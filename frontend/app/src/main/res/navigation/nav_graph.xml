@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/splashFragment">
+
+    <!-- Splash Screen - Check authentication status -->
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.rental_property_management_app.fragments.SplashFragment"
+        android:label="RoomCare">
+        <action
+            android:id="@+id/action_splashFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_landlordDashboardFragment"
+            app:destination="@id/landlordDashboardFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_tenantDashboardFragment"
+            app:destination="@id/tenantDashboardFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Authentication Flow -->
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.rental_property_management_app.fragments.LoginFragment"
+        android:label="Đăng nhập">
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_forgotPasswordFragment"
+            app:destination="@id/forgotPasswordFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_landlordDashboardFragment"
+            app:destination="@id/landlordDashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_tenantDashboardFragment"
+            app:destination="@id/tenantDashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.rental_property_management_app.fragments.RegisterFragment"
+        android:label="Đăng ký">
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.rental_property_management_app.fragments.ForgotPasswordFragment"
+        android:label="Quên mật khẩu" />
+
+    <!-- Landlord Dashboard -->
+    <fragment
+        android:id="@+id/landlordDashboardFragment"
+        android:name="com.example.rental_property_management_app.fragments.LandlordDashboardFragment"
+        android:label="Dashboard - Chủ nhà">
+        <!-- TODO: Add actions to other landlord screens in future phases -->
+    </fragment>
+
+    <!-- Tenant Dashboard -->
+    <fragment
+        android:id="@+id/tenantDashboardFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantDashboardFragment"
+        android:label="Dashboard - Người thuê">
+        <!-- TODO: Add actions to other tenant screens in future phases -->
+    </fragment>
+
+</navigation>

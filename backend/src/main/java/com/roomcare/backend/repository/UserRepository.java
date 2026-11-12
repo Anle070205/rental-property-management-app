@@ -1,0 +1,39 @@
+package com.roomcare.backend.repository;
+
+import com.roomcare.backend.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+/**
+ * User Repository - Data Access Layer cho User
+ */
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    /**
+     * Tìm user theo email
+     */
+    Optional<User> findByEmail(String email);
+
+    /**
+     * Tìm user theo phone
+     */
+    Optional<User> findByPhone(String phone);
+
+    /**
+     * Tìm user theo email hoặc phone (cho login)
+     */
+    Optional<User> findByEmailOrPhone(String email, String phone);
+
+    /**
+     * Kiểm tra email đã tồn tại chưa
+     */
+    boolean existsByEmail(String email);
+
+    /**
+     * Kiểm tra phone đã tồn tại chưa
+     */
+    boolean existsByPhone(String phone);
+}
