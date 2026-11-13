@@ -1,0 +1,34 @@
+package com.roomcare.backend.repository;
+
+import com.roomcare.backend.entity.Tenant;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface TenantRepository extends JpaRepository<Tenant, Long> {
+    
+    Page<Tenant> findByLandlordId(Long landlordId, Pageable pageable);
+    
+    @Query("SELECT t FROM Tenant t WHERE t.landlord.id = :landlordId " +
+           "AND (:propertyId IS NULL OR t.property.id = :propertyId) " +
+           "AND (:keyword IS NULL OR LOWER(t.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+           "     OR LOWER(t.phone) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<Tenant> findByLandlordIdWithFilters(
+        @Param("landlordId") Long landlordId,
+        @Param("propertyId") Long propertyId,
+        @Param("keyword") String keyword,
+        Pageable pageable
+    );
+    
+    boolean existsByPhone(String phone);
+    
+    boolean existsByIdentityNumber(String identityNumber);
+    
+    @Query("SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END FROM Tenant t " +
+           "WHERE t.id = :tenantId AND t.landlord.id = :landlordId")
+    boolean existsByIdAndLandlordId(@Param("tenantId") Long tenantId, @Param("landlordId") Long landlordId);
+}

@@ -1,0 +1,11 @@
+# Ignore local database dumps
+*.dump
+*.backup
+
+# Ignore sensitive data files
+*_production.sql
+*_sensitive.sql
+
+# Keep the main SQL file
+!roomcare_phase2.sql
+!README.md

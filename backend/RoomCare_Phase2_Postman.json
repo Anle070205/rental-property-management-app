@@ -1,0 +1,644 @@
+{
+  "info": {
+    "name": "RoomCare - Phase 2 APIs",
+    "description": "API collection for RoomCare Phase 2 - Property, Room & Tenant Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login Landlord1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('token', jsonData.data.token);",
+                  "    console.log('Token saved:', jsonData.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emailOrPhone\": \"landlord1@example.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Landlord2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emailOrPhone\": \"landlord2@example.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Register New Landlord",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Nguyễn Văn Test\",\n  \"email\": \"test@example.com\",\n  \"phone\": \"0999999999\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Properties",
+      "item": [
+        {
+          "name": "Create Property",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nhà trọ Mới\",\n  \"address\": \"999 Lê Lợi, Quận 1, TP.HCM\",\n  \"description\": \"Nhà trọ test từ Postman\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/landlord/properties",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "properties"]
+            }
+          }
+        },
+        {
+          "name": "Get All Properties",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/properties?page=0&size=10&sortBy=createdAt&sortDir=desc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "properties"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Property by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/properties/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "properties", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Property",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nhà trọ Hoàng Anh (Updated)\",\n  \"address\": \"123 Nguyễn Trãi, Quận 5, TP.HCM\",\n  \"description\": \"Mô tả đã được cập nhật\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/landlord/properties/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "properties", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "Create Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"propertyId\": 1,\n  \"roomCode\": \"301\",\n  \"floor\": 3,\n  \"area\": 25.00,\n  \"rentPrice\": 3000000,\n  \"deposit\": 3000000,\n  \"capacity\": 3,\n  \"amenities\": \"Điều hòa, Nóng lạnh, Giường, Tủ, Bếp\",\n  \"description\": \"Phòng rộng rãi, view đẹp\",\n  \"imageUrl\": null\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/landlord/rooms",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "rooms"]
+            }
+          }
+        },
+        {
+          "name": "Get All Rooms (My Properties)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/rooms?page=0&size=20&sortBy=roomCode&sortDir=asc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "rooms"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "roomCode"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "asc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Rooms by Property",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/rooms/property/1?page=0&size=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "rooms", "property", "1"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Rooms - Filter by Status VACANT",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/rooms/property/1?status=VACANT&page=0&size=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "rooms", "property", "1"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "VACANT"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Rooms - Filter by Price Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/rooms/property/1?minPrice=2000000&maxPrice=3000000&page=0&size=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "rooms", "property", "1"],
+              "query": [
+                {
+                  "key": "minPrice",
+                  "value": "2000000"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "3000000"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Rooms - Filter by Floor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/rooms/property/1?floor=1&page=0&size=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "rooms", "property", "1"],
+              "query": [
+                {
+                  "key": "floor",
+                  "value": "1"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Room by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/rooms/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "rooms", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Room",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomCode\": \"101\",\n  \"floor\": 1,\n  \"area\": 22.00,\n  \"rentPrice\": 2800000,\n  \"deposit\": 2800000,\n  \"capacity\": 2,\n  \"amenities\": \"Điều hòa, Nóng lạnh, Giường, Tủ, Ban công\",\n  \"description\": \"Phòng đã được nâng cấp\",\n  \"imageUrl\": null,\n  \"status\": \"VACANT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/landlord/rooms/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "rooms", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Room",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/rooms/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "rooms", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tenants",
+      "item": [
+        {
+          "name": "Create Tenant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"propertyId\": 1,\n  \"fullName\": \"Nguyễn Thị D\",\n  \"phone\": \"0956789012\",\n  \"email\": \"nguyenthid@example.com\",\n  \"identityNumber\": \"079345678901\",\n  \"dateOfBirth\": \"1997-03-25\",\n  \"address\": \"Tây Ninh\",\n  \"emergencyContact\": \"0954321098\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/landlord/tenants",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "tenants"]
+            }
+          }
+        },
+        {
+          "name": "Get All Tenants",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/tenants?page=0&size=10&sortBy=fullName&sortDir=asc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "tenants"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "fullName"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "asc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Tenants - Filter by Property",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/tenants?propertyId=1&page=0&size=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "tenants"],
+              "query": [
+                {
+                  "key": "propertyId",
+                  "value": "1"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Tenants - Search by Keyword",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/tenants?keyword=Lê&page=0&size=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "tenants"],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "Lê"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Tenant by ID (Full Identity)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/tenants/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "tenants", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Tenant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Lê Văn C (Updated)\",\n  \"phone\": \"0923456789\",\n  \"email\": \"levanc.updated@example.com\",\n  \"identityNumber\": \"079012345678\",\n  \"dateOfBirth\": \"1995-05-15\",\n  \"address\": \"Bình Dương (địa chỉ mới)\",\n  \"emergencyContact\": \"0987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/landlord/tenants/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "tenants", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Tenant",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/landlord/tenants/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "landlord", "tenants", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
