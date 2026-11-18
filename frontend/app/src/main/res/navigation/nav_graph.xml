@@ -70,7 +70,98 @@
         android:id="@+id/landlordDashboardFragment"
         android:name="com.example.rental_property_management_app.fragments.LandlordDashboardFragment"
         android:label="Dashboard - Chủ nhà">
-        <!-- TODO: Add actions to other landlord screens in future phases -->
+        <action
+            android:id="@+id/action_landlordDashboard_to_roomList"
+            app:destination="@id/roomListFragment" />
+        <action
+            android:id="@+id/action_landlordDashboard_to_tenantList"
+            app:destination="@id/tenantListFragment" />
+    </fragment>
+
+    <!-- Phase 2: Room Management -->
+    <fragment
+        android:id="@+id/roomListFragment"
+        android:name="com.example.rental_property_management_app.fragments.RoomListFragment"
+        android:label="@string/room_management">
+        <action
+            android:id="@+id/action_roomList_to_roomDetail"
+            app:destination="@id/roomDetailFragment" />
+        <action
+            android:id="@+id/action_roomList_to_roomForm"
+            app:destination="@id/roomFormFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/roomDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.RoomDetailFragment"
+        android:label="@string/room_detail">
+        <argument
+            android:name="roomId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_roomDetail_to_roomForm"
+            app:destination="@id/roomFormFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/roomFormFragment"
+        android:name="com.example.rental_property_management_app.fragments.RoomFormFragment"
+        android:label="@string/room_form">
+        <argument
+            android:name="roomId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="propertyId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_roomForm_to_propertySelection"
+            app:destination="@id/propertySelectionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/propertySelectionFragment"
+        android:name="com.example.rental_property_management_app.fragments.PropertySelectionFragment"
+        android:label="@string/select_property" />
+
+    <!-- Phase 2: Tenant Management -->
+    <fragment
+        android:id="@+id/tenantListFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantListFragment"
+        android:label="@string/tenant_management">
+        <action
+            android:id="@+id/action_tenantList_to_tenantDetail"
+            app:destination="@id/tenantDetailFragment" />
+        <action
+            android:id="@+id/action_tenantList_to_tenantForm"
+            app:destination="@id/tenantFormFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/tenantDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantDetailFragment"
+        android:label="@string/tenant_detail">
+        <argument
+            android:name="tenantId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_tenantDetail_to_tenantForm"
+            app:destination="@id/tenantFormFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/tenantFormFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantFormFragment"
+        android:label="@string/tenant_form">
+        <argument
+            android:name="tenantId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="roomId"
+            android:defaultValue="0L"
+            app:argType="long" />
     </fragment>
 
     <!-- Tenant Dashboard -->

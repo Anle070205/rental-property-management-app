@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android") version "2.2.10"
+    id("androidx.navigation.safeargs.kotlin") version "2.7.5"
 }
 
 android {
@@ -58,6 +59,7 @@ dependencies {
     // Material Design
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     
     // Navigation Component
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")

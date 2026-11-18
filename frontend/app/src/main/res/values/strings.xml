@@ -1,3 +1,147 @@
 <resources>
-    <string name="app_name">rental-property-management-app</string>
+    <string name="app_name">RoomCare</string>
+    
+    <!-- Common -->
+    <string name="save">Lưu</string>
+    <string name="cancel">Hủy</string>
+    <string name="delete">Xóa</string>
+    <string name="edit">Sửa</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="filter">Lọc</string>
+    <string name="loading">Đang tải...</string>
+    <string name="error">Lỗi</string>
+    <string name="success">Thành công</string>
+    <string name="confirm">Xác nhận</string>
+    <string name="yes">Có</string>
+    <string name="no">Không</string>
+    <string name="arrow_forward">Mũi tên tiếp</string>
+    <string name="management">Quản lý</string>
+    
+    <!-- Dashboard -->
+    <string name="landlord_dashboard">Dashboard Chủ nhà</string>
+    <string name="landlord_dashboard_subtitle">Quản lý nhà trọ và người thuê</string>
+    <string name="tenant_dashboard">Dashboard Người thuê</string>
+    
+    <!-- Room Management -->
+    <string name="room_management">Quản lý phòng</string>
+    <string name="room_management_desc">Thêm, sửa, xóa và theo dõi phòng trọ</string>
+    <string name="room_list">Danh sách phòng</string>
+    <string name="room_detail">Chi tiết phòng</string>
+    <string name="room_form">Form phòng</string>
+    <string name="add_room">Thêm phòng mới</string>
+    <string name="edit_room">Chỉnh sửa phòng</string>
+    <string name="room_number">Số phòng</string>
+    <string name="floor">Tầng</string>
+    <string name="area_m2">Diện tích (m²)</string>
+    <string name="price_per_month">Giá thuê/tháng</string>
+    <string name="deposit">Tiền đặt cọc</string>
+    <string name="max_occupants">Số người tối đa</string>
+    <string name="amenities">Tiện nghi</string>
+    <string name="status">Trạng thái</string>
+    <string name="description">Mô tả</string>
+    <string name="description_optional">Mô tả (tùy chọn)</string>
+    <string name="property">Nhà/Tòa</string>
+    <string name="select_property">Chọn nhà/tòa</string>
+    <string name="select_property_first">Vui lòng chọn nhà/tòa trước</string>
+    <string name="property_selected">Đã chọn nhà/tòa</string>
+    <string name="no_properties">Chưa có nhà/tòa nào</string>
+    
+    <!-- Room Status -->
+    <string name="status_vacant">Trống</string>
+    <string name="status_occupied">Đã thuê</string>
+    <string name="status_expiring_soon">Sắp hết hạn</string>
+    <string name="status_needs_attention">Cần chú ý</string>
+    
+    <!-- Room Messages -->
+    <string name="room_created">Đã tạo phòng thành công</string>
+    <string name="room_updated">Đã cập nhật phòng thành công</string>
+    <string name="room_deleted">Đã xóa phòng thành công</string>
+    <string name="confirm_delete_room">Bạn có chắc muốn xóa phòng này?</string>
+    <string name="confirm_delete_room_message">Phòng %1$s sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác.</string>
+    <string name="no_rooms">Chưa có phòng nào</string>
+    <string name="no_rooms_desc">Nhấn nút + để thêm phòng mới</string>
+    <string name="search_rooms">Tìm kiếm phòng...</string>
+    
+    <!-- Room Filters -->
+    <string name="filter_by_status">Lọc theo trạng thái</string>
+    <string name="filter_by_price">Lọc theo giá</string>
+    <string name="filter_by_floor">Lọc theo tầng</string>
+    <string name="clear_filters">Xóa bộ lọc</string>
+    <string name="all_status">Tất cả</string>
+    
+    <!-- Tenant Management -->
+    <string name="tenant_management">Quản lý người thuê</string>
+    <string name="tenant_management_desc">Quản lý thông tin và hợp đồng người thuê</string>
+    <string name="tenant_list">Danh sách người thuê</string>
+    <string name="tenant_detail">Chi tiết người thuê</string>
+    <string name="tenant_form">Form người thuê</string>
+    <string name="add_tenant">Thêm người thuê</string>
+    <string name="edit_tenant">Chỉnh sửa người thuê</string>
+    <string name="full_name">Họ và tên</string>
+    <string name="phone">Số điện thoại</string>
+    <string name="email">Email</string>
+    <string name="email_optional">Email (tùy chọn)</string>
+    <string name="id_card">CMND/CCCD</string>
+    <string name="move_in_date">Ngày vào ở</string>
+    <string name="select_move_in_date">Chọn ngày vào ở</string>
+    <string name="emergency_contact">Liên hệ khẩn cấp</string>
+    <string name="emergency_contact_optional">Liên hệ khẩn cấp (tùy chọn)</string>
+    <string name="notes">Ghi chú</string>
+    <string name="notes_optional">Ghi chú (tùy chọn)</string>
+    <string name="room_info">Thông tin phòng</string>
+    <string name="tenant_info">Thông tin người thuê</string>
+    
+    <!-- Tenant Messages -->
+    <string name="tenant_created">Đã thêm người thuê thành công</string>
+    <string name="tenant_updated">Đã cập nhật người thuê thành công</string>
+    <string name="tenant_deleted">Đã xóa người thuê thành công</string>
+    <string name="confirm_delete_tenant">Bạn có chắc muốn xóa người thuê này?</string>
+    <string name="confirm_delete_tenant_message">Người thuê %1$s sẽ bị xóa. Hành động này không thể hoàn tác.</string>
+    <string name="no_tenants">Chưa có người thuê nào</string>
+    <string name="no_tenants_desc">Nhấn nút + để thêm người thuê</string>
+    <string name="search_tenants">Tìm kiếm người thuê...</string>
+    
+    <!-- Property Info -->
+    <string name="property_name">Tên nhà/tòa</string>
+    <string name="property_address">Địa chỉ</string>
+    
+    <!-- Validation Errors -->
+    <string name="error_room_number_required">Vui lòng nhập số phòng</string>
+    <string name="error_floor_required">Vui lòng nhập số tầng</string>
+    <string name="error_area_required">Vui lòng nhập diện tích</string>
+    <string name="error_area_invalid">Diện tích không hợp lệ</string>
+    <string name="error_price_required">Vui lòng nhập giá thuê</string>
+    <string name="error_price_invalid">Giá thuê không hợp lệ</string>
+    <string name="error_max_occupants_required">Vui lòng nhập số người tối đa</string>
+    <string name="error_max_occupants_invalid">Số người không hợp lệ</string>
+    <string name="error_select_property">Vui lòng chọn nhà/tòa</string>
+    <string name="error_select_room">Vui lòng chọn phòng</string>
+    
+    <string name="error_full_name_required">Vui lòng nhập họ tên</string>
+    <string name="error_phone_required">Vui lòng nhập số điện thoại</string>
+    <string name="error_phone_invalid">Số điện thoại không hợp lệ</string>
+    <string name="error_email_invalid">Email không hợp lệ</string>
+    <string name="error_id_card_required">Vui lòng nhập CMND/CCCD</string>
+    <string name="error_move_in_date_required">Vui lòng chọn ngày vào ở</string>
+    
+    <!-- Network Errors -->
+    <string name="error_network">Lỗi kết nối mạng</string>
+    <string name="error_server">Lỗi máy chủ</string>
+    <string name="error_unknown">Đã xảy ra lỗi không xác định</string>
+    <string name="error_unauthorized">Phiên đăng nhập hết hạn</string>
+    <string name="error_loading">Không thể tải dữ liệu</string>
+    
+    <!-- Actions -->
+    <string name="action_retry">Thử lại</string>
+    <string name="action_add">Thêm</string>
+    <string name="action_refresh">Làm mới</string>
+    <string name="action_view">Xem</string>
+    <string name="action_call">Gọi điện</string>
+    
+    <!-- Date Format -->
+    <string name="date_format">dd/MM/yyyy</string>
+    
+    <!-- Currency -->
+    <string name="currency_format">%1$s ₫</string>
+    <string name="vnd">₫</string>
 </resources>

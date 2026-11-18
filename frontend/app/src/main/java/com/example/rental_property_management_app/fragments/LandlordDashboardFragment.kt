@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.databinding.FragmentLandlordDashboardBinding
 
 class LandlordDashboardFragment : Fragment() {
@@ -27,8 +29,15 @@ class LandlordDashboardFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        // TODO: Implement dashboard navigation and logic
-        // Ví dụ: navigate to property management, contracts, invoices, etc.
+        // Room Management
+        binding.cardRoomManagement.setOnClickListener {
+            findNavController().navigate(R.id.action_landlordDashboard_to_roomList)
+        }
+        
+        // Tenant Management
+        binding.cardTenantManagement.setOnClickListener {
+            findNavController().navigate(R.id.action_landlordDashboard_to_tenantList)
+        }
     }
 
     override fun onDestroyView() {

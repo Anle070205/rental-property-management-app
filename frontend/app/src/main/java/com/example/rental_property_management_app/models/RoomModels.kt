@@ -1,0 +1,165 @@
+package com.example.rental_property_management_app.models
+
+import com.google.gson.annotations.SerializedName
+import java.math.BigDecimal
+
+/**
+ * Room Status Enum - Khớp với Backend RoomStatus
+ */
+enum class RoomStatus {
+    @SerializedName("VACANT")
+    VACANT,           // Còn trống (AVAILABLE)
+    
+    @SerializedName("OCCUPIED")
+    OCCUPIED,         // Đang thuê (RENTED)
+    
+    @SerializedName("EXPIRING_SOON")
+    EXPIRING_SOON,    // Sắp hết hạn (EXPIRING)
+    
+    @SerializedName("NEEDS_ATTENTION")
+    NEEDS_ATTENTION;  // Cần chú ý (ATTENTION)
+    
+    fun getDisplayName(): String {
+        return when (this) {
+            VACANT -> "Còn trống"
+            OCCUPIED -> "Đang thuê"
+            EXPIRING_SOON -> "Sắp hết hạn"
+            NEEDS_ATTENTION -> "Cần chú ý"
+        }
+    }
+    
+    fun getColorResId(): Int {
+        return when (this) {
+            VACANT -> android.R.color.holo_green_dark
+            OCCUPIED -> android.R.color.holo_blue_dark
+            EXPIRING_SOON -> android.R.color.holo_orange_dark
+            NEEDS_ATTENTION -> android.R.color.holo_red_dark
+        }
+    }
+}
+
+/**
+ * Room Response từ Backend
+ */
+data class RoomResponse(
+    @SerializedName("id")
+    val id: Long,
+    
+    @SerializedName("propertyId")
+    val propertyId: Long,
+    
+    @SerializedName("propertyName")
+    val propertyName: String,
+    
+    @SerializedName("roomCode")
+    val roomCode: String,
+    
+    @SerializedName("floor")
+    val floor: Int,
+    
+    @SerializedName("area")
+    val area: BigDecimal,
+    
+    @SerializedName("rentPrice")
+    val rentPrice: BigDecimal,
+    
+    @SerializedName("deposit")
+    val deposit: BigDecimal,
+    
+    @SerializedName("capacity")
+    val capacity: Int,
+    
+    @SerializedName("amenities")
+    val amenities: String?,
+    
+    @SerializedName("description")
+    val description: String?,
+    
+    @SerializedName("imageUrl")
+    val imageUrl: String?,
+    
+    @SerializedName("status")
+    val status: RoomStatus,
+    
+    @SerializedName("currentContract")
+    val currentContract: String?,     // TODO: Phase 3
+    
+    @SerializedName("currentTenant")
+    val currentTenant: String?,       // TODO: Phase 3
+    
+    @SerializedName("createdAt")
+    val createdAt: String,
+    
+    @SerializedName("updatedAt")
+    val updatedAt: String
+)
+
+/**
+ * Create Room Request
+ */
+data class CreateRoomRequest(
+    @SerializedName("propertyId")
+    val propertyId: Long,
+    
+    @SerializedName("roomCode")
+    val roomCode: String,
+    
+    @SerializedName("floor")
+    val floor: Int,
+    
+    @SerializedName("area")
+    val area: BigDecimal,
+    
+    @SerializedName("rentPrice")
+    val rentPrice: BigDecimal,
+    
+    @SerializedName("deposit")
+    val deposit: BigDecimal,
+    
+    @SerializedName("capacity")
+    val capacity: Int,
+    
+    @SerializedName("amenities")
+    val amenities: String?,
+    
+    @SerializedName("description")
+    val description: String?,
+    
+    @SerializedName("imageUrl")
+    val imageUrl: String?
+)
+
+/**
+ * Update Room Request
+ */
+data class UpdateRoomRequest(
+    @SerializedName("roomCode")
+    val roomCode: String,
+    
+    @SerializedName("floor")
+    val floor: Int,
+    
+    @SerializedName("area")
+    val area: BigDecimal,
+    
+    @SerializedName("rentPrice")
+    val rentPrice: BigDecimal,
+    
+    @SerializedName("deposit")
+    val deposit: BigDecimal,
+    
+    @SerializedName("capacity")
+    val capacity: Int,
+    
+    @SerializedName("amenities")
+    val amenities: String?,
+    
+    @SerializedName("description")
+    val description: String?,
+    
+    @SerializedName("imageUrl")
+    val imageUrl: String?,
+    
+    @SerializedName("status")
+    val status: RoomStatus
+)
