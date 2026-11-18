@@ -15,27 +15,27 @@ class UserRepository {
     suspend fun update(request: UpdateProfileRequest) = apiResult({ api.updateProfile(request) }) { it.data }
     suspend fun changePassword(request: ChangePasswordRequest) =
         apiResult({ api.changePassword(request) }) { Unit }
+}
 
-    private suspend fun <T, R : Any> apiResult(
-        request: suspend () -> Response<ApiResponse<T>>,
-        data: (ApiResponse<T>) -> R?
-    ): Resource<R> {
-        return try {
-            val response = request()
-            val body = response.body()
-            if (response.isSuccessful && body?.success == true) {
-                data(body)?.let { Resource.Success(it) }
-                    ?: Resource.Error(Constants.ErrorMessages.SERVER_ERROR)
-            } else {
-                val message = body?.message ?: runCatching {
-                    response.errorBody()?.use { error ->
-                        JSONObject(error.string()).optString("message").takeIf { it.isNotBlank() }
-                    }
-                }.getOrNull()
-                Resource.Error(message ?: Constants.ErrorMessages.SERVER_ERROR)
-            }
-        } catch (_: IOException) {
-            Resource.Error(Constants.ErrorMessages.NETWORK_ERROR)
+internal suspend fun <T, R : Any> apiResult(
+    request: suspend () -> Response<ApiResponse<T>>,
+    data: (ApiResponse<T>) -> R?
+): Resource<R> {
+    return try {
+        val response = request()
+        val body = response.body()
+        if (response.isSuccessful && body?.success == true) {
+            data(body)?.let { Resource.Success(it) }
+                ?: Resource.Error(Constants.ErrorMessages.SERVER_ERROR)
+        } else {
+            val message = body?.message ?: runCatching {
+                response.errorBody()?.use { error ->
+                    JSONObject(error.string()).optString("message").takeIf { it.isNotBlank() }
+                }
+            }.getOrNull()
+            Resource.Error(message ?: Constants.ErrorMessages.SERVER_ERROR)
         }
+    } catch (_: IOException) {
+        Resource.Error(Constants.ErrorMessages.NETWORK_ERROR)
     }
 }

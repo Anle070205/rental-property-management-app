@@ -160,4 +160,20 @@
     <string name="rc_new_password">Mật khẩu mới</string>
     <string name="rc_required">Vui lòng nhập thông tin</string>
     <string name="rc_password_length">Mật khẩu phải có ít nhất 6 ký tự</string>
+    <string name="rc_notifications">Thông báo</string>
+    <string name="rc_no_notifications">Chưa có thông báo</string>
+    <string name="rc_notification_filter">Nhóm thông báo</string>
+    <string name="rc_unread">Chưa đọc</string>
+    <string name="rc_read_all">Đọc tất cả</string>
+    <string name="rc_load_more">Tải thêm</string>
+    <string name="rc_notification_unread_marker">●</string>
+    <string-array name="rc_notification_types">
+        <item>Tất cả nhóm</item>
+        <item>Hóa đơn</item>
+        <item>Hợp đồng</item>
+        <item>Thanh toán</item>
+        <item>Sự cố</item>
+        <item>Bảo trì</item>
+        <item>Hệ thống</item>
+    </string-array>
 </resources>

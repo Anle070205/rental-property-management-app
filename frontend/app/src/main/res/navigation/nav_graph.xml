@@ -177,4 +177,9 @@
         android:name="com.example.rental_property_management_app.fragments.ProfileFragment"
         android:label="@string/rc_profile" />
 
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.example.rental_property_management_app.fragments.NotificationFragment"
+        android:label="@string/rc_notifications" />
+
 </navigation>

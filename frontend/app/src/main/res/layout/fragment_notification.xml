@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="wrap_content"
+        app:title="@string/rc_notifications" app:navigationIcon="@drawable/ic_arrow_back" />
+    <Spinner android:id="@+id/type" android:layout_width="match_parent" android:layout_height="48dp"
+        android:contentDescription="@string/rc_notification_filter" />
+    <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/unreadOnly"
+        android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_unread" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/readAll"
+        android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_read_all" />
+    <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center" android:padding="16dp" android:visibility="gone" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/retry"
+        android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_retry"
+        android:visibility="gone" />
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:id="@+id/swipe"
+        android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/items"
+            android:layout_width="match_parent" android:layout_height="match_parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <com.google.android.material.button.MaterialButton android:id="@+id/more"
+        android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_load_more"
+        android:visibility="gone" />
+</LinearLayout>

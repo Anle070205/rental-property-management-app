@@ -8,6 +8,22 @@ import retrofit2.http.*
  * Retrofit API Service Interface
  */
 interface ApiService {
+    @GET("api/notifications")
+    suspend fun notifications(
+        @Query("type") type: NotificationType?,
+        @Query("unreadOnly") unreadOnly: Boolean,
+        @Query("page") page: Int
+    ): Response<ApiResponse<PageResponse<NotificationItem>>>
+
+    @PUT("api/notifications/{id}/read")
+    suspend fun markNotificationRead(@Path("id") id: Long): Response<ApiResponse<Unit>>
+
+    @PUT("api/notifications/read-all")
+    suspend fun markAllNotificationsRead(): Response<ApiResponse<Unit>>
+
+    @GET("api/notifications/unread-count")
+    suspend fun unreadNotificationCount(): Response<ApiResponse<Long>>
+
     @GET("api/users/me")
     suspend fun getProfile(): Response<ApiResponse<ProfileResponse>>
 

@@ -1,0 +1,12 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="vertical" android:padding="16dp"
+    android:background="?attr/selectableItemBackground">
+    <TextView android:id="@+id/unread" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:text="@string/rc_notification_unread_marker"
+        android:contentDescription="@string/rc_unread" android:textColor="@color/rc_primary" />
+    <TextView android:id="@+id/title" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:textStyle="bold" android:textSize="16sp" />
+    <TextView android:id="@+id/content" android:layout_width="match_parent" android:layout_height="wrap_content" />
+    <TextView android:id="@+id/date" android:layout_width="match_parent" android:layout_height="wrap_content" />
+</LinearLayout>
