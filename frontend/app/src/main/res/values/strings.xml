@@ -144,4 +144,18 @@
     <!-- Currency -->
     <string name="currency_format">%1$s ₫</string>
     <string name="vnd">₫</string>
+
+    <!-- GĐ4.1: Invoice Management -->
+    <string name="invoice_management">Quản lý hóa đơn</string>
+    <string name="invoice_management_desc">Tạo, theo dõi hóa đơn theo phòng và kỳ thu</string>
+    <string name="invoice_create_single">Tạo 1 phòng</string>
+    <string name="invoice_create_batch">Tạo hàng loạt</string>
+    <string name="invoice_empty">Chưa có hóa đơn nào</string>
+    <string name="invoice_empty_desc">Chọn kỳ tháng hoặc bấm nút Tạo hóa đơn để lập hóa đơn mới</string>
+    <string name="invoice_all_months">Tất cả kỳ</string>
+    <string name="invoice_all_rooms">Tất cả phòng</string>
+    <string name="invoice_status_unpaid">Chưa thu</string>
+    <string name="invoice_status_partial">Thu một phần</string>
+    <string name="invoice_status_paid">Đã thanh toán</string>
+    <string name="invoice_status_overdue">Quá hạn</string>
 </resources>
