@@ -3,7 +3,7 @@ package com.example.rental_property_management_app.utils
 object Constants {
     
     // API Configuration
-    const val BASE_URL = "http://192.168.100.231:8080/" // Your computer's IP
+    const val BASE_URL = "http://10.0.2.2:8081/" // Android emulator host loopback
     const val API_PREFIX = "api/"
     
     // API Endpoints
