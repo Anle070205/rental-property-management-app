@@ -213,9 +213,7 @@ public class InvoiceService {
         BigDecimal otherFees = safeMoney(request.getOtherFees());
         BigDecimal discount = safeMoney(request.getDiscountAmount());
 
-        BigDecimal previousDebt = request.getPreviousDebt() != null
-                ? safeMoney(request.getPreviousDebt())
-                : calculatePreviousDebt(room.getId(), request.getBillingMonth());
+        BigDecimal previousDebt = safeMoney(request.getPreviousDebt());
 
         Invoice invoice = buildInvoice(
                 landlord, room, tenant, utilityRecordId,
@@ -260,7 +258,7 @@ public class InvoiceService {
             BigDecimal service = utilityOpt.map(UtilityRecord::getServiceFee)
                     .orElse(safeMoney(request.getDefaultServiceFee()));
             BigDecimal otherFees = safeMoney(request.getOtherFees());
-            BigDecimal previousDebt = calculatePreviousDebt(room.getId(), request.getBillingMonth());
+            BigDecimal previousDebt = BigDecimal.ZERO;
 
             Invoice invoice = buildInvoice(
                     landlord, room, tenant, utilityOpt.map(UtilityRecord::getId).orElse(null),

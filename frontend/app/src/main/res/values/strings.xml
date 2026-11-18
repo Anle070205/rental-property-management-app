@@ -171,4 +171,10 @@
     <string name="record_payment">Xác nhận ghi nhận thanh toán</string>
     <string name="payment_history">Lịch sử thanh toán &amp; biên nhận</string>
     <string name="no_payments">Chưa có giao dịch thanh toán nào</string>
+
+    <!-- GĐ4.4: Debt Management -->
+    <string name="debt_management">Quản lý công nợ</string>
+    <string name="debt_management_desc">Tổng hợp công nợ, hóa đơn quá hạn và lịch sử biến động</string>
+    <string name="debt_empty">Không có công nợ nào phù hợp</string>
+    <string name="debt_search_hint">Tìm theo tên phòng, người thuê, SĐT...</string>
 </resources>

@@ -200,4 +200,21 @@ interface ApiService {
         @Path("id") id: Long,
         @Body request: UpdateUtilityRequest
     ): Response<ApiResponse<UtilityRecordResponse>>
+
+    // ============================================
+    // PHASE 4 - DEBT APIs (GĐ4.4)
+    // ============================================
+    @GET("api/landlord/debts")
+    suspend fun getDebts(
+        @Query("roomId") roomId: Long? = null,
+        @Query("tenantId") tenantId: Long? = null,
+        @Query("month") month: String? = null,
+        @Query("overdueLevel") overdueLevel: String? = null,
+        @Query("keyword") keyword: String? = null
+    ): Response<ApiResponse<DebtSummaryResponse>>
+
+    @GET("api/landlord/debts/{tenantId}")
+    suspend fun getTenantDebtDetail(
+        @Path("tenantId") tenantId: Long
+    ): Response<ApiResponse<RoomTenantDebtResponse>>
 }

@@ -196,4 +196,16 @@
         android:name="com.example.rental_property_management_app.fragments.UtilityFragment"
         android:label="@string/utility_management" />
 
+    <fragment
+        android:id="@+id/debtFragment"
+        android:name="com.example.rental_property_management_app.fragments.DebtFragment"
+        android:label="@string/debt_management">
+        <action
+            android:id="@+id/action_debtFragment_to_invoiceDetailFragment"
+            app:destination="@id/invoiceDetailFragment" />
+        <action
+            android:id="@+id/action_debtFragment_to_tenantDetailFragment"
+            app:destination="@id/tenantDetailFragment" />
+    </fragment>
+
 </navigation>
