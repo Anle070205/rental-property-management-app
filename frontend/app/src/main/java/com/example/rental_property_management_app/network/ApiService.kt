@@ -217,4 +217,18 @@ interface ApiService {
     suspend fun getTenantDebtDetail(
         @Path("tenantId") tenantId: Long
     ): Response<ApiResponse<RoomTenantDebtResponse>>
+
+    // ============================================
+    // PHASE 4 - HEALTH SCORE APIs (GĐ4.5)
+    // ============================================
+    @GET("api/landlord/health-scores")
+    suspend fun getHealthScores(
+        @Query("ratingLevel") ratingLevel: String? = null,
+        @Query("propertyId") propertyId: Long? = null
+    ): Response<ApiResponse<HealthScoreOverviewResponse>>
+
+    @GET("api/landlord/rooms/{id}/health-score")
+    suspend fun getRoomHealthScore(
+        @Path("id") roomId: Long
+    ): Response<ApiResponse<RoomHealthScoreResponse>>
 }

@@ -177,4 +177,9 @@
     <string name="debt_management_desc">Tổng hợp công nợ, hóa đơn quá hạn và lịch sử biến động</string>
     <string name="debt_empty">Không có công nợ nào phù hợp</string>
     <string name="debt_search_hint">Tìm theo tên phòng, người thuê, SĐT...</string>
+
+    <!-- GĐ4.5: Health Score -->
+    <string name="health_score_title">Health Score phòng</string>
+    <string name="health_score_desc">Đánh giá sức khỏe vận hành phòng theo thang điểm 0-100</string>
+    <string name="health_score_empty">Chưa có dữ liệu Health Score phòng</string>
 </resources>

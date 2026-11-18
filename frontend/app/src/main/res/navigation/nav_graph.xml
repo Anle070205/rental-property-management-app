@@ -208,4 +208,14 @@
             app:destination="@id/tenantDetailFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/healthScoreFragment"
+        android:name="com.example.rental_property_management_app.fragments.HealthScoreFragment"
+        android:label="@string/health_score_title">
+        <argument
+            android:name="roomId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
+
 </navigation>
