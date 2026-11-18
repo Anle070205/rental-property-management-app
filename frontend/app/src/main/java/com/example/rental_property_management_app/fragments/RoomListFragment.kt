@@ -78,7 +78,7 @@ class RoomListFragment : Fragment() {
     private fun setupClickListeners() {
         // FAB - Add new room
         binding.fabAddRoom.setOnClickListener {
-            val action = RoomListFragmentDirections.actionRoomListToRoomForm(roomId = null)
+            val action = RoomListFragmentDirections.actionRoomListToRoomForm()
             findNavController().navigate(action)
         }
         
@@ -111,7 +111,7 @@ class RoomListFragment : Fragment() {
                         binding.swipeRefresh.isRefreshing = false
                         hideAllStates()
                         
-                        val rooms = resource.data.content
+                        val rooms = resource.data?.content.orEmpty()
                         if (rooms.isEmpty()) {
                             showEmptyState()
                         } else {
@@ -131,22 +131,17 @@ class RoomListFragment : Fragment() {
     
     private fun observeDeleteState() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.deleteState.collectLatest { resource ->
-                resource ?: return@collectLatest
-                
-                when (resource) {
-                    is Resource.Loading -> {
-                        // Show loading dialog if needed
-                    }
-                    is Resource.Success -> {
+            viewModel.deleteState.collectLatest { state ->
+                when {
+                    state.data != null -> {
                         Toast.makeText(context, "Đã xóa phòng", Toast.LENGTH_SHORT).show()
                         viewModel.resetDeleteState()
                         viewModel.loadAllRooms() // Reload list
                     }
-                    is Resource.Error -> {
+                    state.error != null -> {
                         Toast.makeText(
                             context,
-                            "Xóa thất bại: ${resource.message}",
+                            "Xóa thất bại: ${state.error}",
                             Toast.LENGTH_LONG
                         ).show()
                         viewModel.resetDeleteState()

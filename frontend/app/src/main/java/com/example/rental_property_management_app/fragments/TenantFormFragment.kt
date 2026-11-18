@@ -19,9 +19,9 @@ import com.example.rental_property_management_app.viewmodels.TenantViewModel
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
-import java.util.Locale
+import java.util.TimeZone
 
 class TenantFormFragment : Fragment() {
 
@@ -31,11 +31,9 @@ class TenantFormFragment : Fragment() {
     private val viewModel: TenantViewModel by viewModels()
     private val args: TenantFormFragmentArgs by navArgs()
 
-    private var selectedRoomId: Long? = null
+    private var selectedPropertyId: Long? = null
     private var isEditMode = false
-    private var selectedMoveInDate: Date? = null
-
-    private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    private var selectedDateOfBirth: Date? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,12 +59,16 @@ class TenantFormFragment : Fragment() {
         } else {
             isEditMode = false
             binding.toolbar.title = getString(R.string.add_tenant)
-            selectedRoomId = args.roomId.takeIf { it != 0L }
-            
-            if (selectedRoomId == null) {
-                // Room selection required - navigate to room selection
-                Snackbar.make(binding.root, getString(R.string.error_select_room), Snackbar.LENGTH_LONG).show()
+            binding.selectProperty.visibility = View.VISIBLE
+            val navController = findNavController()
+            binding.selectProperty.setOnClickListener {
+                navController.navigate(R.id.propertySelectionFragment)
             }
+            navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Long>("selected_property_id")
+                ?.observe(viewLifecycleOwner) {
+                    selectedPropertyId = it
+                    binding.selectProperty.setText(R.string.property_selected)
+                }
         }
     }
 
@@ -94,13 +96,24 @@ class TenantFormFragment : Fragment() {
 
     private fun showDatePicker() {
         val datePicker = MaterialDatePicker.Builder.datePicker()
-            .setTitleText(getString(R.string.select_move_in_date))
-            .setSelection(selectedMoveInDate?.time ?: MaterialDatePicker.todayInUtcMilliseconds())
+            .setTitleText(getString(R.string.tenant_date_of_birth))
+            .setSelection(selectedDateOfBirth?.let { date ->
+                val local = Calendar.getInstance().apply { time = date }
+                Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+                    clear()
+                    set(local.get(Calendar.YEAR), local.get(Calendar.MONTH), local.get(Calendar.DAY_OF_MONTH))
+                }.timeInMillis
+            })
             .build()
 
         datePicker.addOnPositiveButtonClickListener { selection ->
-            selectedMoveInDate = Date(selection)
-            binding.etMoveInDate.setText(dateFormat.format(selectedMoveInDate!!))
+            val utc = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply { timeInMillis = selection }
+            val date = Calendar.getInstance().apply {
+                clear()
+                set(utc.get(Calendar.YEAR), utc.get(Calendar.MONTH), utc.get(Calendar.DAY_OF_MONTH))
+            }.time
+            selectedDateOfBirth = date
+            binding.etMoveInDate.setText(DateUtils.formatDate(date))
         }
 
         datePicker.show(parentFragmentManager, "DATE_PICKER")
@@ -152,33 +165,21 @@ class TenantFormFragment : Fragment() {
     }
 
     private fun populateForm(tenant: com.example.rental_property_management_app.models.TenantResponse) {
-        selectedRoomId = tenant.roomId
-
         binding.etFullName.setText(tenant.fullName)
         binding.etPhone.setText(tenant.phone)
         binding.etEmail.setText(tenant.email)
-        binding.etIdCard.setText(tenant.idCard)
-
-        // Parse and display move-in date
-        tenant.moveInDate?.let { dateStr ->
-            try {
-                selectedMoveInDate = DateUtils.parseDate(dateStr)
-                binding.etMoveInDate.setText(dateFormat.format(selectedMoveInDate!!))
-            } catch (e: Exception) {
-                // Handle parse error
-            }
-        }
-
+        binding.etIdCard.setText(tenant.identityNumber)
+        selectedDateOfBirth = tenant.dateOfBirth?.let(DateUtils::parseApiDate)
+        binding.etMoveInDate.setText(selectedDateOfBirth?.let(DateUtils::formatDate))
         binding.etEmergencyContact.setText(tenant.emergencyContact)
-        binding.etNotes.setText(tenant.notes)
+        binding.etNotes.setText(tenant.address)
     }
 
     private fun validateForm(): Boolean {
         var isValid = true
 
-        // Validate room selection
-        if (selectedRoomId == null) {
-            showError(getString(R.string.error_select_room))
+        if (!isEditMode && selectedPropertyId == null) {
+            showError(getString(R.string.error_select_property))
             return false
         }
 
@@ -221,27 +222,19 @@ class TenantFormFragment : Fragment() {
             binding.tilIdCard.error = null
         }
 
-        // Validate move-in date
-        if (selectedMoveInDate == null) {
-            binding.tilMoveInDate.error = getString(R.string.error_move_in_date_required)
-            isValid = false
-        } else {
-            binding.tilMoveInDate.error = null
-        }
-
         return isValid
     }
 
     private fun createTenant() {
         val request = CreateTenantRequest(
-            roomId = selectedRoomId!!,
+            propertyId = requireNotNull(selectedPropertyId),
             fullName = binding.etFullName.text.toString().trim(),
             phone = binding.etPhone.text.toString().trim(),
             email = binding.etEmail.text.toString().trim().ifEmpty { null },
-            idCard = binding.etIdCard.text.toString().trim(),
-            moveInDate = DateUtils.formatDate(selectedMoveInDate!!),
+            identityNumber = binding.etIdCard.text.toString().trim(),
+            dateOfBirth = selectedDateOfBirth?.let(DateUtils::formatToApiDate),
             emergencyContact = binding.etEmergencyContact.text.toString().trim().ifEmpty { null },
-            notes = binding.etNotes.text.toString().trim().ifEmpty { null }
+            address = binding.etNotes.text.toString().trim().ifEmpty { null }
         )
 
         viewModel.createTenant(request)
@@ -252,10 +245,10 @@ class TenantFormFragment : Fragment() {
             fullName = binding.etFullName.text.toString().trim(),
             phone = binding.etPhone.text.toString().trim(),
             email = binding.etEmail.text.toString().trim().ifEmpty { null },
-            idCard = binding.etIdCard.text.toString().trim(),
-            moveInDate = DateUtils.formatDate(selectedMoveInDate!!),
+            identityNumber = binding.etIdCard.text.toString().trim(),
+            dateOfBirth = selectedDateOfBirth?.let(DateUtils::formatToApiDate),
             emergencyContact = binding.etEmergencyContact.text.toString().trim().ifEmpty { null },
-            notes = binding.etNotes.text.toString().trim().ifEmpty { null }
+            address = binding.etNotes.text.toString().trim().ifEmpty { null }
         )
 
         viewModel.updateTenant(args.tenantId, request)

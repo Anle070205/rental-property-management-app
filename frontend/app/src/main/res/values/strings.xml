@@ -104,6 +104,7 @@
     <!-- Property Info -->
     <string name="property_name">Tên nhà/tòa</string>
     <string name="property_address">Địa chỉ</string>
+    <string name="tenant_date_of_birth">Ngày sinh</string>
     
     <!-- Validation Errors -->
     <string name="error_room_number_required">Vui lòng nhập số phòng</string>
@@ -144,4 +145,19 @@
     <!-- Currency -->
     <string name="currency_format">%1$s ₫</string>
     <string name="vnd">₫</string>
+    <string name="rc_profile">Hồ sơ cá nhân</string>
+    <string name="rc_phone">Số điện thoại</string>
+    <string name="rc_full_name">Họ và tên</string>
+    <string name="rc_tenant">Người thuê</string>
+    <string name="rc_landlord">Chủ nhà</string>
+    <string name="rc_retry">Thử lại</string>
+    <string name="rc_save">Lưu</string>
+    <string name="rc_saved">Đã lưu thay đổi</string>
+    <string name="rc_logout">Đăng xuất</string>
+    <string name="rc_logout_confirm">Bạn có muốn đăng xuất khỏi RoomCare?</string>
+    <string name="rc_change_password">Đổi mật khẩu</string>
+    <string name="rc_current_password">Mật khẩu hiện tại</string>
+    <string name="rc_new_password">Mật khẩu mới</string>
+    <string name="rc_required">Vui lòng nhập thông tin</string>
+    <string name="rc_password_length">Mật khẩu phải có ít nhất 6 ký tự</string>
 </resources>

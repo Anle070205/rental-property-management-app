@@ -13,7 +13,7 @@ import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.adapters.PropertyAdapter
 import com.example.rental_property_management_app.databinding.FragmentPropertySelectionBinding
 import com.example.rental_property_management_app.models.PropertyResponse
-import com.example.rental_property_management_app.viewmodel.PropertyViewModel
+import com.example.rental_property_management_app.viewmodels.PropertyViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 

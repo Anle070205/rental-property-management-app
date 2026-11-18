@@ -26,6 +26,7 @@ class LandlordDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
+        binding.openProfile.setOnClickListener { findNavController().navigate(R.id.profileFragment) }
     }
 
     private fun setupClickListeners() {

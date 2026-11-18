@@ -172,4 +172,9 @@
         <!-- TODO: Add actions to other tenant screens in future phases -->
     </fragment>
 
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.rental_property_management_app.fragments.ProfileFragment"
+        android:label="@string/rc_profile" />
+
 </navigation>

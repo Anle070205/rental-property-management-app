@@ -13,7 +13,6 @@ import androidx.navigation.fragment.navArgs
 import com.example.rental_property_management_app.databinding.FragmentRoomDetailBinding
 import com.example.rental_property_management_app.models.RoomResponse
 import com.example.rental_property_management_app.utils.CurrencyUtils
-import com.example.rental_property_management_app.utils.Resource
 import com.example.rental_property_management_app.viewmodels.RoomViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -58,22 +57,20 @@ class RoomDetailFragment : Fragment() {
     
     private fun observeRoomDetail() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.roomDetailState.collectLatest { resource ->
-                resource ?: return@collectLatest
-                
-                when (resource) {
-                    is Resource.Loading -> {
+            viewModel.roomDetailState.collectLatest { state ->
+                when {
+                    state.isLoading -> {
                         binding.progressBar.visibility = View.VISIBLE
                         binding.contentLayout.visibility = View.GONE
                     }
-                    is Resource.Success -> {
+                    state.data != null -> {
                         binding.progressBar.visibility = View.GONE
                         binding.contentLayout.visibility = View.VISIBLE
-                        displayRoomDetail(resource.data)
+                        displayRoomDetail(state.data)
                     }
-                    is Resource.Error -> {
+                    state.error != null -> {
                         binding.progressBar.visibility = View.GONE
-                        Toast.makeText(context, resource.message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
                     }
                 }
             }

@@ -8,6 +8,14 @@ import retrofit2.http.*
  * Retrofit API Service Interface
  */
 interface ApiService {
+    @GET("api/users/me")
+    suspend fun getProfile(): Response<ApiResponse<ProfileResponse>>
+
+    @PUT("api/users/me")
+    suspend fun updateProfile(@Body request: UpdateProfileRequest): Response<ApiResponse<ProfileResponse>>
+
+    @PUT("api/users/me/password")
+    suspend fun changePassword(@Body request: ChangePasswordRequest): Response<ApiResponse<Unit>>
     
     // ============================================
     // TEST API
