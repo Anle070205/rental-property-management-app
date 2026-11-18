@@ -158,4 +158,11 @@
     <string name="invoice_status_partial">Thu một phần</string>
     <string name="invoice_status_paid">Đã thanh toán</string>
     <string name="invoice_status_overdue">Quá hạn</string>
+
+    <!-- GĐ4.2: Utility Management -->
+    <string name="utility_management">Điện, nước &amp; dịch vụ</string>
+    <string name="utility_management_desc">Ghi chỉ số điện nước và cấu hình đơn giá dịch vụ</string>
+    <string name="utility_empty">Chưa có bản ghi điện nước</string>
+    <string name="utility_save">Lưu chỉ số kỳ này</string>
+    <string name="utility_update">Cập nhật bản ghi</string>
 </resources>
