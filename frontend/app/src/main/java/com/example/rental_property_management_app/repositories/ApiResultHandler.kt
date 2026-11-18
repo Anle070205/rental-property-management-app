@@ -3,7 +3,6 @@ package com.example.rental_property_management_app.repositories
 import com.example.rental_property_management_app.models.ApiResponse
 import com.example.rental_property_management_app.utils.Resource
 import com.google.gson.Gson
-import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
@@ -46,12 +45,12 @@ object ApiResultHandler {
         }
         if (!raw.isNullOrBlank()) {
             try {
-                val obj = JsonParser.parseString(raw).asJsonObject
-                val message = obj.get("message")?.takeIf { !it.isJsonNull }?.asString
-                val dataEl = obj.get("data")
-                if (dataEl != null && dataEl.isJsonObject) {
-                    val fieldErrors = dataEl.asJsonObject.entrySet()
-                        .joinToString("; ") { "${it.key}: ${it.value.asString}" }
+                val map = gson.fromJson(raw, Map::class.java)
+                val message = map?.get("message")?.toString()
+                val dataMap = map?.get("data") as? Map<*, *>
+                if (!dataMap.isNullOrEmpty()) {
+                    val fieldErrors = dataMap.entries
+                        .joinToString("; ") { "${it.key}: ${it.value}" }
                     if (fieldErrors.isNotBlank()) {
                         return if (!message.isNullOrBlank()) "$message ($fieldErrors)" else fieldErrors
                     }

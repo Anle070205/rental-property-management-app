@@ -7,10 +7,16 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Seed data cho môi trường development
@@ -25,17 +31,29 @@ public class DataSeeder {
     private final PropertyRepository propertyRepository;
     private final RoomRepository roomRepository;
     private final TenantRepository tenantRepository;
+    private final UtilityRecordRepository utilityRecordRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final PaymentRepository paymentRepository;
     private final PasswordEncoder passwordEncoder;
     
     @Bean
     public CommandLineRunner seedData() {
         return args -> {
-            // Kiểm tra nếu đã có data thì không seed nữa
-            if (userRepository.count() > 0) {
-                System.out.println("Database already has data. Skipping seed.");
-                return;
+            // Kiểm tra nếu chưa có users/properties/rooms/tenants thì seed Phase 1 + 2
+            if (userRepository.count() == 0) {
+                seedBaseData();
+            } else {
+                System.out.println("Base data already exists. Skipping base seed.");
             }
-            
+
+            // Seed dữ liệu Phase 4 (Member 2) nếu chưa có hóa đơn
+            if (invoiceRepository.count() == 0) {
+                seedFinanceAndHealthData();
+            }
+        };
+    }
+
+    private void seedBaseData() {
             System.out.println("Seeding development data...");
             
             // 1. Tạo Landlord users
@@ -213,6 +231,169 @@ public class DataSeeder {
             System.out.println("  - email: landlord2@example.com, password: 123456");
             System.out.println("Tenant accounts:");
             System.out.println("  - email: tenant1@example.com, password: 123456");
-        };
+    }
+
+    private void seedFinanceAndHealthData() {
+        User landlord1 = userRepository.findByEmail("landlord1@example.com").orElse(null);
+        if (landlord1 == null) {
+            return;
+        }
+
+        List<Room> rooms = roomRepository.findByLandlordId(landlord1.getId(), PageRequest.of(0, 50)).getContent();
+        Map<String, Room> roomByCode = rooms.stream()
+                .collect(Collectors.toMap(Room::getRoomCode, r -> r, (a, b) -> a));
+
+        List<Tenant> tenants = tenantRepository.findByLandlordId(landlord1.getId(), PageRequest.of(0, 50)).getContent();
+        Tenant tenantC = tenants.stream().filter(t -> t.getFullName().contains("C")).findFirst().orElse(null);
+        Tenant tenantD = tenants.stream().filter(t -> t.getFullName().contains("D")).findFirst().orElse(null);
+
+        YearMonth currentMonth = YearMonth.now();
+        String mPrev2 = currentMonth.minusMonths(2).toString();
+        String mPrev1 = currentMonth.minusMonths(1).toString();
+        String mCurr = currentMonth.toString();
+
+        // 1. Phòng 102 (OCCUPIED - Tốt)
+        Room r102 = roomByCode.get("102");
+        if (r102 != null) {
+            UtilityRecord u102M2 = saveUtility(landlord1, r102, mPrev2, 1000, 1110, 65, 72, 100000, 50000);
+            UtilityRecord u102M1 = saveUtility(landlord1, r102, mPrev1, 1110, 1225, 72, 80, 100000, 50000);
+            UtilityRecord u102Curr = saveUtility(landlord1, r102, mCurr, 1225, 1345, 80, 88, 100000, 50000);
+
+            Invoice inv102M2 = saveInvoice(landlord1, r102, tenantC, u102M2, mPrev2,
+                    LocalDate.now().minusMonths(2).withDayOfMonth(5),
+                    new BigDecimal("3640000"), InvoiceStatus.PAID, "Thanh toán đủ kỳ trước");
+            savePayment(landlord1, inv102M2, new BigDecimal("3640000"), PaymentMethod.BANK_TRANSFER,
+                    "FT" + mPrev2.replace("-", "") + "102", "Chủ nhà xác nhận đã nhận đủ", LocalDateTime.now().minusMonths(2));
+
+            Invoice inv102M1 = saveInvoice(landlord1, r102, tenantC, u102M1, mPrev1,
+                    LocalDate.now().minusMonths(1).withDayOfMonth(5),
+                    new BigDecimal("3672500"), InvoiceStatus.PAID, "Thanh toán đúng hạn");
+            savePayment(landlord1, inv102M1, new BigDecimal("3672500"), PaymentMethod.CASH,
+                    "PT-" + mPrev1.replace("-", "") + "-102", "Thu tiền mặt tại phòng", LocalDateTime.now().minusMonths(1));
+
+            Invoice inv102Curr = saveInvoice(landlord1, r102, tenantC, u102Curr, mCurr,
+                    LocalDate.now().plusDays(10),
+                    new BigDecimal("2000000"), InvoiceStatus.PARTIALLY_PAID, "Đã cọc trước 2 triệu tiền phòng");
+            savePayment(landlord1, inv102Curr, new BigDecimal("2000000"), PaymentMethod.BANK_TRANSFER,
+                    "FT" + mCurr.replace("-", "") + "102A", "Chuyển khoản đợt 1", LocalDateTime.now().minusDays(1));
+        }
+
+        // 2. Phòng 201 (EXPIRING_SOON - Cần theo dõi)
+        Room r201 = roomByCode.get("201");
+        if (r201 != null) {
+            UtilityRecord u201M1 = saveUtility(landlord1, r201, mPrev1, 500, 610, 30, 36, 100000, 50000);
+            UtilityRecord u201Curr = saveUtility(landlord1, r201, mCurr, 610, 730, 36, 43, 100000, 50000);
+
+            Invoice inv201M1 = saveInvoice(landlord1, r201, tenantC, u201M1, mPrev1,
+                    LocalDate.now().minusMonths(1).withDayOfMonth(5),
+                    new BigDecimal("3325000"), InvoiceStatus.PAID, "Hoàn tất kỳ trước");
+            savePayment(landlord1, inv201M1, new BigDecimal("3325000"), PaymentMethod.BANK_TRANSFER,
+                    "FT" + mPrev1.replace("-", "") + "201", "Chuyển khoản đủ", LocalDateTime.now().minusMonths(1));
+
+            saveInvoice(landlord1, r201, tenantC, u201Curr, mCurr,
+                    LocalDate.now().plusDays(8),
+                    BigDecimal.ZERO, InvoiceStatus.UNPAID, "Hợp đồng sắp hết hạn, chờ thanh toán kỳ mới");
+        }
+
+        // 3. Phòng 2B (NEEDS_ATTENTION - Rủi ro)
+        Room r2B = roomByCode.get("2B");
+        if (r2B != null) {
+            UtilityRecord u2BM2 = saveUtility(landlord1, r2B, mPrev2, 300, 390, 20, 26, 100000, 50000);
+            UtilityRecord u2BM1 = saveUtility(landlord1, r2B, mPrev1, 390, 560, 26, 36, 100000, 50000);
+
+            saveInvoice(landlord1, r2B, tenantD, u2BM2, mPrev2,
+                    LocalDate.now().minusDays(40),
+                    BigDecimal.ZERO, InvoiceStatus.OVERDUE, "Quá hạn chưa thanh toán");
+
+            Invoice inv2BM1 = saveInvoice(landlord1, r2B, tenantD, u2BM1, mPrev1,
+                    LocalDate.now().minusDays(12),
+                    new BigDecimal("1000000"), InvoiceStatus.OVERDUE, "Mới đóng 1 triệu, điện tăng cao");
+            savePayment(landlord1, inv2BM1, new BigDecimal("1000000"), PaymentMethod.CASH,
+                    "PT-" + mPrev1.replace("-", "") + "-2B", "Khách hẹn cuối tuần đóng phần còn lại", LocalDateTime.now().minusDays(10));
+        }
+
+        System.out.println("Phase 4 (Member 2) finance & health score sample data seeded!");
+    }
+
+    private UtilityRecord saveUtility(
+            User landlord, Room room, String billingMonth,
+            double prevElec, double currElec,
+            double prevWater, double currWater,
+            double internet, double service) {
+        if (utilityRecordRepository.existsByRoomIdAndBillingMonth(room.getId(), billingMonth)) {
+            return utilityRecordRepository.findByRoomIdAndBillingMonth(room.getId(), billingMonth).orElse(null);
+        }
+        UtilityRecord u = new UtilityRecord();
+        u.setLandlord(landlord);
+        u.setProperty(room.getProperty());
+        u.setRoom(room);
+        u.setBillingMonth(billingMonth);
+        u.setPrevElectricIndex(BigDecimal.valueOf(prevElec));
+        u.setCurrElectricIndex(BigDecimal.valueOf(currElec));
+        u.setElectricUsage(BigDecimal.valueOf(currElec - prevElec));
+        u.setElectricUnitPrice(new BigDecimal("3500"));
+        u.setElectricityAmount(u.getElectricUsage().multiply(u.getElectricUnitPrice()));
+        u.setPrevWaterIndex(BigDecimal.valueOf(prevWater));
+        u.setCurrWaterIndex(BigDecimal.valueOf(currWater));
+        u.setWaterUsage(BigDecimal.valueOf(currWater - prevWater));
+        u.setWaterUnitPrice(new BigDecimal("15000"));
+        u.setWaterAmount(u.getWaterUsage().multiply(u.getWaterUnitPrice()));
+        u.setInternetFee(BigDecimal.valueOf(internet));
+        u.setServiceFee(BigDecimal.valueOf(service));
+        u.setTotalUtilityAmount(u.getElectricityAmount().add(u.getWaterAmount())
+                .add(u.getInternetFee()).add(u.getServiceFee()));
+        u.setIsAdjustment(false);
+        u.setHistoryLog("Khởi tạo dữ liệu mẫu kỳ " + billingMonth);
+        return utilityRecordRepository.save(u);
+    }
+
+    private Invoice saveInvoice(
+            User landlord, Room room, Tenant tenant, UtilityRecord utility,
+            String billingMonth, LocalDate dueDate,
+            BigDecimal paidAmount, InvoiceStatus status, String notes) {
+        Invoice inv = new Invoice();
+        inv.setInvoiceCode("INV-" + billingMonth.replace("-", "") + "-" + room.getRoomCode().toUpperCase() + "-R" + room.getId());
+        inv.setLandlord(landlord);
+        inv.setProperty(room.getProperty());
+        inv.setRoom(room);
+        inv.setTenant(tenant);
+        inv.setUtilityRecordId(utility != null ? utility.getId() : null);
+        inv.setBillingMonth(billingMonth);
+        inv.setRoomRent(room.getRentPrice());
+        inv.setElectricityAmount(utility != null ? utility.getElectricityAmount() : BigDecimal.ZERO);
+        inv.setWaterAmount(utility != null ? utility.getWaterAmount() : BigDecimal.ZERO);
+        inv.setInternetAmount(utility != null ? utility.getInternetFee() : BigDecimal.ZERO);
+        inv.setServiceAmount(utility != null ? utility.getServiceFee() : BigDecimal.ZERO);
+        inv.setOtherFees(BigDecimal.ZERO);
+        inv.setPreviousDebt(BigDecimal.ZERO);
+        inv.setDiscountAmount(BigDecimal.ZERO);
+
+        BigDecimal total = inv.getRoomRent()
+                .add(inv.getElectricityAmount())
+                .add(inv.getWaterAmount())
+                .add(inv.getInternetAmount())
+                .add(inv.getServiceAmount());
+        BigDecimal safePaid = paidAmount.min(total);
+        inv.setTotalAmount(total);
+        inv.setPaidAmount(safePaid);
+        inv.setRemainingAmount(total.subtract(safePaid));
+        inv.setStatus(status);
+        inv.setDueDate(dueDate);
+        inv.setNotes(notes);
+        return invoiceRepository.save(inv);
+    }
+
+    private void savePayment(
+            User landlord, Invoice invoice, BigDecimal amount,
+            PaymentMethod method, String txCode, String note, LocalDateTime paidAt) {
+        Payment p = new Payment();
+        p.setLandlord(landlord);
+        p.setInvoice(invoice);
+        p.setAmount(amount);
+        p.setPaymentMethod(method);
+        p.setTransactionCode(txCode);
+        p.setReceiptNote(note);
+        p.setPaidAt(paidAt);
+        paymentRepository.save(p);
     }
 }

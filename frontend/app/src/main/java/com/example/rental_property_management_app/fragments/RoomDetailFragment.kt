@@ -10,10 +10,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.databinding.FragmentRoomDetailBinding
 import com.example.rental_property_management_app.models.RoomResponse
 import com.example.rental_property_management_app.utils.CurrencyUtils
-import com.example.rental_property_management_app.utils.Resource
 import com.example.rental_property_management_app.viewmodels.RoomViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -50,6 +50,11 @@ class RoomDetailFragment : Fragment() {
             val action = RoomDetailFragmentDirections.actionRoomDetailToRoomForm(args.roomId)
             findNavController().navigate(action)
         }
+
+        binding.btnHealthScore.setOnClickListener {
+            val bundle = Bundle().apply { putLong("roomId", args.roomId) }
+            findNavController().navigate(R.id.healthScoreFragment, bundle)
+        }
         
         binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
@@ -58,22 +63,20 @@ class RoomDetailFragment : Fragment() {
     
     private fun observeRoomDetail() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.roomDetailState.collectLatest { resource ->
-                resource ?: return@collectLatest
-                
-                when (resource) {
-                    is Resource.Loading -> {
+            viewModel.roomDetailState.collectLatest { state ->
+                when {
+                    state.isLoading -> {
                         binding.progressBar.visibility = View.VISIBLE
                         binding.contentLayout.visibility = View.GONE
                     }
-                    is Resource.Success -> {
+                    state.error != null -> {
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+                    }
+                    state.data != null -> {
                         binding.progressBar.visibility = View.GONE
                         binding.contentLayout.visibility = View.VISIBLE
-                        displayRoomDetail(resource.data)
-                    }
-                    is Resource.Error -> {
-                        binding.progressBar.visibility = View.GONE
-                        Toast.makeText(context, resource.message, Toast.LENGTH_LONG).show()
+                        displayRoomDetail(state.data)
                     }
                 }
             }

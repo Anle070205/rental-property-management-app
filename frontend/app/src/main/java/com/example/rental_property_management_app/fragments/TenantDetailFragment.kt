@@ -13,7 +13,6 @@ import androidx.navigation.fragment.navArgs
 import com.example.rental_property_management_app.databinding.FragmentTenantDetailBinding
 import com.example.rental_property_management_app.models.TenantResponse
 import com.example.rental_property_management_app.utils.DateUtils
-import com.example.rental_property_management_app.utils.Resource
 import com.example.rental_property_management_app.viewmodels.TenantViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -52,22 +51,20 @@ class TenantDetailFragment : Fragment() {
     
     private fun observeTenantDetail() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.tenantDetailState.collectLatest { resource ->
-                resource ?: return@collectLatest
-                
-                when (resource) {
-                    is Resource.Loading -> {
+            viewModel.tenantDetailState.collectLatest { state ->
+                when {
+                    state.isLoading -> {
                         binding.progressBar.visibility = View.VISIBLE
                         binding.contentLayout.visibility = View.GONE
                     }
-                    is Resource.Success -> {
+                    state.error != null -> {
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+                    }
+                    state.data != null -> {
                         binding.progressBar.visibility = View.GONE
                         binding.contentLayout.visibility = View.VISIBLE
-                        displayTenantDetail(resource.data)
-                    }
-                    is Resource.Error -> {
-                        binding.progressBar.visibility = View.GONE
-                        Toast.makeText(context, resource.message, Toast.LENGTH_LONG).show()
+                        displayTenantDetail(state.data)
                     }
                 }
             }

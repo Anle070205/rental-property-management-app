@@ -3,7 +3,9 @@ package com.example.rental_property_management_app.utils
 object Constants {
     
     // API Configuration
-    const val BASE_URL = "http://192.168.100.231:8080/" // Your computer's IP
+    // 10.0.2.2 trỏ về localhost:8080 trên máy host khi chạy Android Emulator
+    // (Nếu chạy thiết bị thật cùng mạng LAN, đổi thành IP LAN của máy backend)
+    const val BASE_URL = "http://10.0.2.2:8080/"
     const val API_PREFIX = "api/"
     
     // API Endpoints
