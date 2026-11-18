@@ -24,6 +24,7 @@ class TenantHomeFragment : Fragment(R.layout.fragment_tenant_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentTenantHomeBinding.bind(view)
         val nav = findNavController()
+        binding.room.setOnClickListener { nav.navigate(R.id.action_tenantHome_to_room) }
         binding.profile.setOnClickListener { nav.navigate(R.id.profileFragment) }
         binding.notifications.setOnClickListener { nav.navigate(R.id.notificationFragment) }
         binding.incidents.setOnClickListener { nav.navigate(R.id.incidentListFragment) }

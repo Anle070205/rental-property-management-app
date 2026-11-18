@@ -9,3 +9,8 @@ data class TenantDashboard(
     val dueDate: String?,
     val unreadCount: Long
 )
+
+data class MyRoom(
+    val roomCode: String?, val address: String?, val rentPrice: BigDecimal?,
+    val amenities: List<String>, val landlordName: String?, val landlordPhone: String?
+)

@@ -1,5 +1,6 @@
 package com.roomcare.backend.service;
 
+import com.roomcare.backend.dto.tenant.MyRoomResponse;
 import com.roomcare.backend.entity.Tenant;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,6 +11,10 @@ public interface TenantPortalProvider {
     record AmountDue(BigDecimal amount, LocalDate dueDate) {}
 
     default Optional<String> activeRoomCode(Tenant tenant) {
+        return room(tenant).map(MyRoomResponse::roomCode);
+    }
+
+    default Optional<MyRoomResponse> room(Tenant tenant) {
         return Optional.empty();
     }
 

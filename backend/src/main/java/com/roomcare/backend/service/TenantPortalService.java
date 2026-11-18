@@ -1,5 +1,6 @@
 package com.roomcare.backend.service;
 
+import com.roomcare.backend.dto.tenant.MyRoomResponse;
 import com.roomcare.backend.dto.tenant.TenantDashboardResponse;
 import com.roomcare.backend.entity.Tenant;
 import com.roomcare.backend.entity.User;
@@ -25,6 +26,12 @@ public class TenantPortalService {
                 source == null ? null : source.activeRoomCode(tenant).orElse(null),
                 amountDue == null ? null : amountDue.amount(), amountDue == null ? null : amountDue.dueDate(),
                 notifications.unreadCount(user));
+    }
+
+    public MyRoomResponse room(User user) {
+        Tenant tenant = tenantFor(user);
+        TenantPortalProvider source = provider.getIfAvailable();
+        return source == null ? MyRoomResponse.empty() : source.room(tenant).orElseGet(MyRoomResponse::empty);
     }
 
     private Tenant tenantFor(User user) {
