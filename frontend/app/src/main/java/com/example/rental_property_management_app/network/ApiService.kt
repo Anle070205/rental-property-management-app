@@ -162,4 +162,31 @@ interface ApiService {
     suspend fun batchCreateInvoices(
         @Body request: BatchCreateInvoiceRequest
     ): Response<ApiResponse<BatchCreateInvoiceResult>>
+
+    // ============================================
+    // PHASE 4 - UTILITY APIs (GĐ4.2)
+    // ============================================
+    @GET("api/landlord/utilities")
+    suspend fun getUtilities(
+        @Query("month") month: String? = null,
+        @Query("roomId") roomId: Long? = null,
+        @Query("propertyId") propertyId: Long? = null
+    ): Response<ApiResponse<List<UtilityRecordResponse>>>
+
+    @GET("api/landlord/utilities/previous-index")
+    suspend fun getPreviousUtilityIndex(
+        @Query("roomId") roomId: Long,
+        @Query("month") month: String? = null
+    ): Response<ApiResponse<PreviousUtilityIndexResponse>>
+
+    @POST("api/landlord/utilities")
+    suspend fun createUtility(
+        @Body request: CreateUtilityRequest
+    ): Response<ApiResponse<UtilityRecordResponse>>
+
+    @PUT("api/landlord/utilities/{id}")
+    suspend fun updateUtility(
+        @Path("id") id: Long,
+        @Body request: UpdateUtilityRequest
+    ): Response<ApiResponse<UtilityRecordResponse>>
 }

@@ -10,10 +10,12 @@ import com.roomcare.backend.entity.Room;
 import com.roomcare.backend.entity.RoomStatus;
 import com.roomcare.backend.entity.Tenant;
 import com.roomcare.backend.entity.User;
+import com.roomcare.backend.entity.UtilityRecord;
 import com.roomcare.backend.repository.InvoiceRepository;
 import com.roomcare.backend.repository.RoomRepository;
 import com.roomcare.backend.repository.TenantRepository;
 import com.roomcare.backend.repository.UserRepository;
+import com.roomcare.backend.repository.UtilityRecordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ public class InvoiceService {
     private final RoomRepository roomRepository;
     private final TenantRepository tenantRepository;
     private final UserRepository userRepository;
+    private final UtilityRecordRepository utilityRecordRepository;
 
     @Transactional
     public List<InvoiceResponse> getInvoices(
@@ -94,13 +97,26 @@ public class InvoiceService {
 
         Tenant tenant = resolveTenantForRoom(landlordId, room, request.getTenantId());
 
-        BigDecimal roomRent = request.getRoomRent() != null
+        Optional<UtilityRecord> utilityOpt = utilityRecordRepository
+                .findByRoomIdAndBillingMonth(room.getId(), request.getBillingMonth());
+        boolean useUtility = !Boolean.FALSE.equals(request.getUseUtilityRecord()) && utilityOpt.isPresent();
+        Long utilityRecordId = utilityOpt.map(UtilityRecord::getId).orElse(null);
+
+        BigDecimal roomRent = (request.getRoomRent() != null && request.getRoomRent().compareTo(BigDecimal.ZERO) > 0)
                 ? request.getRoomRent()
                 : safeMoney(room.getRentPrice());
-        BigDecimal electricity = safeMoney(request.getElectricityAmount());
-        BigDecimal water = safeMoney(request.getWaterAmount());
-        BigDecimal internet = safeMoney(request.getInternetAmount());
-        BigDecimal service = safeMoney(request.getServiceAmount());
+        BigDecimal electricity = useUtility
+                ? utilityOpt.get().getElectricityAmount()
+                : safeMoney(request.getElectricityAmount());
+        BigDecimal water = useUtility
+                ? utilityOpt.get().getWaterAmount()
+                : safeMoney(request.getWaterAmount());
+        BigDecimal internet = useUtility
+                ? utilityOpt.get().getInternetFee()
+                : safeMoney(request.getInternetAmount());
+        BigDecimal service = useUtility
+                ? utilityOpt.get().getServiceFee()
+                : safeMoney(request.getServiceAmount());
         BigDecimal otherFees = safeMoney(request.getOtherFees());
         BigDecimal discount = safeMoney(request.getDiscountAmount());
 
@@ -109,7 +125,7 @@ public class InvoiceService {
                 : calculatePreviousDebt(room.getId(), request.getBillingMonth());
 
         Invoice invoice = buildInvoice(
-                landlord, room, tenant, null,
+                landlord, room, tenant, utilityRecordId,
                 request.getBillingMonth(), request.getDueDate(),
                 roomRent, electricity, water, internet, service,
                 otherFees, previousDebt, discount, request.getNotes()
@@ -141,16 +157,20 @@ public class InvoiceService {
             }
 
             Tenant tenant = resolveTenantForRoom(landlordId, room, null);
+            Optional<UtilityRecord> utilityOpt = utilityRecordRepository
+                    .findByRoomIdAndBillingMonth(room.getId(), request.getBillingMonth());
             BigDecimal roomRent = safeMoney(room.getRentPrice());
-            BigDecimal electricity = BigDecimal.ZERO;
-            BigDecimal water = BigDecimal.ZERO;
-            BigDecimal internet = safeMoney(request.getDefaultInternetFee());
-            BigDecimal service = safeMoney(request.getDefaultServiceFee());
+            BigDecimal electricity = utilityOpt.map(UtilityRecord::getElectricityAmount).orElse(BigDecimal.ZERO);
+            BigDecimal water = utilityOpt.map(UtilityRecord::getWaterAmount).orElse(BigDecimal.ZERO);
+            BigDecimal internet = utilityOpt.map(UtilityRecord::getInternetFee)
+                    .orElse(safeMoney(request.getDefaultInternetFee()));
+            BigDecimal service = utilityOpt.map(UtilityRecord::getServiceFee)
+                    .orElse(safeMoney(request.getDefaultServiceFee()));
             BigDecimal otherFees = safeMoney(request.getOtherFees());
             BigDecimal previousDebt = calculatePreviousDebt(room.getId(), request.getBillingMonth());
 
             Invoice invoice = buildInvoice(
-                    landlord, room, tenant, null,
+                    landlord, room, tenant, utilityOpt.map(UtilityRecord::getId).orElse(null),
                     request.getBillingMonth(), request.getDueDate(),
                     roomRent, electricity, water, internet, service,
                     otherFees, previousDebt, BigDecimal.ZERO, request.getNotes()
@@ -364,6 +384,13 @@ public class InvoiceService {
         }
         response.setDaysOverdue(daysOverdue);
         response.setNotes(invoice.getNotes());
+        Optional<UtilityRecord> utilityOpt = invoice.getUtilityRecordId() != null
+                ? utilityRecordRepository.findById(invoice.getUtilityRecordId())
+                : utilityRecordRepository.findByRoomIdAndBillingMonth(invoice.getRoom().getId(), invoice.getBillingMonth());
+        utilityOpt.ifPresent(u -> {
+            response.setElectricUsage(u.getElectricUsage());
+            response.setWaterUsage(u.getWaterUsage());
+        });
         response.setCreatedAt(invoice.getCreatedAt());
         response.setUpdatedAt(invoice.getUpdatedAt());
         return response;

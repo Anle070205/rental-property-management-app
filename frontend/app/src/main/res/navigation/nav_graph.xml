@@ -178,4 +178,9 @@
         android:name="com.example.rental_property_management_app.fragments.InvoiceFragment"
         android:label="@string/invoice_management" />
 
+    <fragment
+        android:id="@+id/utilityFragment"
+        android:name="com.example.rental_property_management_app.fragments.UtilityFragment"
+        android:label="@string/utility_management" />
+
 </navigation>
