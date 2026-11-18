@@ -104,6 +104,7 @@
     <!-- Property Info -->
     <string name="property_name">Tên nhà/tòa</string>
     <string name="property_address">Địa chỉ</string>
+    <string name="tenant_date_of_birth">Ngày sinh</string>
     
     <!-- Validation Errors -->
     <string name="error_room_number_required">Vui lòng nhập số phòng</string>
@@ -144,6 +145,167 @@
     <!-- Currency -->
     <string name="currency_format">%1$s ₫</string>
     <string name="vnd">₫</string>
+
+    <string name="rc_profile">Hồ sơ cá nhân</string>
+    <string name="rc_phone">Số điện thoại</string>
+    <string name="rc_full_name">Họ và tên</string>
+    <string name="rc_tenant">Người thuê</string>
+    <string name="rc_landlord">Chủ nhà</string>
+    <string name="rc_retry">Thử lại</string>
+    <string name="rc_save">Lưu</string>
+    <string name="rc_saved">Đã lưu thay đổi</string>
+    <string name="rc_logout">Đăng xuất</string>
+    <string name="rc_logout_confirm">Bạn có muốn đăng xuất khỏi RoomCare?</string>
+    <string name="rc_change_password">Đổi mật khẩu</string>
+    <string name="rc_current_password">Mật khẩu hiện tại</string>
+    <string name="rc_new_password">Mật khẩu mới</string>
+    <string name="rc_required">Vui lòng nhập thông tin</string>
+    <string name="rc_password_length">Mật khẩu phải có ít nhất 6 ký tự</string>
+    <string name="rc_notifications">Thông báo</string>
+    <string name="rc_no_notifications">Chưa có thông báo</string>
+    <string name="rc_notification_filter">Nhóm thông báo</string>
+    <string name="rc_unread">Chưa đọc</string>
+    <string name="rc_read_all">Đọc tất cả</string>
+    <string name="rc_load_more">Tải thêm</string>
+    <string name="rc_notification_unread_marker">●</string>
+    <string-array name="rc_notification_types">
+        <item>Tất cả nhóm</item>
+        <item>Hóa đơn</item>
+        <item>Hợp đồng</item>
+        <item>Thanh toán</item>
+        <item>Sự cố</item>
+        <item>Bảo trì</item>
+        <item>Hệ thống</item>
+    </string-array>
+    <string name="rc_incidents">Báo sự cố</string>
+    <string name="rc_incident_detail">Chi tiết sự cố</string>
+    <string name="rc_report_incident">Báo sự cố mới</string>
+    <string name="rc_supplement_incident">Bổ sung thông tin</string>
+    <string name="rc_incident_title">Tiêu đề</string>
+    <string name="rc_incident_type">Loại sự cố</string>
+    <string name="rc_incident_priority">Mức ưu tiên</string>
+    <string name="rc_incident_description">Mô tả sự cố</string>
+    <string name="rc_incident_image">Liên kết ảnh (không bắt buộc)</string>
+    <string name="rc_incident_invalid_link">Liên kết ảnh phải dùng HTTP hoặc HTTPS</string>
+    <string name="rc_incident_requires_supplement">Vui lòng nhập mô tả bổ sung hoặc liên kết ảnh</string>
+    <string name="rc_incident_saved">Đã lưu sự cố</string>
+    <string name="rc_no_incidents">Chưa có sự cố</string>
+    <string name="rc_all_incidents">Tất cả trạng thái</string>
+    <string name="rc_incident_filter">Lọc theo trạng thái</string>
+    <string name="rc_landlord_response">Phản hồi của chủ nhà</string>
+    <string name="rc_no_landlord_response">Chưa có phản hồi</string>
+    <string name="rc_incident_created">Thời gian báo: %1$s</string>
+    <string name="rc_incident_updated">Cập nhật: %1$s</string>
+    <string name="rc_incident_step_done">✓ %1$s</string>
+    <string name="rc_incident_step_pending">○ %1$s</string>
+    <string-array name="rc_incident_types">
+        <item>Điện</item>
+        <item>Nước</item>
+        <item>Thiết bị</item>
+        <item>An ninh</item>
+        <item>Khác</item>
+    </string-array>
+    <string-array name="rc_incident_priorities">
+        <item>Thấp</item>
+        <item>Trung bình</item>
+        <item>Cao</item>
+        <item>Khẩn cấp</item>
+    </string-array>
+    <string-array name="rc_incident_status">
+        <item>Đã tiếp nhận</item>
+        <item>Đang xử lý</item>
+        <item>Hoàn tất</item>
+    </string-array>
+    <string name="rc_tenant_home">Trang chủ người thuê</string>
+    <string name="rc_tenant_greeting">Xin chào, %1$s</string>
+    <string name="rc_active_room">Phòng đang thuê</string>
+    <string name="rc_no_active_room">Chưa có phòng đang thuê</string>
+    <string name="rc_tenant_amount_due">Số tiền cần thanh toán</string>
+    <string name="rc_no_amount_due">Chưa có khoản cần thanh toán</string>
+    <string name="rc_tenant_due_date">Hạn thanh toán: %1$s</string>
+    <string name="rc_notifications_with_count">Thông báo · %1$d chưa đọc</string>
+    <string name="rc_tenant_sample">Thông tin phòng và thanh toán có thể là dữ liệu mẫu.</string>
+    <string name="rc_my_room">Phòng của tôi</string>
+    <string name="rc_room_address">Địa chỉ: %1$s</string>
+    <string name="rc_room_rent">Giá thuê: %1$s</string>
+    <string name="rc_room_amenities">Tiện ích: %1$s</string>
+    <string name="rc_room_landlord">Liên hệ chủ nhà: %1$s</string>
+    <string name="rc_call_landlord">Gọi chủ nhà</string>
+    <string name="rc_dial_unavailable">Thiết bị không có ứng dụng gọi điện</string>
+    <string name="rc_my_contract">Hợp đồng của tôi</string>
+    <string name="rc_no_contract">Chưa có hợp đồng</string>
+    <string name="rc_contract_active">Đang hiệu lực</string>
+    <string name="rc_contract_expired">Hết hạn</string>
+    <string name="rc_contract_terminated">Đã chấm dứt</string>
+    <string name="rc_contract_pending">Chờ xác nhận</string>
+    <string name="rc_contract_status">Trạng thái: %1$s</string>
+    <string name="rc_contract_start">Ngày bắt đầu: %1$s</string>
+    <string name="rc_contract_end">Ngày kết thúc: %1$s</string>
+    <string name="rc_contract_deposit">Tiền cọc: %1$s</string>
+    <string name="rc_contract_terms">Điều khoản</string>
+    <string name="rc_contract_renew">Yêu cầu gia hạn</string>
+    <string name="rc_contract_confirm_renew">Gửi yêu cầu gia hạn hợp đồng này cho chủ nhà?</string>
+    <string name="rc_contract_renew_sent">Đã gửi yêu cầu gia hạn</string>
+    <string name="rc_tenant_portal_sample">Dữ liệu minh họa</string>
+    <string name="rc_tenant_invoices">Hóa đơn</string>
+    <string name="rc_invoice_detail">Chi tiết hóa đơn</string>
+    <string name="rc_invoice_month_hint">Tháng (YYYY-MM)</string>
+    <string name="rc_invoice_month_error">Nhập tháng theo định dạng YYYY-MM</string>
+    <string name="rc_invoice_all_status">Tất cả trạng thái</string>
+    <string name="rc_invoice_filter">Lọc</string>
+    <string name="rc_invoice_empty">Chưa có hóa đơn</string>
+    <string name="rc_invoice_month">Kỳ hóa đơn: %1$s</string>
+    <string name="rc_invoice_charge">%1$s: %2$s</string>
+    <string name="rc_invoice_rent">Tiền phòng</string>
+    <string name="rc_invoice_electricity">Điện</string>
+    <string name="rc_invoice_water">Nước</string>
+    <string name="rc_invoice_internet">Internet</string>
+    <string name="rc_invoice_service">Dịch vụ</string>
+    <string name="rc_invoice_other">Phát sinh</string>
+    <string name="rc_invoice_previous_debt">Nợ cũ</string>
+    <string name="rc_invoice_discount">Giảm trừ</string>
+    <string name="rc_invoice_total">Tổng cộng</string>
+    <string name="rc_invoice_paid">Đã thanh toán</string>
+    <string name="rc_invoice_remaining">Còn phải trả</string>
+    <string-array name="rc_invoice_status">
+        <item>Chưa thanh toán</item>
+        <item>Thanh toán một phần</item>
+        <item>Đã thanh toán</item>
+        <item>Quá hạn</item>
+    </string-array>
+    <string name="rc_payment_history">Lịch sử thanh toán</string>
+    <string name="rc_payment_qr">Thanh toán bằng mã QR</string>
+    <string name="rc_payment_qr_image">Mã QR thanh toán</string>
+    <string name="rc_payment_copy_account">Sao chép số tài khoản</string>
+    <string name="rc_payment_copy_content">Sao chép nội dung</string>
+    <string name="rc_payment_copied">Đã sao chép</string>
+    <string name="rc_payment_bank">Ngân hàng: %1$s</string>
+    <string name="rc_payment_account">Số tài khoản: %1$s</string>
+    <string name="rc_payment_amount">Số tiền: %1$s</string>
+    <string name="rc_payment_content">Nội dung chuyển khoản: %1$s</string>
+    <string name="rc_payment_instructions">Quét mã trong ứng dụng ngân hàng. Kiểm tra số tài khoản, số tiền và nội dung trước khi chuyển. Trạng thái hóa đơn cập nhật sau khi khoản thanh toán được xác nhận.</string>
+    <string name="rc_payment_sample">Mã QR minh họa. Vui lòng không chuyển tiền.</string>
+    <string name="rc_payment_qr_error">Không tạo được mã QR. Bạn vẫn có thể xem thông tin chuyển khoản.</string>
+    <string name="rc_payment_history_empty">Chưa có giao dịch</string>
+    <string name="rc_payment_method_cash">Tiền mặt</string>
+    <string name="rc_payment_method_transfer">Chuyển khoản</string>
+    <string name="rc_payment_status_confirmed">Đã xác nhận</string>
+    <string name="rc_payment_status_pending">Chờ xác nhận</string>
+    <string name="rc_payment_status_failed">Thất bại</string>
+    <string name="rc_payment_time_missing">Chưa có thời gian xác nhận</string>
+    <string name="rc_tenant_tab_home">Trang chủ</string>
+    <string name="rc_tenant_tab_room">Phòng</string>
+    <string name="rc_tenant_tab_profile">Cá nhân</string>
+    <string name="rc_home_hello">Xin chào,</string>
+    <string name="rc_home_updates">Cập nhật cho bạn</string>
+    <string name="rc_home_shortcuts">Thao tác nhanh</string>
+    <string name="rc_home_contract">Hợp đồng</string>
+    <string name="rc_home_view_invoices">Xem hóa đơn</string>
+    <string name="rc_profile_settings">Tài khoản và bảo mật</string>
+    <string name="rc_notification_done_title">Bạn đã xem hết rồi</string>
+    <string name="rc_notification_done_body">Thông báo về hóa đơn, thanh toán, hợp đồng và sự cố sẽ xuất hiện tại đây.</string>
+</resources>
+
 
     <!-- GĐ4.1: Invoice Management -->
     <string name="invoice_management">Quản lý hóa đơn</string>
@@ -188,3 +350,4 @@
     <string name="dashboard_no_attention">Không có phòng nào gặp sự cố hoặc nợ xấu</string>
     <string name="dashboard_no_expiring">Chưa có hợp đồng sắp hết hạn</string>
 </resources>
+

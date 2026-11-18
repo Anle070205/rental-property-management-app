@@ -184,10 +184,57 @@
     <!-- Tenant Dashboard -->
     <fragment
         android:id="@+id/tenantDashboardFragment"
-        android:name="com.example.rental_property_management_app.fragments.TenantDashboardFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantHomeFragment"
         android:label="Dashboard - Người thuê">
-        <!-- TODO: Add actions to other tenant screens in future phases -->
+        <action android:id="@+id/action_tenantHome_to_incidents" app:destination="@id/incidentListFragment" />
+        <action android:id="@+id/action_tenantHome_to_room" app:destination="@id/myRoomFragment" />
+        <action android:id="@+id/action_tenantHome_to_contract" app:destination="@id/myContractFragment" />
+        <action android:id="@+id/action_tenantHome_to_invoices" app:destination="@id/tenantInvoiceFragment" />
     </fragment>
+
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.rental_property_management_app.fragments.ProfileFragment"
+        android:label="@string/rc_profile" />
+
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.example.rental_property_management_app.fragments.NotificationFragment"
+        android:label="@string/rc_notifications" />
+
+    <fragment
+        android:id="@+id/incidentListFragment"
+        android:name="com.example.rental_property_management_app.fragments.IncidentListFragment"
+        android:label="@string/rc_incidents" />
+    <fragment
+        android:id="@+id/incidentFormFragment"
+        android:name="com.example.rental_property_management_app.fragments.IncidentFormFragment"
+        android:label="@string/rc_report_incident">
+        <argument android:name="incidentId" android:defaultValue="0L" app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/incidentDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.IncidentDetailFragment"
+        android:label="@string/rc_incident_detail">
+        <argument android:name="incidentId" app:argType="long" />
+    </fragment>
+    <fragment android:id="@+id/myRoomFragment"
+        android:name="com.example.rental_property_management_app.fragments.MyRoomFragment" android:label="@string/rc_my_room" />
+    <fragment android:id="@+id/myContractFragment"
+        android:name="com.example.rental_property_management_app.fragments.MyContractFragment" android:label="@string/rc_my_contract" />
+    <fragment android:id="@+id/tenantInvoiceFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantInvoiceFragment" android:label="@string/rc_tenant_invoices" />
+    <fragment android:id="@+id/tenantInvoiceDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantInvoiceDetailFragment" android:label="@string/rc_invoice_detail">
+        <argument android:name="invoiceId" app:argType="long" />
+    </fragment>
+    <fragment android:id="@+id/qrPaymentFragment"
+        android:name="com.example.rental_property_management_app.fragments.QRPaymentFragment" android:label="@string/rc_payment_qr">
+        <argument android:name="invoiceId" app:argType="long" />
+    </fragment>
+    <fragment android:id="@+id/paymentHistoryFragment"
+        android:name="com.example.rental_property_management_app.fragments.PaymentHistoryFragment" android:label="@string/rc_payment_history" />
 
     <!-- Phase 4: Member 2 - Finance, Utilities, Debt & Health Score -->
     <fragment
@@ -234,5 +281,6 @@
             android:defaultValue="0L"
             app:argType="long" />
     </fragment>
+
 
 </navigation>

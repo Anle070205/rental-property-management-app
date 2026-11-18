@@ -69,6 +69,16 @@ class RoomDetailFragment : Fragment() {
                         binding.progressBar.visibility = View.VISIBLE
                         binding.contentLayout.visibility = View.GONE
                     }
+
+                    state.data != null -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.contentLayout.visibility = View.VISIBLE
+                        displayRoomDetail(state.data)
+                    }
+                    state.error != null -> {
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+
                     state.error != null -> {
                         binding.progressBar.visibility = View.GONE
                         Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
@@ -77,6 +87,7 @@ class RoomDetailFragment : Fragment() {
                         binding.progressBar.visibility = View.GONE
                         binding.contentLayout.visibility = View.VISIBLE
                         displayRoomDetail(state.data)
+
                     }
                 }
             }

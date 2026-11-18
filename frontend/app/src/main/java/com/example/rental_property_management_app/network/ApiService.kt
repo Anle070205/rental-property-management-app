@@ -8,6 +8,70 @@ import retrofit2.http.*
  * Retrofit API Service Interface
  */
 interface ApiService {
+    @GET("api/tenant/invoices/{id}/payment-info")
+    suspend fun tenantPaymentInfo(@Path("id") id: Long): Response<ApiResponse<TenantPaymentInfo>>
+
+    @GET("api/tenant/payments")
+    suspend fun tenantPayments(@Query("page") page: Int): Response<ApiResponse<PageResponse<TenantPayment>>>
+
+    @GET("api/tenant/invoices")
+    suspend fun tenantInvoices(
+        @Query("month") month: String?, @Query("status") status: TenantInvoiceStatus?, @Query("page") page: Int
+    ): Response<ApiResponse<PageResponse<TenantInvoice>>>
+
+    @GET("api/tenant/invoices/{id}")
+    suspend fun tenantInvoice(@Path("id") id: Long): Response<ApiResponse<TenantInvoice>>
+
+    @GET("api/tenant/my-contract")
+    suspend fun myContract(): Response<ApiResponse<MyContract>>
+
+    @POST("api/tenant/contracts/{id}/renewal-requests")
+    suspend fun requestContractRenewal(@Path("id") id: Long): Response<ApiResponse<Unit>>
+
+    @GET("api/tenant/my-room")
+    suspend fun myRoom(): Response<ApiResponse<MyRoom>>
+
+    @GET("api/tenant/dashboard")
+    suspend fun tenantDashboard(): Response<ApiResponse<TenantDashboard>>
+
+    @GET("api/tenant/incidents")
+    suspend fun incidents(@Query("status") status: IncidentStatus?, @Query("page") page: Int):
+        Response<ApiResponse<PageResponse<Incident>>>
+
+    @POST("api/tenant/incidents")
+    suspend fun createIncident(@Body request: CreateIncidentRequest): Response<ApiResponse<Incident>>
+
+    @GET("api/tenant/incidents/{id}")
+    suspend fun incident(@Path("id") id: Long): Response<ApiResponse<Incident>>
+
+    @PUT("api/tenant/incidents/{id}")
+    suspend fun supplementIncident(@Path("id") id: Long, @Body request: UpdateIncidentRequest):
+        Response<ApiResponse<Incident>>
+
+    @GET("api/notifications")
+    suspend fun notifications(
+        @Query("type") type: NotificationType?,
+        @Query("unreadOnly") unreadOnly: Boolean,
+        @Query("page") page: Int
+    ): Response<ApiResponse<PageResponse<NotificationItem>>>
+
+    @PUT("api/notifications/{id}/read")
+    suspend fun markNotificationRead(@Path("id") id: Long): Response<ApiResponse<Unit>>
+
+    @PUT("api/notifications/read-all")
+    suspend fun markAllNotificationsRead(): Response<ApiResponse<Unit>>
+
+    @GET("api/notifications/unread-count")
+    suspend fun unreadNotificationCount(): Response<ApiResponse<Long>>
+
+    @GET("api/users/me")
+    suspend fun getProfile(): Response<ApiResponse<ProfileResponse>>
+
+    @PUT("api/users/me")
+    suspend fun updateProfile(@Body request: UpdateProfileRequest): Response<ApiResponse<ProfileResponse>>
+
+    @PUT("api/users/me/password")
+    suspend fun changePassword(@Body request: ChangePasswordRequest): Response<ApiResponse<Unit>>
     
     // ============================================
     // TEST API

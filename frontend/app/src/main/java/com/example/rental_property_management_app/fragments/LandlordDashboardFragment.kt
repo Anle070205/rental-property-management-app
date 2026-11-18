@@ -24,6 +24,24 @@ class LandlordDashboardFragment : Fragment() {
         _binding = FragmentLandlordDashboardBinding.inflate(inflater, container, false)
         return binding.root
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupClickListeners()
+        binding.openProfile.setOnClickListener { findNavController().navigate(R.id.profileFragment) }
+        binding.openNotifications.setOnClickListener { findNavController().navigate(R.id.notificationFragment) }
+    }
+
+    private fun setupClickListeners() {
+        // Room Management
+        binding.cardRoomManagement.setOnClickListener {
+            findNavController().navigate(R.id.action_landlordDashboard_to_roomList)
+        }
+        
+        // Tenant Management
+        binding.cardTenantManagement.setOnClickListener {
+            findNavController().navigate(R.id.action_landlordDashboard_to_tenantList)
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

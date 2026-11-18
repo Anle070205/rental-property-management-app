@@ -107,14 +107,19 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Move-in Date -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/selectProperty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_property"
+                android:visibility="gone" />
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilMoveInDate"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_normal"
-                android:hint="@string/move_in_date"
+                android:hint="@string/tenant_date_of_birth"
                 app:startIconDrawable="@drawable/ic_calendar">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -147,14 +152,14 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Notes -->
+            <!-- Address -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilNotes"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_normal"
-                android:hint="@string/notes_optional"
+                android:hint="@string/property_address"
                 app:startIconDrawable="@drawable/ic_description">
 
                 <com.google.android.material.textfield.TextInputEditText

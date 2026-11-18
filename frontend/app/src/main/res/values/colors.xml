@@ -35,6 +35,9 @@
     <color name="surface">#FFFFFF</color>
     <color name="surface_variant">#F5F5F5</color>
 
+    <color name="rc_primary">#00796B</color>
+
+
     <!-- Phase 4: Finance, Invoice & Health Score Colors -->
     <color name="invoice_unpaid">#FF9800</color>
     <color name="invoice_unpaid_bg">#FFF3E0</color>
@@ -52,4 +55,5 @@
     <color name="health_risk_bg">#FFEBEE</color>
     <color name="chart_billed">#B39DDB</color>
     <color name="chart_collected">#6200EE</color>
+
 </resources>

@@ -29,7 +29,11 @@ class PropertyViewModel : ViewModel() {
 
             when (val result = repository.getProperties()) {
                 is Resource.Success -> {
+
+                    _propertiesState.value = PropertyListState(data = result.data?.content.orEmpty())
+
                     _propertiesState.value = PropertyListState(data = result.data?.content)
+
                 }
                 is Resource.Error -> {
                     _propertiesState.value = PropertyListState(error = result.message)

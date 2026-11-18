@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@id/tenantDashboardFragment" android:title="@string/rc_tenant_tab_home" android:icon="@drawable/ic_home" />
+    <item android:id="@id/myRoomFragment" android:title="@string/rc_tenant_tab_room" android:icon="@drawable/ic_room" />
+    <item android:id="@id/tenantInvoiceFragment" android:title="@string/rc_tenant_invoices" android:icon="@drawable/ic_description" />
+    <item android:id="@id/notificationFragment" android:title="@string/rc_notifications" android:icon="@drawable/rc_bell" />
+    <item android:id="@id/profileFragment" android:title="@string/rc_tenant_tab_profile" android:icon="@drawable/ic_person" />
+</menu>

@@ -1,6 +1,7 @@
 package com.roomcare.backend.repository;
 
 import com.roomcare.backend.entity.Tenant;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TenantRepository extends JpaRepository<Tenant, Long> {
+    Optional<Tenant> findByUserId(Long userId);
     
     Page<Tenant> findByLandlordId(Long landlordId, Pageable pageable);
     

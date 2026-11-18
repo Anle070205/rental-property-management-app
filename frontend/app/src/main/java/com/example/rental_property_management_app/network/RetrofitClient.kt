@@ -8,14 +8,22 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Retrofit Client Singleton
  */
 object RetrofitClient {
+    private val _expiredToken = MutableStateFlow<String?>(null)
+    val expiredToken = _expiredToken.asStateFlow()
+
+    fun consumeExpiredToken(token: String) {
+        _expiredToken.compareAndSet(token, null)
+    }
     
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+        level = HttpLoggingInterceptor.Level.BASIC
     }
     
     private val authInterceptor = Interceptor { chain ->
@@ -30,7 +38,11 @@ object RetrofitClient {
             originalRequest
         }
         
-        chain.proceed(newRequest)
+        val response = chain.proceed(newRequest)
+        if (response.code == 401 && token != null && !originalRequest.url.encodedPath.startsWith("/api/auth/")) {
+            _expiredToken.value = token
+        }
+        response
     }
     
     private val okHttpClient = OkHttpClient.Builder()

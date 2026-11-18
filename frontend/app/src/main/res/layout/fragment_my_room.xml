@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/rc_canvas">
+    <com.google.android.material.appbar.MaterialToolbar style="@style/RoomCare.Toolbar" android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="wrap_content"
+        app:title="@string/rc_my_room" app:navigationIcon="@drawable/ic_arrow_back" />
+    <ProgressBar android:indeterminateTint="@color/rc_brand" android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="16dp" />
+    <com.google.android.material.button.MaterialButton style="@style/RoomCare.Button.Secondary" android:id="@+id/retry" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_retry" />
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:id="@+id/content" android:background="@drawable/rc_panel" android:layout_margin="12dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <TextView android:id="@+id/sample" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_tenant_sample" />
+        <TextView android:id="@+id/roomCode" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/rc_brand" android:textSize="24sp" android:textStyle="bold" />
+        <TextView android:id="@+id/address" android:layout_width="match_parent" android:layout_height="wrap_content"  />
+        <TextView android:id="@+id/rentPrice" android:layout_width="match_parent" android:layout_height="wrap_content"  />
+        <TextView android:id="@+id/amenities" android:layout_width="match_parent" android:layout_height="wrap_content"  />
+        <TextView android:id="@+id/landlord" android:layout_width="match_parent" android:layout_height="wrap_content"  />
+            <com.google.android.material.button.MaterialButton style="@style/RoomCare.Button" android:id="@+id/dial" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_call_landlord" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
