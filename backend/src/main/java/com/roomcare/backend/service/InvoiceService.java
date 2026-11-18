@@ -3,15 +3,19 @@ package com.roomcare.backend.service;
 import com.roomcare.backend.dto.invoice.BatchCreateInvoiceRequest;
 import com.roomcare.backend.dto.invoice.BatchCreateInvoiceResult;
 import com.roomcare.backend.dto.invoice.CreateInvoiceRequest;
+import com.roomcare.backend.dto.invoice.CreatePaymentRequest;
 import com.roomcare.backend.dto.invoice.InvoiceResponse;
+import com.roomcare.backend.dto.invoice.PaymentResponse;
 import com.roomcare.backend.entity.Invoice;
 import com.roomcare.backend.entity.InvoiceStatus;
+import com.roomcare.backend.entity.Payment;
 import com.roomcare.backend.entity.Room;
 import com.roomcare.backend.entity.RoomStatus;
 import com.roomcare.backend.entity.Tenant;
 import com.roomcare.backend.entity.User;
 import com.roomcare.backend.entity.UtilityRecord;
 import com.roomcare.backend.repository.InvoiceRepository;
+import com.roomcare.backend.repository.PaymentRepository;
 import com.roomcare.backend.repository.RoomRepository;
 import com.roomcare.backend.repository.TenantRepository;
 import com.roomcare.backend.repository.UserRepository;
@@ -23,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -35,6 +40,7 @@ import java.util.stream.Collectors;
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
+    private final PaymentRepository paymentRepository;
     private final RoomRepository roomRepository;
     private final TenantRepository tenantRepository;
     private final UserRepository userRepository;
@@ -73,8 +79,95 @@ public class InvoiceService {
 
         return invoices.stream()
                 .filter(inv -> status == null || inv.getStatus() == status)
-                .map(this::mapToResponse)
+                .map(inv -> mapToResponse(inv, false))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public InvoiceResponse getInvoiceById(Long landlordId, Long invoiceId) {
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn"));
+
+        if (!invoice.getLandlord().getId().equals(landlordId)) {
+            throw new RuntimeException("Bạn không có quyền truy cập hóa đơn này");
+        }
+
+        if (invoice.getRemainingAmount().compareTo(BigDecimal.ZERO) > 0
+                && invoice.getDueDate().isBefore(LocalDate.now())
+                && invoice.getStatus() != InvoiceStatus.OVERDUE) {
+            invoice.setStatus(InvoiceStatus.OVERDUE);
+            invoice = invoiceRepository.save(invoice);
+        }
+
+        return mapToResponse(invoice, true);
+    }
+
+    @Transactional
+    public InvoiceResponse recordPayment(Long landlordId, Long invoiceId, CreatePaymentRequest request) {
+        if (!Boolean.TRUE.equals(request.getConfirmedByLandlord())) {
+            throw new RuntimeException("Chỉ chủ nhà xác nhận thực thu mới được ghi nhận thanh toán hóa đơn");
+        }
+
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn"));
+
+        if (!invoice.getLandlord().getId().equals(landlordId)) {
+            throw new RuntimeException("Bạn không có quyền ghi nhận thanh toán cho hóa đơn này");
+        }
+
+        if (invoice.getStatus() == InvoiceStatus.PAID || invoice.getRemainingAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Hóa đơn này đã được thanh toán đủ");
+        }
+
+        BigDecimal amount = safeMoney(request.getAmount());
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Số tiền thanh toán phải lớn hơn 0");
+        }
+
+        if (amount.compareTo(invoice.getRemainingAmount()) > 0) {
+            throw new RuntimeException("Số tiền thanh toán không được vượt quá số tiền còn thiếu ("
+                    + invoice.getRemainingAmount().toPlainString() + " đ)");
+        }
+
+        String trimmedCode = request.getTransactionCode() != null && !request.getTransactionCode().isBlank()
+                ? request.getTransactionCode().trim()
+                : null;
+
+        if (trimmedCode != null && paymentRepository.existsByInvoiceIdAndTransactionCode(invoiceId, trimmedCode)) {
+            throw new RuntimeException("Mã giao dịch " + trimmedCode + " đã tồn tại cho hóa đơn này");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (paymentRepository.existsByInvoiceIdAndAmountAndPaymentMethodAndPaidAtAfter(
+                invoiceId, amount, request.getPaymentMethod(), now.minusMinutes(2))) {
+            throw new RuntimeException("Giao dịch tương tự vừa được ghi nhận, vui lòng kiểm tra lại để tránh trùng");
+        }
+
+        User landlord = userRepository.findById(landlordId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy chủ nhà"));
+
+        Payment payment = new Payment();
+        payment.setInvoice(invoice);
+        payment.setLandlord(landlord);
+        payment.setAmount(amount);
+        payment.setPaymentMethod(request.getPaymentMethod());
+        payment.setTransactionCode(trimmedCode != null ? trimmedCode : generateReceiptCode(invoice));
+        payment.setReceiptNote(request.getReceiptNote());
+        payment.setPaidAt(now);
+        paymentRepository.save(payment);
+
+        BigDecimal newPaidAmount = invoice.getPaidAmount().add(amount);
+        BigDecimal newRemainingAmount = invoice.getTotalAmount().subtract(newPaidAmount);
+        if (newRemainingAmount.compareTo(BigDecimal.ZERO) < 0) {
+            newRemainingAmount = BigDecimal.ZERO;
+        }
+
+        invoice.setPaidAmount(newPaidAmount);
+        invoice.setRemainingAmount(newRemainingAmount);
+        invoice.setStatus(resolveStatus(invoice.getTotalAmount(), newPaidAmount, invoice.getDueDate()));
+        Invoice savedInvoice = invoiceRepository.save(invoice);
+
+        return mapToResponse(savedInvoice, true);
     }
 
     @Transactional
@@ -349,7 +442,15 @@ public class InvoiceService {
         return value;
     }
 
+    private String generateReceiptCode(Invoice invoice) {
+        return "PT-" + invoice.getId() + "-" + System.currentTimeMillis() % 100000;
+    }
+
     protected InvoiceResponse mapToResponse(Invoice invoice) {
+        return mapToResponse(invoice, false);
+    }
+
+    protected InvoiceResponse mapToResponse(Invoice invoice, boolean includePayments) {
         InvoiceResponse response = new InvoiceResponse();
         response.setId(invoice.getId());
         response.setInvoiceCode(invoice.getInvoiceCode());
@@ -391,6 +492,22 @@ public class InvoiceService {
             response.setElectricUsage(u.getElectricUsage());
             response.setWaterUsage(u.getWaterUsage());
         });
+        if (includePayments) {
+            List<PaymentResponse> payments = paymentRepository.findByInvoiceIdOrderByPaidAtDesc(invoice.getId())
+                    .stream()
+                    .map(p -> new PaymentResponse(
+                            p.getId(),
+                            invoice.getId(),
+                            p.getAmount(),
+                            p.getPaymentMethod().name(),
+                            p.getTransactionCode(),
+                            p.getReceiptNote(),
+                            p.getPaidAt(),
+                            p.getCreatedAt()
+                    ))
+                    .collect(Collectors.toList());
+            response.setPayments(payments);
+        }
         response.setCreatedAt(invoice.getCreatedAt());
         response.setUpdatedAt(invoice.getUpdatedAt());
         return response;

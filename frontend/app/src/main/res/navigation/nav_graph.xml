@@ -176,7 +176,20 @@
     <fragment
         android:id="@+id/invoiceFragment"
         android:name="com.example.rental_property_management_app.fragments.InvoiceFragment"
-        android:label="@string/invoice_management" />
+        android:label="@string/invoice_management">
+        <action
+            android:id="@+id/action_invoiceFragment_to_invoiceDetailFragment"
+            app:destination="@id/invoiceDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/invoiceDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.InvoiceDetailFragment"
+        android:label="@string/invoice_detail">
+        <argument
+            android:name="invoiceId"
+            app:argType="long" />
+    </fragment>
 
     <fragment
         android:id="@+id/utilityFragment"

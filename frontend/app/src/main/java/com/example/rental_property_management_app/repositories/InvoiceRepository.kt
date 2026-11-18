@@ -26,4 +26,16 @@ class InvoiceRepository {
         ApiResultHandler.execute {
             apiService.batchCreateInvoices(request)
         }
+
+    suspend fun getInvoiceById(id: Long): Resource<InvoiceResponse> =
+        ApiResultHandler.execute {
+            apiService.getInvoiceById(id)
+        }
+
+    suspend fun recordPayment(
+        invoiceId: Long,
+        request: CreatePaymentRequest
+    ): Resource<InvoiceResponse> = ApiResultHandler.execute {
+        apiService.recordPayment(invoiceId, request)
+    }
 }

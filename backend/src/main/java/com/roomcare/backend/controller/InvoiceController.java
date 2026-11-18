@@ -4,6 +4,7 @@ import com.roomcare.backend.dto.ApiResponse;
 import com.roomcare.backend.dto.invoice.BatchCreateInvoiceRequest;
 import com.roomcare.backend.dto.invoice.BatchCreateInvoiceResult;
 import com.roomcare.backend.dto.invoice.CreateInvoiceRequest;
+import com.roomcare.backend.dto.invoice.CreatePaymentRequest;
 import com.roomcare.backend.dto.invoice.InvoiceResponse;
 import com.roomcare.backend.entity.InvoiceStatus;
 import com.roomcare.backend.entity.User;
@@ -36,6 +37,14 @@ public class InvoiceController {
         return ApiResponse.success(responses);
     }
 
+    @GetMapping("/{id}")
+    public ApiResponse<InvoiceResponse> getInvoiceById(
+            @AuthenticationPrincipal User landlord,
+            @PathVariable Long id) {
+        InvoiceResponse response = invoiceService.getInvoiceById(landlord.getId(), id);
+        return ApiResponse.success(response);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<InvoiceResponse> createInvoice(
@@ -55,5 +64,15 @@ public class InvoiceController {
                 "Đã tạo " + result.getCreatedCount() + " hóa đơn, bỏ qua " + result.getSkippedCount() + " phòng",
                 result
         );
+    }
+
+    @PostMapping("/{id}/payments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<InvoiceResponse> recordPayment(
+            @AuthenticationPrincipal User landlord,
+            @PathVariable Long id,
+            @Valid @RequestBody CreatePaymentRequest request) {
+        InvoiceResponse response = invoiceService.recordPayment(landlord.getId(), id, request);
+        return ApiResponse.success("Ghi nhận thanh toán thành công", response);
     }
 }

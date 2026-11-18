@@ -163,6 +163,17 @@ interface ApiService {
         @Body request: BatchCreateInvoiceRequest
     ): Response<ApiResponse<BatchCreateInvoiceResult>>
 
+    @GET("api/landlord/invoices/{id}")
+    suspend fun getInvoiceById(
+        @Path("id") id: Long
+    ): Response<ApiResponse<InvoiceResponse>>
+
+    @POST("api/landlord/invoices/{id}/payments")
+    suspend fun recordPayment(
+        @Path("id") id: Long,
+        @Body request: CreatePaymentRequest
+    ): Response<ApiResponse<InvoiceResponse>>
+
     // ============================================
     // PHASE 4 - UTILITY APIs (GĐ4.2)
     // ============================================

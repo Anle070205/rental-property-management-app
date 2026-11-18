@@ -38,6 +38,12 @@ class InvoiceViewModel : ViewModel() {
     private val _batchCreateState = MutableStateFlow<Resource<BatchCreateInvoiceResult>?>(null)
     val batchCreateState: StateFlow<Resource<BatchCreateInvoiceResult>?> = _batchCreateState.asStateFlow()
 
+    private val _invoiceDetailState = MutableStateFlow<Resource<InvoiceResponse>>(Resource.Loading())
+    val invoiceDetailState: StateFlow<Resource<InvoiceResponse>> = _invoiceDetailState.asStateFlow()
+
+    private val _paymentState = MutableStateFlow<Resource<InvoiceResponse>?>(null)
+    val paymentState: StateFlow<Resource<InvoiceResponse>?> = _paymentState.asStateFlow()
+
     var currentMonthFilter: String? = null
     var currentRoomIdFilter: Long? = null
     var currentStatusFilter: InvoiceStatus? = null
@@ -92,11 +98,33 @@ class InvoiceViewModel : ViewModel() {
         }
     }
 
+    fun loadInvoiceDetail(invoiceId: Long) {
+        viewModelScope.launch {
+            _invoiceDetailState.value = Resource.Loading()
+            _invoiceDetailState.value = invoiceRepository.getInvoiceById(invoiceId)
+        }
+    }
+
+    fun recordPayment(invoiceId: Long, request: CreatePaymentRequest) {
+        viewModelScope.launch {
+            _paymentState.value = Resource.Loading()
+            val res = invoiceRepository.recordPayment(invoiceId, request)
+            _paymentState.value = res
+            if (res is Resource.Success) {
+                _invoiceDetailState.value = res
+            }
+        }
+    }
+
     fun resetCreateInvoiceState() {
         _createInvoiceState.value = null
     }
 
     fun resetBatchCreateState() {
         _batchCreateState.value = null
+    }
+
+    fun resetPaymentState() {
+        _paymentState.value = null
     }
 }
