@@ -1,0 +1,56 @@
+<resources>
+    <color name="rc_canvas">#F4F7F6</color>
+    <color name="rc_ink">#1B2927</color>
+    <color name="rc_muted">#516561</color>
+    <color name="rc_brand">#10756D</color>
+    <color name="rc_tint">#DAEFEB</color>
+    <color name="rc_line">#E1E9E6</color>
+    <color name="rc_danger">#BC4143</color>
+    <color name="rc_icon_blue_bg">#E5EDF9</color>
+    <color name="rc_icon_blue">#3E6091</color>
+    <color name="rc_icon_yellow_bg">#FFF1DB</color>
+    <color name="rc_icon_yellow">#8F5310</color>
+    <color name="rc_icon_red_bg">#FCE7E7</color>
+
+    <style name="RoomCare.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/rc_canvas</item>
+        <item name="titleTextColor">@color/rc_ink</item>
+        <item name="navigationIconTint">@color/rc_ink</item>
+    </style>
+    <style name="RoomCare.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/rc_brand</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">10dp</item>
+    </style>
+    <style name="RoomCare.Button.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="backgroundTint">@android:color/white</item>
+        <item name="android:textColor">@color/rc_brand</item>
+        <item name="iconTint">@color/rc_brand</item>
+        <item name="strokeColor">@color/rc_line</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">10dp</item>
+    </style>
+    <style name="RoomCare.Button.Danger" parent="RoomCare.Button">
+        <item name="backgroundTint">@color/rc_danger</item>
+    </style>
+    <style name="RoomCare.Input" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@android:color/white</item>
+        <item name="boxStrokeColor">@color/rc_field_stroke</item>
+        <item name="boxCornerRadiusTopStart">10dp</item>
+        <item name="boxCornerRadiusTopEnd">10dp</item>
+        <item name="boxCornerRadiusBottomStart">10dp</item>
+        <item name="boxCornerRadiusBottomEnd">10dp</item>
+    </style>
+    <style name="RoomCare.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/rc_ink</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="RoomCare.Section" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/rc_ink</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="RoomCare.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/rc_muted</item>
+    </style>
+</resources>

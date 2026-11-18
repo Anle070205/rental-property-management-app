@@ -49,6 +49,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 binding.error.text = result.message
                 binding.save.isEnabled = result is Resource.Success && profile.mutation.value !is Resource.Loading
                 result.data?.let {
+                    binding.displayName.text = it.fullName
+                    binding.avatar.text = profileInitials(it.fullName)
                     binding.fullName.setText(it.fullName)
                     binding.phone.setText(it.phone)
                     binding.email.text = it.email

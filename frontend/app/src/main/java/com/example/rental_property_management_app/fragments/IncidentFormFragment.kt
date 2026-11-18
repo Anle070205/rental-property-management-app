@@ -2,7 +2,6 @@ package com.example.rental_property_management_app.fragments
 
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -12,6 +11,8 @@ import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.databinding.FragmentIncidentFormBinding
 import com.example.rental_property_management_app.models.*
 import com.example.rental_property_management_app.utils.Resource
+import com.example.rental_property_management_app.utils.populateRoomCareChoices
+import com.example.rental_property_management_app.utils.selectedRoomCareChoice
 import com.example.rental_property_management_app.viewmodels.IncidentViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -28,9 +29,10 @@ class IncidentFormFragment : Fragment(R.layout.fragment_incident_form) {
         binding.toolbar.setTitle(if (supplement) R.string.rc_supplement_incident else R.string.rc_report_incident)
         binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
         binding.initialFields.isVisible = !supplement
-        binding.type.adapter = options(R.array.rc_incident_types)
-        binding.priority.adapter = options(R.array.rc_incident_priorities)
-        if (savedInstanceState == null) binding.priority.setSelection(IncidentPriority.MEDIUM.ordinal)
+        binding.type.populateRoomCareChoices(resources.getStringArray(R.array.rc_incident_types),
+            savedInstanceState?.getInt(TYPE) ?: 0)
+        binding.priority.populateRoomCareChoices(resources.getStringArray(R.array.rc_incident_priorities),
+            savedInstanceState?.getInt(PRIORITY) ?: IncidentPriority.MEDIUM.ordinal)
         binding.submit.setOnClickListener { submit(supplement) }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.save.collect { result ->
@@ -46,9 +48,6 @@ class IncidentFormFragment : Fragment(R.layout.fragment_incident_form) {
             }
         }
     }
-
-    private fun options(id: Int) =
-        ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(id))
 
     private fun submit(supplement: Boolean) {
         val title = binding.title.text.toString().trim()
@@ -71,10 +70,23 @@ class IncidentFormFragment : Fragment(R.layout.fragment_incident_form) {
                 return
             }
             viewModel.create(CreateIncidentRequest(
-                IncidentType.entries[binding.type.selectedItemPosition], title, description,
-                IncidentPriority.entries[binding.priority.selectedItemPosition], image
+                IncidentType.entries[binding.type.selectedRoomCareChoice()], title, description,
+                IncidentPriority.entries[binding.priority.selectedRoomCareChoice()], image
             ))
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        _binding?.let {
+            outState.putInt(TYPE, it.type.selectedRoomCareChoice())
+            outState.putInt(PRIORITY, it.priority.selectedRoomCareChoice())
+        }
+        super.onSaveInstanceState(outState)
+    }
+
+    private companion object {
+        const val TYPE = "incident_type"
+        const val PRIORITY = "incident_priority"
     }
 
     override fun onDestroyView() {

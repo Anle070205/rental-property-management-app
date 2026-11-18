@@ -1,26 +1,47 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="wrap_content"
-        app:title="@string/rc_notifications" app:navigationIcon="@drawable/ic_arrow_back" />
-    <Spinner android:id="@+id/type" android:layout_width="match_parent" android:layout_height="48dp"
-        android:contentDescription="@string/rc_notification_filter" />
-    <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/unreadOnly"
-        android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_unread" />
-    <com.google.android.material.button.MaterialButton android:id="@+id/readAll"
-        android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_read_all" />
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/rc_canvas">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:paddingEnd="12dp">
+        <com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar" style="@style/RoomCare.Toolbar"
+            android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            app:title="@string/rc_notifications" app:navigationIcon="@drawable/ic_arrow_back" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/readAll" style="@style/RoomCare.Button.Secondary"
+            android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_read_all" />
+    </LinearLayout>
+    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:scrollbars="none" android:paddingHorizontal="12dp" android:clipToPadding="false">
+        <com.google.android.material.chip.ChipGroup android:id="@+id/types"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            app:selectionRequired="true" app:singleSelection="true" app:singleLine="true" />
+    </HorizontalScrollView>
+    <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/unreadOnly" android:layout_marginStart="12dp"
+        android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_unread"
+        app:buttonTint="@color/rc_brand" />
     <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:gravity="center" android:padding="16dp" android:visibility="gone" />
-    <com.google.android.material.button.MaterialButton android:id="@+id/retry"
-        android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_retry"
-        android:visibility="gone" />
+        android:gravity="center" android:padding="16dp" android:textColor="@color/rc_danger" android:visibility="gone" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/retry" style="@style/RoomCare.Button.Secondary"
+        android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
+        android:text="@string/rc_retry" android:visibility="gone" />
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:id="@+id/swipe"
         android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-        <androidx.recyclerview.widget.RecyclerView android:id="@+id/items"
-            android:layout_width="match_parent" android:layout_height="match_parent" />
+        <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/items"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:paddingTop="8dp" android:clipToPadding="false" />
+            <LinearLayout android:id="@+id/empty" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:gravity="center" android:padding="28dp"
+                android:layout_gravity="center" android:visibility="gone">
+                <ImageView android:layout_width="56dp" android:layout_height="56dp" android:padding="14dp"
+                    android:background="@drawable/rc_badge" android:src="@drawable/rc_bell" android:importantForAccessibility="no" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp"
+                    android:textAppearance="@style/RoomCare.Title" android:text="@string/rc_notification_done_title" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp"
+                    android:gravity="center" android:textAppearance="@style/RoomCare.Caption" android:text="@string/rc_notification_done_body" />
+            </LinearLayout>
+        </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    <com.google.android.material.button.MaterialButton android:id="@+id/more"
-        android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_load_more"
-        android:visibility="gone" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/more" style="@style/RoomCare.Button.Secondary"
+        android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
+        android:text="@string/rc_load_more" android:visibility="gone" />
 </LinearLayout>

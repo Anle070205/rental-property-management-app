@@ -295,4 +295,12 @@
     <string name="rc_tenant_tab_home">Trang chủ</string>
     <string name="rc_tenant_tab_room">Phòng</string>
     <string name="rc_tenant_tab_profile">Cá nhân</string>
+    <string name="rc_home_hello">Xin chào,</string>
+    <string name="rc_home_updates">Cập nhật cho bạn</string>
+    <string name="rc_home_shortcuts">Thao tác nhanh</string>
+    <string name="rc_home_contract">Hợp đồng</string>
+    <string name="rc_home_view_invoices">Xem hóa đơn</string>
+    <string name="rc_profile_settings">Tài khoản và bảo mật</string>
+    <string name="rc_notification_done_title">Bạn đã xem hết rồi</string>
+    <string name="rc_notification_done_body">Thông báo về hóa đơn, thanh toán, hợp đồng và sự cố sẽ xuất hiện tại đây.</string>
 </resources>

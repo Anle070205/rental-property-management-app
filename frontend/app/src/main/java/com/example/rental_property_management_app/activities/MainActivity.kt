@@ -3,6 +3,8 @@ package com.example.rental_property_management_app.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
@@ -57,7 +59,20 @@ class MainActivity : AppCompatActivity() {
     
     private fun setupTenantNavigation() {
         val menu = binding.tenantNavigation.menu
+        val bars = WindowCompat.getInsetsController(window, binding.root)
+        val defaultStatusColor = window.statusBarColor
+        val defaultLightStatusBar = bars.isAppearanceLightStatusBars
+        val roomCareStatusColor = ContextCompat.getColor(this, R.color.rc_canvas)
+        val roomCareScreens = setOf(
+            R.id.tenantDashboardFragment, R.id.myRoomFragment, R.id.myContractFragment,
+            R.id.tenantInvoiceFragment, R.id.tenantInvoiceDetailFragment, R.id.qrPaymentFragment,
+            R.id.paymentHistoryFragment, R.id.profileFragment, R.id.notificationFragment,
+            R.id.incidentListFragment, R.id.incidentFormFragment, R.id.incidentDetailFragment
+        )
         navController.addOnDestinationChangedListener { _, destination, _ ->
+            val styled = destination.id in roomCareScreens
+            window.statusBarColor = if (styled) roomCareStatusColor else defaultStatusColor
+            bars.isAppearanceLightStatusBars = styled || defaultLightStatusBar
             val item = menu.findItem(destination.id)
             binding.tenantNavigation.isVisible = item != null &&
                 RoomCareApplication.prefsManager.getUserRole() == "TENANT"

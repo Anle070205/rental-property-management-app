@@ -28,6 +28,7 @@ class TenantHomeFragment : Fragment(R.layout.fragment_tenant_home) {
         binding.contract.setOnClickListener { nav.navigate(R.id.action_tenantHome_to_contract) }
         binding.invoices.setOnClickListener { nav.navigate(R.id.action_tenantHome_to_invoices) }
         binding.profile.setOnClickListener { nav.navigate(R.id.profileFragment) }
+        binding.notificationBell.setOnClickListener { nav.navigate(R.id.notificationFragment) }
         binding.notifications.setOnClickListener { nav.navigate(R.id.notificationFragment) }
         binding.incidents.setOnClickListener { nav.navigate(R.id.incidentListFragment) }
         binding.retry.setOnClickListener { viewModel.refresh() }
@@ -39,7 +40,8 @@ class TenantHomeFragment : Fragment(R.layout.fragment_tenant_home) {
                 binding.error.text = result.message
                 binding.retry.isVisible = result is Resource.Error
                 result.data?.let {
-                    binding.greeting.text = getString(R.string.rc_tenant_greeting, it.fullName)
+                    binding.greeting.text = it.fullName
+                    binding.avatar.text = profileInitials(it.fullName)
                     binding.roomCode.text = it.roomCode ?: getString(R.string.rc_no_active_room)
                     binding.amount.text = it.amountDue?.let(CurrencyUtils::formatVND)
                         ?: getString(R.string.rc_no_amount_due)

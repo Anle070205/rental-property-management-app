@@ -2,6 +2,7 @@ package com.example.rental_property_management_app.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -10,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.databinding.FragmentTenantInvoiceDetailBinding
+import com.example.rental_property_management_app.databinding.ItemInvoiceChargeBinding
 import com.example.rental_property_management_app.models.TenantInvoice
 import com.example.rental_property_management_app.utils.Constants
 import com.example.rental_property_management_app.utils.CurrencyUtils
@@ -54,7 +56,8 @@ class TenantInvoiceDetailFragment : Fragment(R.layout.fragment_tenant_invoice_de
         binding.dueDate.text = invoice.dueDate?.let {
             getString(R.string.rc_tenant_due_date, DateUtils.parseApiDate(it)?.let(DateUtils::formatDate) ?: it)
         }
-        binding.charges.text = listOf(
+        binding.charges.removeAllViews()
+        listOf(
             R.string.rc_invoice_rent to invoice.roomRent,
             R.string.rc_invoice_electricity to invoice.electricityAmount,
             R.string.rc_invoice_water to invoice.waterAmount,
@@ -66,8 +69,14 @@ class TenantInvoiceDetailFragment : Fragment(R.layout.fragment_tenant_invoice_de
             R.string.rc_invoice_total to invoice.totalAmount,
             R.string.rc_invoice_paid to invoice.paidAmount,
             R.string.rc_invoice_remaining to invoice.remainingAmount
-        ).joinToString("\n") { (label, amount) ->
-            getString(R.string.rc_invoice_charge, getString(label), CurrencyUtils.formatVND(amount))
+        ).forEach { (label, amount) ->
+            val row = ItemInvoiceChargeBinding.inflate(layoutInflater, binding.charges, false)
+            row.label.setText(label)
+            row.amount.text = CurrencyUtils.formatVND(amount)
+            if (label == R.string.rc_invoice_total || label == R.string.rc_invoice_remaining) {
+                row.amount.setTextColor(ContextCompat.getColor(requireContext(), R.color.rc_brand))
+            }
+            binding.charges.addView(row.root)
         }
     }
 

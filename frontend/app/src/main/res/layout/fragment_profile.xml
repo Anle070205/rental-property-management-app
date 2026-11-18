@@ -1,39 +1,38 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical" android:padding="24dp">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="@string/rc_profile" android:textSize="24sp" android:textColor="@color/rc_primary" />
-        <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:visibility="gone" />
-        <TextView android:id="@+id/error" android:layout_width="match_parent" android:layout_height="wrap_content" />
-        <com.google.android.material.button.MaterialButton android:id="@+id/retry"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="@string/rc_retry" />
-        <TextView android:id="@+id/email" android:layout_width="match_parent" android:layout_height="wrap_content" />
-        <TextView android:id="@+id/role" android:layout_width="match_parent" android:layout_height="wrap_content" />
-        <com.google.android.material.textfield.TextInputLayout
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/rc_canvas">
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Title" android:text="@string/rc_tenant_tab_profile" />
+<ProgressBar android:id="@+id/progress" android:layout_width="32dp" android:layout_height="32dp" android:indeterminateTint="@color/rc_brand" android:visibility="gone" />
+<TextView android:id="@+id/error" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/rc_danger" android:visibility="gone" />
+<com.google.android.material.button.MaterialButton android:id="@+id/retry" style="@style/RoomCare.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_retry" android:visibility="gone" />
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:padding="14dp" android:layout_marginTop="12dp" android:background="@drawable/rc_panel">
+<TextView android:id="@+id/avatar" android:layout_width="48dp" android:layout_height="48dp" android:gravity="center"
+    android:background="@drawable/rc_badge" android:textColor="@color/rc_brand" android:textStyle="bold" />
+<LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
+<TextView android:id="@+id/displayName" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Section" />
+<TextView android:id="@+id/email" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Caption" />
+<TextView android:id="@+id/role" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/rc_badge" android:paddingHorizontal="8dp" android:paddingVertical="3dp" android:textColor="@color/rc_brand" />
+</LinearLayout>
+</LinearLayout>
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Section" android:text="@string/rc_profile_settings" android:layout_marginTop="16dp" android:layout_marginBottom="6dp" />
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/rc_panel" android:padding="14dp" android:layout_marginBottom="10dp">
+<com.google.android.material.textfield.TextInputLayout style="@style/RoomCare.Input" android:layout_marginTop="8dp"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:hint="@string/rc_full_name">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/fullName" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout style="@style/RoomCare.Input" android:layout_marginTop="8dp"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:hint="@string/rc_phone">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/phone" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:inputType="phone" />
         </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.button.MaterialButton android:id="@+id/save"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="@string/rc_save" />
-        <com.google.android.material.button.MaterialButton android:id="@+id/password"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="@string/rc_change_password" />
-        <com.google.android.material.button.MaterialButton android:id="@+id/logout"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="@string/rc_logout" />
-    </LinearLayout>
+<com.google.android.material.button.MaterialButton android:id="@+id/save" style="@style/RoomCare.Button" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_save"  />
+<com.google.android.material.button.MaterialButton android:id="@+id/password" style="@style/RoomCare.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_change_password" app:icon="@drawable/ic_edit" />
+</LinearLayout>
+<com.google.android.material.button.MaterialButton android:id="@+id/logout" style="@style/RoomCare.Button.Danger" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_logout"  />
+</LinearLayout>
 </ScrollView>

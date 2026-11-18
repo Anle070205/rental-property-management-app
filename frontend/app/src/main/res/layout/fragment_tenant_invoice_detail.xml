@@ -1,17 +1,18 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" >
-    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="wrap_content" app:title="@string/rc_invoice_detail" app:navigationIcon="@drawable/ic_arrow_back" />
-    <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/rc_canvas">
+    <com.google.android.material.appbar.MaterialToolbar style="@style/RoomCare.Toolbar" android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="wrap_content" app:title="@string/rc_invoice_detail" app:navigationIcon="@drawable/ic_arrow_back" />
+    <ProgressBar android:indeterminateTint="@color/rc_brand" android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content" />
     <TextView android:id="@+id/error" android:layout_width="match_parent" android:layout_height="wrap_content"  />
-    <com.google.android.material.button.MaterialButton android:id="@+id/retry" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_retry" />
+    <com.google.android.material.button.MaterialButton style="@style/RoomCare.Button.Secondary" android:id="@+id/retry" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_retry" />
     <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:id="@+id/content" android:padding="24dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:id="@+id/content" android:background="@drawable/rc_panel" android:layout_margin="12dp" android:padding="24dp">
     <TextView android:id="@+id/sample" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_tenant_portal_sample" />
-    <TextView android:id="@+id/code" android:layout_width="match_parent" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="20sp" android:textColor="@color/rc_primary" />
+    <TextView android:id="@+id/code" android:layout_width="match_parent" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="20sp" android:textColor="@color/rc_brand" />
     <TextView android:id="@+id/month" android:layout_width="match_parent" android:layout_height="wrap_content"  />
     <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"  />
     <TextView android:id="@+id/dueDate" android:layout_width="match_parent" android:layout_height="wrap_content"  />
-    <TextView android:id="@+id/charges" android:layout_width="match_parent" android:layout_height="wrap_content" android:lineSpacingExtra="6dp" android:paddingTop="12dp" />
-    <com.google.android.material.button.MaterialButton android:id="@+id/payment" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_payment_qr" />
+    <LinearLayout android:id="@+id/charges" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:layout_marginTop="12dp" />
+    <com.google.android.material.button.MaterialButton style="@style/RoomCare.Button" android:id="@+id/payment" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_payment_qr" />
 </LinearLayout>
     </ScrollView>
 </LinearLayout>

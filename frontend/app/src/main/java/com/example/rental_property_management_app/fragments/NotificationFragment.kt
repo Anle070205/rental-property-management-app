@@ -2,8 +2,6 @@ package com.example.rental_property_management_app.fragments
 
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.AdapterView
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -16,6 +14,8 @@ import com.example.rental_property_management_app.RoomCareApplication
 import com.example.rental_property_management_app.adapters.NotificationAdapter
 import com.example.rental_property_management_app.databinding.FragmentNotificationBinding
 import com.example.rental_property_management_app.models.NotificationType
+import com.example.rental_property_management_app.utils.populateRoomCareChoices
+import com.example.rental_property_management_app.utils.selectedRoomCareChoice
 import com.example.rental_property_management_app.viewmodels.NotificationViewModel
 import kotlinx.coroutines.launch
 
@@ -30,17 +30,19 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
         binding.items.layoutManager = LinearLayoutManager(requireContext())
         binding.items.adapter = adapter
         binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
+        binding.swipe.setColorSchemeResources(R.color.rc_brand)
+        binding.swipe.setOnChildScrollUpCallback { _, _ -> binding.items.canScrollVertically(-1) }
         binding.swipe.setOnRefreshListener { viewModel.refresh() }
         binding.readAll.setOnClickListener { viewModel.markAllRead() }
         binding.more.setOnClickListener { viewModel.loadMore() }
         binding.retry.setOnClickListener { viewModel.refresh() }
 
-        val labels = resources.getStringArray(R.array.rc_notification_types)
-        binding.type.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, labels)
-        binding.type.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, row: View?, position: Int, id: Long) = applyFilter()
-            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
-        }
+        binding.types.populateRoomCareChoices(
+            resources.getStringArray(R.array.rc_notification_types),
+            savedInstanceState?.getInt(SELECTED_TYPE) ?: 0
+        )
+        binding.types.setOnCheckedStateChangeListener { _, _ -> applyFilter() }
+        applyFilter()
         binding.unreadOnly.setOnCheckedChangeListener { _, _ -> applyFilter() }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -70,17 +72,27 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
                 binding.readAll.isEnabled = !state.loading
                 binding.more.isVisible = state.hasMore && !state.loading
                 binding.retry.isVisible = state.error != null
-                binding.status.isVisible = !state.loading && (state.error != null || state.items.isEmpty())
-                binding.status.text = state.error ?: getString(R.string.rc_no_notifications)
+                binding.status.isVisible = !state.loading && state.error != null
+                binding.status.text = state.error
+                binding.empty.isVisible = !state.loading && state.error == null && state.items.isEmpty()
             }
         }
     }
 
     private fun applyFilter() {
         viewModel.filter(
-            NotificationType.entries.getOrNull(binding.type.selectedItemPosition - 1),
+            NotificationType.entries.getOrNull(binding.types.selectedRoomCareChoice() - 1),
             binding.unreadOnly.isChecked
         )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        _binding?.let { outState.putInt(SELECTED_TYPE, it.types.selectedRoomCareChoice()) }
+        super.onSaveInstanceState(outState)
+    }
+
+    private companion object {
+        const val SELECTED_TYPE = "notification_type"
     }
 
     override fun onDestroyView() {

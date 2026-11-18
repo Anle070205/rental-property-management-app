@@ -1,12 +1,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:orientation="vertical" android:padding="16dp"
-    android:background="?attr/selectableItemBackground">
-    <TextView android:id="@+id/unread" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:text="@string/rc_notification_unread_marker"
-        android:contentDescription="@string/rc_unread" android:textColor="@color/rc_primary" />
-    <TextView android:id="@+id/title" android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:textStyle="bold" android:textSize="16sp" />
-    <TextView android:id="@+id/content" android:layout_width="match_parent" android:layout_height="wrap_content" />
-    <TextView android:id="@+id/date" android:layout_width="match_parent" android:layout_height="wrap_content" />
+    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="12dp"
+    android:layout_marginBottom="8dp" android:orientation="horizontal" android:padding="12dp"
+    android:background="@drawable/rc_panel" android:foreground="?attr/selectableItemBackground" android:gravity="center_vertical">
+    <TextView android:id="@+id/unread" android:layout_width="12dp" android:layout_height="wrap_content"
+        android:text="@string/rc_notification_unread_marker" android:textSize="9sp" android:textColor="@color/rc_brand"
+        android:contentDescription="@string/rc_unread" />
+    <ImageView android:id="@+id/typeIcon" android:layout_width="36dp" android:layout_height="36dp"
+        android:background="@drawable/rc_badge" android:padding="8dp" android:importantForAccessibility="no" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+        android:layout_marginStart="10dp" android:orientation="vertical">
+        <TextView android:id="@+id/title" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textAppearance="@style/RoomCare.Section" />
+        <TextView android:id="@+id/content" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textColor="@color/rc_muted" android:textSize="14sp" />
+        <TextView android:id="@+id/date" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" android:textAppearance="@style/RoomCare.Caption" />
+    </LinearLayout>
 </LinearLayout>
