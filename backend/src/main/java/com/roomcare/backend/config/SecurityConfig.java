@@ -45,11 +45,18 @@ public class SecurityConfig {
                 // Authenticated requests
                 .anyRequest().authenticated()
             )
-            .exceptionHandling(errors -> errors.authenticationEntryPoint((request, response, exception) -> {
-                response.setStatus(401);
-                response.setContentType("application/json");
-                objectMapper.writeValue(response.getOutputStream(), ApiResponse.error("Vui lòng đăng nhập lại"));
-            }))
+            .exceptionHandling(errors -> errors
+                .authenticationEntryPoint((request, response, exception) -> {
+                    response.setStatus(401);
+                    response.setContentType("application/json");
+                    objectMapper.writeValue(response.getOutputStream(), ApiResponse.error("Vui lòng đăng nhập lại"));
+                })
+                .accessDeniedHandler((request, response, exception) -> {
+                    response.setStatus(403);
+                    response.setContentType("application/json");
+                    objectMapper.writeValue(response.getOutputStream(), ApiResponse.error("Bạn không có quyền truy cập"));
+                })
+            )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
