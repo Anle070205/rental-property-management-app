@@ -1,6 +1,7 @@
 package com.example.rental_property_management_app.utils
 
 import java.text.DecimalFormat
+import java.math.BigDecimal
 import java.text.DecimalFormatSymbols
 import java.util.*
 
@@ -23,6 +24,13 @@ object CurrencyUtils {
      */
     fun formatVND(amount: Long): String {
         return "${vndFormat.format(amount)} ₫"
+    }
+
+    fun formatVND(amount: BigDecimal): String {
+        val decimalFormat = (vndFormat.clone() as DecimalFormat).apply {
+            maximumFractionDigits = 2
+        }
+        return "${decimalFormat.format(amount)} ₫"
     }
     
     /**

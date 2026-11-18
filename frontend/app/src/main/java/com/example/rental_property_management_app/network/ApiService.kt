@@ -8,6 +8,9 @@ import retrofit2.http.*
  * Retrofit API Service Interface
  */
 interface ApiService {
+    @GET("api/tenant/dashboard")
+    suspend fun tenantDashboard(): Response<ApiResponse<TenantDashboard>>
+
     @GET("api/tenant/incidents")
     suspend fun incidents(@Query("status") status: IncidentStatus?, @Query("page") page: Int):
         Response<ApiResponse<PageResponse<Incident>>>

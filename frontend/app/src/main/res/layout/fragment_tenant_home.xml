@@ -1,0 +1,22 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <TextView android:id="@+id/greeting" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_tenant_home" android:textSize="22sp" android:textStyle="bold" android:textColor="@color/rc_primary" />
+        <TextView android:id="@+id/sample" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_tenant_sample"  />
+        <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@+id/error" android:layout_width="match_parent" android:layout_height="wrap_content"   />
+        <com.google.android.material.button.MaterialButton android:id="@+id/retry" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_retry" />
+        <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+        <TextView android:id="@+id/roomLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_active_room"  />
+        <TextView android:id="@+id/roomCode" android:layout_width="match_parent" android:layout_height="wrap_content"  android:textSize="22sp" android:textStyle="bold" android:textColor="@color/rc_primary" />
+        <TextView android:id="@+id/amountLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_tenant_amount_due" android:layout_marginTop="12dp" />
+        <TextView android:id="@+id/amount" android:layout_width="match_parent" android:layout_height="wrap_content"  android:textSize="22sp" android:textStyle="bold" android:textColor="@color/rc_primary" />
+        <TextView android:id="@+id/dueDate" android:layout_width="match_parent" android:layout_height="wrap_content"   />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.button.MaterialButton android:id="@+id/incidents" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_incidents" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/notifications" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_notifications" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/profile" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_profile" />
+    </LinearLayout>
+</ScrollView>

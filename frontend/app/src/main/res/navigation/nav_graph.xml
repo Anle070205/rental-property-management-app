@@ -167,9 +167,9 @@
     <!-- Tenant Dashboard -->
     <fragment
         android:id="@+id/tenantDashboardFragment"
-        android:name="com.example.rental_property_management_app.fragments.TenantDashboardFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantHomeFragment"
         android:label="Dashboard - Người thuê">
-        <!-- TODO: Add actions to other tenant screens in future phases -->
+        <action android:id="@+id/action_tenantHome_to_incidents" app:destination="@id/incidentListFragment" />
     </fragment>
 
     <fragment

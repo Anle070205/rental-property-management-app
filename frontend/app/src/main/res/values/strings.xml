@@ -215,4 +215,13 @@
         <item>Đang xử lý</item>
         <item>Hoàn tất</item>
     </string-array>
+    <string name="rc_tenant_home">Trang chủ người thuê</string>
+    <string name="rc_tenant_greeting">Xin chào, %1$s</string>
+    <string name="rc_active_room">Phòng đang thuê</string>
+    <string name="rc_no_active_room">Chưa có phòng đang thuê</string>
+    <string name="rc_tenant_amount_due">Số tiền cần thanh toán</string>
+    <string name="rc_no_amount_due">Chưa có khoản cần thanh toán</string>
+    <string name="rc_tenant_due_date">Hạn thanh toán: %1$s</string>
+    <string name="rc_notifications_with_count">Thông báo · %1$d chưa đọc</string>
+    <string name="rc_tenant_sample">Thông tin phòng và thanh toán có thể là dữ liệu mẫu.</string>
 </resources>
