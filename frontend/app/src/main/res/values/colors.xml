@@ -34,5 +34,26 @@
     <color name="background_light">#FAFAFA</color>
     <color name="surface">#FFFFFF</color>
     <color name="surface_variant">#F5F5F5</color>
+
     <color name="rc_primary">#00796B</color>
+
+
+    <!-- Phase 4: Finance, Invoice & Health Score Colors -->
+    <color name="invoice_unpaid">#FF9800</color>
+    <color name="invoice_unpaid_bg">#FFF3E0</color>
+    <color name="invoice_partial">#2196F3</color>
+    <color name="invoice_partial_bg">#E3F2FD</color>
+    <color name="invoice_paid">#4CAF50</color>
+    <color name="invoice_paid_bg">#E8F5E9</color>
+    <color name="invoice_overdue">#F44336</color>
+    <color name="invoice_overdue_bg">#FFEBEE</color>
+    <color name="health_good">#2E7D32</color>
+    <color name="health_good_bg">#E8F5E9</color>
+    <color name="health_warning">#EF6C00</color>
+    <color name="health_warning_bg">#FFF3E0</color>
+    <color name="health_risk">#C62828</color>
+    <color name="health_risk_bg">#FFEBEE</color>
+    <color name="chart_billed">#B39DDB</color>
+    <color name="chart_collected">#6200EE</color>
+
 </resources>

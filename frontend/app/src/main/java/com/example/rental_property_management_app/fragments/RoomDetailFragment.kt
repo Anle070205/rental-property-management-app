@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.databinding.FragmentRoomDetailBinding
 import com.example.rental_property_management_app.models.RoomResponse
 import com.example.rental_property_management_app.utils.CurrencyUtils
@@ -49,6 +50,11 @@ class RoomDetailFragment : Fragment() {
             val action = RoomDetailFragmentDirections.actionRoomDetailToRoomForm(args.roomId)
             findNavController().navigate(action)
         }
+
+        binding.btnHealthScore.setOnClickListener {
+            val bundle = Bundle().apply { putLong("roomId", args.roomId) }
+            findNavController().navigate(R.id.healthScoreFragment, bundle)
+        }
         
         binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
@@ -63,6 +69,7 @@ class RoomDetailFragment : Fragment() {
                         binding.progressBar.visibility = View.VISIBLE
                         binding.contentLayout.visibility = View.GONE
                     }
+
                     state.data != null -> {
                         binding.progressBar.visibility = View.GONE
                         binding.contentLayout.visibility = View.VISIBLE
@@ -71,6 +78,16 @@ class RoomDetailFragment : Fragment() {
                     state.error != null -> {
                         binding.progressBar.visibility = View.GONE
                         Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+
+                    state.error != null -> {
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+                    }
+                    state.data != null -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.contentLayout.visibility = View.VISIBLE
+                        displayRoomDetail(state.data)
+
                     }
                 }
             }

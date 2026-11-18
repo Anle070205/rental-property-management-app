@@ -1,5 +1,7 @@
 package com.example.rental_property_management_app.utils
 
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.math.BigDecimal
 import java.text.DecimalFormatSymbols
@@ -39,6 +41,14 @@ object CurrencyUtils {
      */
     fun formatVND(amount: Double): String {
         return "${vndFormat.format(amount.toLong())} ₫"
+    }
+
+    /**
+     * Format BigDecimal thành chuỗi tiền VND chính xác, tránh sai số số thực
+     */
+    fun formatVND(amount: BigDecimal?): String {
+        val safeAmount = (amount ?: BigDecimal.ZERO).setScale(0, RoundingMode.HALF_UP)
+        return "${vndFormat.format(safeAmount)} ₫"
     }
     
     /**

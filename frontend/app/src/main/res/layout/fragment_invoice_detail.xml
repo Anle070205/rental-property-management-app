@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@android:color/white"
+            app:title="@string/invoice_detail"
+            app:titleTextColor="@android:color/white" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/contentScroll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_normal">
+
+                    <!-- Invoice Header Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="@dimen/card_corner_radius"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/spacing_normal">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/tvInvoiceCode"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="12sp"
+                                        tools:text="INV-202611-102" />
+
+                                    <TextView
+                                        android:id="@+id/tvRoomTitle"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="@dimen/text_size_large"
+                                        android:textStyle="bold"
+                                        tools:text="Phòng 102 • Kỳ 11/2026" />
+
+                                    <TextView
+                                        android:id="@+id/tvPropertyName"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="13sp"
+                                        tools:text="Nhà trọ Hoàng Anh" />
+
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/tvStatusBadge"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_badge_rounded"
+                                    android:paddingHorizontal="10dp"
+                                    android:paddingVertical="4dp"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    tools:text="Thanh toán 1 phần" />
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/divider_height"
+                                android:layout_marginVertical="10dp"
+                                android:background="@color/divider" />
+
+                            <TextView
+                                android:id="@+id/tvTenantInfo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
+                                tools:text="Người thuê: Lê Văn C (0923456789)" />
+
+                            <TextView
+                                android:id="@+id/tvDueDate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp"
+                                tools:text="Hạn thanh toán: 05/12/2026" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Fee Breakdown Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="@dimen/card_corner_radius"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/spacing_normal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Chi tiết các khoản phí"
+                                android:textColor="@color/text_primary"
+                                android:textSize="@dimen/text_size_medium"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvFeeLines"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:lineSpacingMultiplier="1.35"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
+                                tools:text="• Tiền phòng: 3.000.000 ₫\n• Tiền điện: 525.000 ₫" />
+
+                            <TextView
+                                android:id="@+id/tvInvoiceNotes"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp"
+                                android:visibility="gone" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Reconciliation Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="@dimen/card_corner_radius"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/spacing_normal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Đối chiếu thanh toán"
+                                android:textColor="@color/text_primary"
+                                android:textSize="@dimen/text_size_medium"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Tổng phải thu:"
+                                    android:textColor="@color/text_secondary" />
+
+                                <TextView
+                                    android:id="@+id/tvTotalAmount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/text_primary"
+                                    android:textStyle="bold"
+                                    tools:text="3.795.000 ₫" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Đã thanh toán:"
+                                    android:textColor="@color/text_secondary" />
+
+                                <TextView
+                                    android:id="@+id/tvPaidAmount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/success"
+                                    android:textStyle="bold"
+                                    tools:text="2.000.000 ₫" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Số tiền còn thiếu:"
+                                    android:textColor="@color/text_primary"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvRemainingAmount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/error"
+                                    android:textSize="@dimen/text_size_medium"
+                                    android:textStyle="bold"
+                                    tools:text="1.795.000 ₫" />
+                            </LinearLayout>
+
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:id="@+id/progressPayment"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:max="100"
+                                app:indicatorColor="@color/success"
+                                app:trackColor="@color/divider"
+                                app:trackCornerRadius="4dp"
+                                app:trackThickness="8dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnRecordPayment"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                android:text="@string/record_payment"
+                                app:icon="@drawable/ic_money" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Payment History Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="@dimen/card_corner_radius"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/spacing_normal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/payment_history"
+                                android:textColor="@color/text_primary"
+                                android:textSize="@dimen/text_size_medium"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvEmptyPayments"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:gravity="center"
+                                android:padding="12dp"
+                                android:text="@string/no_payments"
+                                android:textColor="@color/text_secondary"
+                                android:visibility="gone" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvPayments"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:nestedScrollingEnabled="false"
+                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/layoutError"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/error" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRetry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/action_retry" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

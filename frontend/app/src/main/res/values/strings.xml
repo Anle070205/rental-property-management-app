@@ -145,6 +145,7 @@
     <!-- Currency -->
     <string name="currency_format">%1$s ₫</string>
     <string name="vnd">₫</string>
+
     <string name="rc_profile">Hồ sơ cá nhân</string>
     <string name="rc_phone">Số điện thoại</string>
     <string name="rc_full_name">Họ và tên</string>
@@ -304,3 +305,49 @@
     <string name="rc_notification_done_title">Bạn đã xem hết rồi</string>
     <string name="rc_notification_done_body">Thông báo về hóa đơn, thanh toán, hợp đồng và sự cố sẽ xuất hiện tại đây.</string>
 </resources>
+
+
+    <!-- GĐ4.1: Invoice Management -->
+    <string name="invoice_management">Quản lý hóa đơn</string>
+    <string name="invoice_management_desc">Tạo, theo dõi hóa đơn theo phòng và kỳ thu</string>
+    <string name="invoice_create_single">Tạo 1 phòng</string>
+    <string name="invoice_create_batch">Tạo hàng loạt</string>
+    <string name="invoice_empty">Chưa có hóa đơn nào</string>
+    <string name="invoice_empty_desc">Chọn kỳ tháng hoặc bấm nút Tạo hóa đơn để lập hóa đơn mới</string>
+    <string name="invoice_all_months">Tất cả kỳ</string>
+    <string name="invoice_all_rooms">Tất cả phòng</string>
+    <string name="invoice_status_unpaid">Chưa thu</string>
+    <string name="invoice_status_partial">Thu một phần</string>
+    <string name="invoice_status_paid">Đã thanh toán</string>
+    <string name="invoice_status_overdue">Quá hạn</string>
+
+    <!-- GĐ4.2: Utility Management -->
+    <string name="utility_management">Điện, nước &amp; dịch vụ</string>
+    <string name="utility_management_desc">Ghi chỉ số điện nước và cấu hình đơn giá dịch vụ</string>
+    <string name="utility_empty">Chưa có bản ghi điện nước</string>
+    <string name="utility_save">Lưu chỉ số kỳ này</string>
+    <string name="utility_update">Cập nhật bản ghi</string>
+
+    <!-- GĐ4.3: Invoice Detail & Payment -->
+    <string name="invoice_detail">Chi tiết hóa đơn</string>
+    <string name="record_payment">Xác nhận ghi nhận thanh toán</string>
+    <string name="payment_history">Lịch sử thanh toán &amp; biên nhận</string>
+    <string name="no_payments">Chưa có giao dịch thanh toán nào</string>
+
+    <!-- GĐ4.4: Debt Management -->
+    <string name="debt_management">Quản lý công nợ</string>
+    <string name="debt_management_desc">Tổng hợp công nợ, hóa đơn quá hạn và lịch sử biến động</string>
+    <string name="debt_empty">Không có công nợ nào phù hợp</string>
+    <string name="debt_search_hint">Tìm theo tên phòng, người thuê, SĐT...</string>
+
+    <!-- GĐ4.5: Health Score -->
+    <string name="health_score_title">Health Score phòng</string>
+    <string name="health_score_desc">Đánh giá sức khỏe vận hành phòng theo thang điểm 0-100</string>
+    <string name="health_score_empty">Chưa có dữ liệu Health Score phòng</string>
+
+    <!-- GĐ4.6: Landlord Dashboard -->
+    <string name="dashboard_home_title">Tổng quan Chủ nhà</string>
+    <string name="dashboard_no_attention">Không có phòng nào gặp sự cố hoặc nợ xấu</string>
+    <string name="dashboard_no_expiring">Chưa có hợp đồng sắp hết hạn</string>
+</resources>
+

@@ -78,7 +78,11 @@ class RoomListFragment : Fragment() {
     private fun setupClickListeners() {
         // FAB - Add new room
         binding.fabAddRoom.setOnClickListener {
+          
             val action = RoomListFragmentDirections.actionRoomListToRoomForm()
+
+            val action = RoomListFragmentDirections.actionRoomListToRoomForm(roomId = 0L)
+
             findNavController().navigate(action)
         }
         
@@ -111,7 +115,11 @@ class RoomListFragment : Fragment() {
                         binding.swipeRefresh.isRefreshing = false
                         hideAllStates()
                         
+
                         val rooms = resource.data?.content.orEmpty()
+
+                        val rooms = resource.data?.content ?: emptyList()
+
                         if (rooms.isEmpty()) {
                             showEmptyState()
                         } else {
@@ -133,6 +141,10 @@ class RoomListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.deleteState.collectLatest { state ->
                 when {
+
+
+                    state.isLoading -> Unit
+
                     state.data != null -> {
                         Toast.makeText(context, "Đã xóa phòng", Toast.LENGTH_SHORT).show()
                         viewModel.resetDeleteState()
