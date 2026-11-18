@@ -22,6 +22,8 @@ class NotificationViewModel : ViewModel() {
     private val repository = NotificationRepository()
     private val _state = MutableStateFlow(NotificationState())
     val state = _state.asStateFlow()
+    private val _opened = MutableStateFlow<NotificationItem?>(null)
+    val opened = _opened.asStateFlow()
     private var type: NotificationType? = null
     private var unreadOnly = false
     private var loadJob: kotlinx.coroutines.Job? = null
@@ -40,7 +42,19 @@ class NotificationViewModel : ViewModel() {
     }
 
     fun markRead(item: NotificationItem) {
-        if (!item.isRead) mutate { repository.markRead(item.id) }
+        if (item.isRead) {
+            _opened.value = item
+        } else {
+            mutate {
+                repository.markRead(item.id).also { result ->
+                    if (result is Resource.Success) _opened.value = item
+                }
+            }
+        }
+    }
+
+    fun consumeOpened() {
+        _opened.value = null
     }
 
     fun markAllRead() = mutate { repository.markAllRead() }

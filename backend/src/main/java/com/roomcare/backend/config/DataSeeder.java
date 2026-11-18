@@ -1,7 +1,10 @@
 package com.roomcare.backend.config;
 
 import com.roomcare.backend.entity.*;
+import com.roomcare.backend.dto.incident.CreateIncidentRequest;
 import com.roomcare.backend.repository.*;
+import com.roomcare.backend.service.IncidentService;
+import com.roomcare.backend.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +29,8 @@ public class DataSeeder {
     private final RoomRepository roomRepository;
     private final TenantRepository tenantRepository;
     private final PasswordEncoder passwordEncoder;
+    private final IncidentService incidentService;
+    private final NotificationService notificationService;
     
     @Bean
     public CommandLineRunner seedData() {
@@ -180,6 +185,15 @@ public class DataSeeder {
             tenant1Obj.setAddress("Bình Dương");
             tenant1Obj.setEmergencyContact("0987654321");
             tenantRepository.save(tenant1Obj);
+            var waterIncident = incidentService.create(tenant1, new CreateIncidentRequest(
+                    Incident.Type.WATER, "Vòi nước bị rò rỉ", "Vòi nước ở bồn rửa bị nhỏ giọt liên tục.",
+                    Incident.Priority.MEDIUM, null));
+            incidentService.create(tenant1, new CreateIncidentRequest(Incident.Type.ELECTRIC,
+                    "Đèn hành lang chập chờn", "Đèn hành lang nhấp nháy vào buổi tối.", Incident.Priority.HIGH, null));
+            notificationService.createNotification(tenant1, NotificationType.INCIDENT,
+                    "Đã tiếp nhận sự cố", "Chủ nhà đã nhận báo cáo về vòi nước.", waterIncident.id());
+            notificationService.createNotification(tenant1, NotificationType.SYSTEM,
+                    "Chào mừng đến RoomCare", "Bạn có thể theo dõi thông báo và báo sự cố trên ứng dụng.", null);
             
             Tenant tenant2Obj = new Tenant();
             tenant2Obj.setLandlord(landlord1);

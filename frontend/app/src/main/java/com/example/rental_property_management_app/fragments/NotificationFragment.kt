@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AdapterView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -11,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rental_property_management_app.R
+import com.example.rental_property_management_app.RoomCareApplication
 import com.example.rental_property_management_app.adapters.NotificationAdapter
 import com.example.rental_property_management_app.databinding.FragmentNotificationBinding
 import com.example.rental_property_management_app.models.NotificationType
@@ -41,6 +43,18 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
         }
         binding.unreadOnly.setOnCheckedChangeListener { _, _ -> applyFilter() }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.opened.collect { item ->
+                if (item == null) return@collect
+                viewModel.consumeOpened()
+                val incidentId = item.refId
+                if (item.type == NotificationType.INCIDENT && incidentId != null &&
+                    RoomCareApplication.prefsManager.getUserRole() == "TENANT"
+                ) {
+                    findNavController().navigate(R.id.incidentDetailFragment, bundleOf("incidentId" to incidentId))
+                }
+            }
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.state.collect { state ->
                 adapter.submitList(state.items)

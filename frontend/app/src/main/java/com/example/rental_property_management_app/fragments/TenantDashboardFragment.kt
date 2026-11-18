@@ -28,6 +28,7 @@ class TenantDashboardFragment : Fragment() {
         setupClickListeners()
         binding.openProfile.setOnClickListener { findNavController().navigate(R.id.profileFragment) }
         binding.openNotifications.setOnClickListener { findNavController().navigate(R.id.notificationFragment) }
+        binding.openIncidents.setOnClickListener { findNavController().navigate(R.id.incidentListFragment) }
     }
 
     private fun setupClickListeners() {

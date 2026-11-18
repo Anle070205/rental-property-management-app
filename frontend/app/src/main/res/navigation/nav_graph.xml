@@ -182,4 +182,20 @@
         android:name="com.example.rental_property_management_app.fragments.NotificationFragment"
         android:label="@string/rc_notifications" />
 
+    <fragment
+        android:id="@+id/incidentListFragment"
+        android:name="com.example.rental_property_management_app.fragments.IncidentListFragment"
+        android:label="@string/rc_incidents" />
+    <fragment
+        android:id="@+id/incidentFormFragment"
+        android:name="com.example.rental_property_management_app.fragments.IncidentFormFragment"
+        android:label="@string/rc_report_incident">
+        <argument android:name="incidentId" android:defaultValue="0L" app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/incidentDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.IncidentDetailFragment"
+        android:label="@string/rc_incident_detail">
+        <argument android:name="incidentId" app:argType="long" />
+    </fragment>
 </navigation>

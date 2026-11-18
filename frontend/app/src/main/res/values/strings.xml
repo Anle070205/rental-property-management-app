@@ -176,4 +176,43 @@
         <item>Bảo trì</item>
         <item>Hệ thống</item>
     </string-array>
+    <string name="rc_incidents">Báo sự cố</string>
+    <string name="rc_incident_detail">Chi tiết sự cố</string>
+    <string name="rc_report_incident">Báo sự cố mới</string>
+    <string name="rc_supplement_incident">Bổ sung thông tin</string>
+    <string name="rc_incident_title">Tiêu đề</string>
+    <string name="rc_incident_type">Loại sự cố</string>
+    <string name="rc_incident_priority">Mức ưu tiên</string>
+    <string name="rc_incident_description">Mô tả sự cố</string>
+    <string name="rc_incident_image">Liên kết ảnh (không bắt buộc)</string>
+    <string name="rc_incident_invalid_link">Liên kết ảnh phải dùng HTTP hoặc HTTPS</string>
+    <string name="rc_incident_requires_supplement">Vui lòng nhập mô tả bổ sung hoặc liên kết ảnh</string>
+    <string name="rc_incident_saved">Đã lưu sự cố</string>
+    <string name="rc_no_incidents">Chưa có sự cố</string>
+    <string name="rc_all_incidents">Tất cả trạng thái</string>
+    <string name="rc_incident_filter">Lọc theo trạng thái</string>
+    <string name="rc_landlord_response">Phản hồi của chủ nhà</string>
+    <string name="rc_no_landlord_response">Chưa có phản hồi</string>
+    <string name="rc_incident_created">Thời gian báo: %1$s</string>
+    <string name="rc_incident_updated">Cập nhật: %1$s</string>
+    <string name="rc_incident_step_done">✓ %1$s</string>
+    <string name="rc_incident_step_pending">○ %1$s</string>
+    <string-array name="rc_incident_types">
+        <item>Điện</item>
+        <item>Nước</item>
+        <item>Thiết bị</item>
+        <item>An ninh</item>
+        <item>Khác</item>
+    </string-array>
+    <string-array name="rc_incident_priorities">
+        <item>Thấp</item>
+        <item>Trung bình</item>
+        <item>Cao</item>
+        <item>Khẩn cấp</item>
+    </string-array>
+    <string-array name="rc_incident_status">
+        <item>Đã tiếp nhận</item>
+        <item>Đang xử lý</item>
+        <item>Hoàn tất</item>
+    </string-array>
 </resources>

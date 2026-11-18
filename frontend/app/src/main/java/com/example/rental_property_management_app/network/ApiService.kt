@@ -8,6 +8,20 @@ import retrofit2.http.*
  * Retrofit API Service Interface
  */
 interface ApiService {
+    @GET("api/tenant/incidents")
+    suspend fun incidents(@Query("status") status: IncidentStatus?, @Query("page") page: Int):
+        Response<ApiResponse<PageResponse<Incident>>>
+
+    @POST("api/tenant/incidents")
+    suspend fun createIncident(@Body request: CreateIncidentRequest): Response<ApiResponse<Incident>>
+
+    @GET("api/tenant/incidents/{id}")
+    suspend fun incident(@Path("id") id: Long): Response<ApiResponse<Incident>>
+
+    @PUT("api/tenant/incidents/{id}")
+    suspend fun supplementIncident(@Path("id") id: Long, @Body request: UpdateIncidentRequest):
+        Response<ApiResponse<Incident>>
+
     @GET("api/notifications")
     suspend fun notifications(
         @Query("type") type: NotificationType?,
