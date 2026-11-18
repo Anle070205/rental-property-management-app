@@ -141,4 +141,25 @@ interface ApiService {
     suspend fun deleteTenant(
         @Path("id") id: Long
     ): Response<ApiResponse<Unit>>
+
+    // ============================================
+    // PHASE 4 - INVOICE APIs (GĐ4.1)
+    // ============================================
+    @GET("api/landlord/invoices")
+    suspend fun getInvoices(
+        @Query("month") month: String? = null,
+        @Query("roomId") roomId: Long? = null,
+        @Query("propertyId") propertyId: Long? = null,
+        @Query("status") status: String? = null
+    ): Response<ApiResponse<List<InvoiceResponse>>>
+
+    @POST("api/landlord/invoices")
+    suspend fun createInvoice(
+        @Body request: CreateInvoiceRequest
+    ): Response<ApiResponse<InvoiceResponse>>
+
+    @POST("api/landlord/invoices/batch")
+    suspend fun batchCreateInvoices(
+        @Body request: BatchCreateInvoiceRequest
+    ): Response<ApiResponse<BatchCreateInvoiceResult>>
 }

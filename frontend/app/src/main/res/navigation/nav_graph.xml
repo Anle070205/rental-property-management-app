@@ -172,4 +172,10 @@
         <!-- TODO: Add actions to other tenant screens in future phases -->
     </fragment>
 
+    <!-- Phase 4: Member 2 - Finance, Utilities, Debt & Health Score -->
+    <fragment
+        android:id="@+id/invoiceFragment"
+        android:name="com.example.rental_property_management_app.fragments.InvoiceFragment"
+        android:label="@string/invoice_management" />
+
 </navigation>
