@@ -76,7 +76,24 @@
         <action
             android:id="@+id/action_landlordDashboard_to_tenantList"
             app:destination="@id/tenantListFragment" />
+        <action
+            android:id="@+id/action_landlordDashboard_to_invoiceFragment"
+            app:destination="@id/invoiceFragment" />
+        <action
+            android:id="@+id/action_landlordDashboard_to_utilityFragment"
+            app:destination="@id/utilityFragment" />
+        <action
+            android:id="@+id/action_landlordDashboard_to_debtFragment"
+            app:destination="@id/debtFragment" />
+        <action
+            android:id="@+id/action_landlordDashboard_to_healthScoreFragment"
+            app:destination="@id/healthScoreFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/landlordHomeFragment"
+        android:name="com.example.rental_property_management_app.fragments.LandlordHomeFragment"
+        android:label="@string/dashboard_home_title" />
 
     <!-- Phase 2: Room Management -->
     <fragment

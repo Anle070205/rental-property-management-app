@@ -231,4 +231,10 @@ interface ApiService {
     suspend fun getRoomHealthScore(
         @Path("id") roomId: Long
     ): Response<ApiResponse<RoomHealthScoreResponse>>
+
+    // ============================================
+    // PHASE 4 - DASHBOARD API (GĐ4.6)
+    // ============================================
+    @GET("api/landlord/dashboard")
+    suspend fun getLandlordDashboard(): Response<ApiResponse<LandlordDashboardResponse>>
 }

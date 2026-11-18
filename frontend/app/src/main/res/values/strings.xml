@@ -182,4 +182,9 @@
     <string name="health_score_title">Health Score phòng</string>
     <string name="health_score_desc">Đánh giá sức khỏe vận hành phòng theo thang điểm 0-100</string>
     <string name="health_score_empty">Chưa có dữ liệu Health Score phòng</string>
+
+    <!-- GĐ4.6: Landlord Dashboard -->
+    <string name="dashboard_home_title">Tổng quan Chủ nhà</string>
+    <string name="dashboard_no_attention">Không có phòng nào gặp sự cố hoặc nợ xấu</string>
+    <string name="dashboard_no_expiring">Chưa có hợp đồng sắp hết hạn</string>
 </resources>

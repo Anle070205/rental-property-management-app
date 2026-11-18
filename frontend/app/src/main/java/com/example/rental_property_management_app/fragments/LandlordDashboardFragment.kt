@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.databinding.FragmentLandlordDashboardBinding
 
+/**
+ * Host fragment for Landlord home dashboard, delegating directly to [LandlordHomeFragment]
+ * so Splash/Login flows and direct home navigation share one synchronized UI and data source.
+ */
 class LandlordDashboardFragment : Fragment() {
-    
+
     private var _binding: FragmentLandlordDashboardBinding? = null
     private val binding get() = _binding!!
 
@@ -21,23 +23,6 @@ class LandlordDashboardFragment : Fragment() {
     ): View {
         _binding = FragmentLandlordDashboardBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupClickListeners()
-    }
-
-    private fun setupClickListeners() {
-        // Room Management
-        binding.cardRoomManagement.setOnClickListener {
-            findNavController().navigate(R.id.action_landlordDashboard_to_roomList)
-        }
-        
-        // Tenant Management
-        binding.cardTenantManagement.setOnClickListener {
-            findNavController().navigate(R.id.action_landlordDashboard_to_tenantList)
-        }
     }
 
     override fun onDestroyView() {
