@@ -48,10 +48,18 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
                 if (item == null) return@collect
                 viewModel.consumeOpened()
                 val incidentId = item.refId
-                if (item.type == NotificationType.INCIDENT && incidentId != null &&
-                    RoomCareApplication.prefsManager.getUserRole() == "TENANT"
-                ) {
-                    findNavController().navigate(R.id.incidentDetailFragment, bundleOf("incidentId" to incidentId))
+                if (RoomCareApplication.prefsManager.getUserRole() != "TENANT") return@collect
+                val nav = findNavController()
+                when (item.type) {
+                    NotificationType.INCIDENT -> if (incidentId != null) {
+                        nav.navigate(R.id.incidentDetailFragment, bundleOf("incidentId" to incidentId))
+                    }
+                    NotificationType.INVOICE -> if (incidentId != null) {
+                        nav.navigate(R.id.tenantInvoiceDetailFragment, bundleOf("invoiceId" to incidentId))
+                    }
+                    NotificationType.CONTRACT -> nav.navigate(R.id.myContractFragment)
+                    NotificationType.PAYMENT -> nav.navigate(R.id.paymentHistoryFragment)
+                    else -> Unit
                 }
             }
         }

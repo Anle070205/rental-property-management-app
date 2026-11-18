@@ -272,4 +272,27 @@
         <item>Đã thanh toán</item>
         <item>Quá hạn</item>
     </string-array>
+    <string name="rc_payment_history">Lịch sử thanh toán</string>
+    <string name="rc_payment_qr">Thanh toán bằng mã QR</string>
+    <string name="rc_payment_qr_image">Mã QR thanh toán</string>
+    <string name="rc_payment_copy_account">Sao chép số tài khoản</string>
+    <string name="rc_payment_copy_content">Sao chép nội dung</string>
+    <string name="rc_payment_copied">Đã sao chép</string>
+    <string name="rc_payment_bank">Ngân hàng: %1$s</string>
+    <string name="rc_payment_account">Số tài khoản: %1$s</string>
+    <string name="rc_payment_amount">Số tiền: %1$s</string>
+    <string name="rc_payment_content">Nội dung chuyển khoản: %1$s</string>
+    <string name="rc_payment_instructions">Quét mã trong ứng dụng ngân hàng. Kiểm tra số tài khoản, số tiền và nội dung trước khi chuyển. Trạng thái hóa đơn cập nhật sau khi khoản thanh toán được xác nhận.</string>
+    <string name="rc_payment_sample">Mã QR minh họa. Vui lòng không chuyển tiền.</string>
+    <string name="rc_payment_qr_error">Không tạo được mã QR. Bạn vẫn có thể xem thông tin chuyển khoản.</string>
+    <string name="rc_payment_history_empty">Chưa có giao dịch</string>
+    <string name="rc_payment_method_cash">Tiền mặt</string>
+    <string name="rc_payment_method_transfer">Chuyển khoản</string>
+    <string name="rc_payment_status_confirmed">Đã xác nhận</string>
+    <string name="rc_payment_status_pending">Chờ xác nhận</string>
+    <string name="rc_payment_status_failed">Thất bại</string>
+    <string name="rc_payment_time_missing">Chưa có thời gian xác nhận</string>
+    <string name="rc_tenant_tab_home">Trang chủ</string>
+    <string name="rc_tenant_tab_room">Phòng</string>
+    <string name="rc_tenant_tab_profile">Cá nhân</string>
 </resources>

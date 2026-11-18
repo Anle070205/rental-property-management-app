@@ -36,6 +36,7 @@ class TenantInvoiceFragment : Fragment(R.layout.fragment_tenant_invoice) {
             listOf(getString(R.string.rc_invoice_all_status)) + resources.getStringArray(R.array.rc_invoice_status)
         )
         binding.filter.setOnClickListener { applyFilter() }
+        binding.history.setOnClickListener { nav.navigate(R.id.paymentHistoryFragment) }
         binding.more.setOnClickListener { viewModel.more() }
         binding.retry.setOnClickListener { viewModel.refresh() }
         binding.swipe.setOnRefreshListener { viewModel.refresh() }

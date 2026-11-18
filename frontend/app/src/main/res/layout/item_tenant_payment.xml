@@ -1,0 +1,6 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+    <TextView android:id="@+id/amount" android:layout_width="match_parent" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="20sp" android:textColor="@color/rc_primary" />
+    <TextView android:id="@+id/time" android:layout_width="match_parent" android:layout_height="wrap_content"  />
+    <TextView android:id="@+id/method" android:layout_width="match_parent" android:layout_height="wrap_content"  />
+    <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"  />
+</LinearLayout>

@@ -6,6 +6,8 @@ import com.roomcare.backend.dto.tenant.MyContractResponse;
 import com.roomcare.backend.dto.tenant.MyRoomResponse;
 import com.roomcare.backend.dto.tenant.TenantDashboardResponse;
 import com.roomcare.backend.dto.tenant.TenantInvoiceResponse;
+import com.roomcare.backend.dto.tenant.TenantPaymentInfoResponse;
+import com.roomcare.backend.dto.tenant.TenantPaymentResponse;
 import com.roomcare.backend.entity.User;
 import com.roomcare.backend.service.TenantPortalService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,20 @@ public class TenantPortalController {
                                                                      @PathVariable Long id) {
         return service.invoice(user, id).map(value -> ResponseEntity.ok(ApiResponse.success(value)))
                 .orElseGet(() -> ResponseEntity.status(404).body(ApiResponse.error("Không tìm thấy hóa đơn")));
+    }
+
+    @GetMapping("/invoices/{id}/payment-info")
+    public ResponseEntity<ApiResponse<TenantPaymentInfoResponse>> paymentInfo(
+            @AuthenticationPrincipal User user, @PathVariable Long id) {
+        return service.paymentInfo(user, id).map(value -> ResponseEntity.ok(ApiResponse.success(value)))
+                .orElseGet(() -> ResponseEntity.status(404).body(ApiResponse.error("Chưa có thông tin thanh toán")));
+    }
+
+    @GetMapping("/payments")
+    public ApiResponse<PageResponse<TenantPaymentResponse>> payments(
+            @AuthenticationPrincipal User user, @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ApiResponse.success(service.payments(user, page, size));
     }
 
     @GetMapping("/my-contract")

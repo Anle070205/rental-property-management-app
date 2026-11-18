@@ -2,6 +2,7 @@ package com.example.rental_property_management_app.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -42,6 +43,10 @@ class TenantInvoiceDetailFragment : Fragment(R.layout.fragment_tenant_invoice_de
 
     private fun display(invoice: TenantInvoice) {
         binding.sample.isVisible = Constants.USE_MOCK_TENANT_DATA
+        binding.payment.isVisible = invoice.remainingAmount.signum() > 0
+        binding.payment.setOnClickListener {
+            findNavController().navigate(R.id.qrPaymentFragment, bundleOf("invoiceId" to invoice.id))
+        }
         binding.code.text = invoice.invoiceCode
         binding.month.text = getString(R.string.rc_invoice_month, invoice.billingMonth)
         binding.status.text = resources.getStringArray(R.array.rc_invoice_status)[invoice.status.ordinal]

@@ -5,6 +5,8 @@ import com.roomcare.backend.dto.tenant.MyContractResponse;
 import com.roomcare.backend.dto.tenant.MyRoomResponse;
 import com.roomcare.backend.dto.tenant.TenantDashboardResponse;
 import com.roomcare.backend.dto.tenant.TenantInvoiceResponse;
+import com.roomcare.backend.dto.tenant.TenantPaymentInfoResponse;
+import com.roomcare.backend.dto.tenant.TenantPaymentResponse;
 import com.roomcare.backend.entity.Tenant;
 import com.roomcare.backend.entity.User;
 import com.roomcare.backend.repository.TenantRepository;
@@ -72,6 +74,26 @@ public class TenantPortalService {
     public Optional<TenantInvoiceResponse> invoice(User user, Long invoiceId) {
         Tenant tenant = tenantFor(user);
         return Optional.ofNullable(provider.getIfAvailable()).flatMap(source -> source.invoice(tenant, invoiceId));
+    }
+
+    public Optional<TenantPaymentInfoResponse> paymentInfo(User user, Long invoiceId) {
+        Tenant tenant = tenantFor(user);
+        TenantPortalProvider source = provider.getIfAvailable();
+        if (source == null) {
+            return Optional.empty();
+        }
+        return source.invoice(tenant, invoiceId)
+                .filter(invoice -> invoice.remainingAmount().signum() > 0)
+                .flatMap(invoice -> source.paymentInfo(tenant, invoiceId));
+    }
+
+    public PageResponse<TenantPaymentResponse> payments(User user, int page, int size) {
+        Tenant tenant = tenantFor(user);
+        var pageable = pageRequest(page, size);
+        TenantPortalProvider source = provider.getIfAvailable();
+        Page<TenantPaymentResponse> result = source == null ? Page.empty(pageable)
+                : source.payments(tenant, pageable);
+        return PageResponse.of(result.getContent(), page, size, result.getTotalElements(), result.getTotalPages());
     }
 
     private PageRequest pageRequest(int page, int size) {

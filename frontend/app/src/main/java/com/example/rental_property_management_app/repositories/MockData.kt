@@ -24,6 +24,20 @@ internal object MockData {
 
     fun invoice(id: Long) = invoices.find { it.id == id }
 
+    fun paymentInfo(invoiceId: Long): TenantPaymentInfo? {
+        val invoice = invoice(invoiceId)?.takeIf { it.remainingAmount.signum() > 0 } ?: return null
+        return TenantPaymentInfo("Ngân hàng minh họa", "0000000000", invoice.remainingAmount,
+            "ROOMCARE DEMO ${invoice.invoiceCode}", "RoomCare demo / ${invoice.invoiceCode}", isSample = true)
+    }
+
+    fun paymentPage(page: PageResponse<TenantPayment>): PageResponse<TenantPayment> {
+        val paid = invoices.last()
+        val payment = TenantPayment(1, paid.id, "2026-11-02T09:00:00", paid.paidAmount,
+            "BANK_TRANSFER", "CONFIRMED")
+        return if (page.page == 0) PageResponse(listOf(payment), 0, page.size, 1, 1)
+        else PageResponse(emptyList(), page.page, page.size, 1, 1)
+    }
+
     fun invoicePage(month: String?, status: TenantInvoiceStatus?, page: PageResponse<TenantInvoice>): PageResponse<TenantInvoice> {
         val matching = invoices.filter { (month == null || it.billingMonth == month) && (status == null || it.status == status) }
         val offset = (page.page.toLong() * page.size).coerceAtMost(matching.size.toLong()).toInt()

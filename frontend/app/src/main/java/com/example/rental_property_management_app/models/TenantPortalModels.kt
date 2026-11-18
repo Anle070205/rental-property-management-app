@@ -29,3 +29,13 @@ data class TenantInvoice(
     val previousDebt: BigDecimal, val discountAmount: BigDecimal, val totalAmount: BigDecimal,
     val paidAmount: BigDecimal, val remainingAmount: BigDecimal
 )
+
+data class TenantPaymentInfo(
+    val bankName: String, val accountNumber: String, val amount: BigDecimal,
+    val transferContent: String, val qrPayload: String, val isSample: Boolean = false
+)
+
+data class TenantPayment(
+    val id: Long, val invoiceId: Long, val paidAt: String?, val amount: BigDecimal,
+    val method: String, val status: String
+)

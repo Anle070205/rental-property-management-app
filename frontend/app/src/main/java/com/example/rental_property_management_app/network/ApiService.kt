@@ -8,6 +8,12 @@ import retrofit2.http.*
  * Retrofit API Service Interface
  */
 interface ApiService {
+    @GET("api/tenant/invoices/{id}/payment-info")
+    suspend fun tenantPaymentInfo(@Path("id") id: Long): Response<ApiResponse<TenantPaymentInfo>>
+
+    @GET("api/tenant/payments")
+    suspend fun tenantPayments(@Query("page") page: Int): Response<ApiResponse<PageResponse<TenantPayment>>>
+
     @GET("api/tenant/invoices")
     suspend fun tenantInvoices(
         @Query("month") month: String?, @Query("status") status: TenantInvoiceStatus?, @Query("page") page: Int

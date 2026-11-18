@@ -211,4 +211,10 @@
         android:name="com.example.rental_property_management_app.fragments.TenantInvoiceDetailFragment" android:label="@string/rc_invoice_detail">
         <argument android:name="invoiceId" app:argType="long" />
     </fragment>
+    <fragment android:id="@+id/qrPaymentFragment"
+        android:name="com.example.rental_property_management_app.fragments.QRPaymentFragment" android:label="@string/rc_payment_qr">
+        <argument android:name="invoiceId" app:argType="long" />
+    </fragment>
+    <fragment android:id="@+id/paymentHistoryFragment"
+        android:name="com.example.rental_property_management_app.fragments.PaymentHistoryFragment" android:label="@string/rc_payment_history" />
 </navigation>

@@ -1,0 +1,862 @@
+{
+  "info": {
+    "name": "RoomCare TV3",
+    "description": "API Hồ sơ, Thông báo, Báo sự cố và cổng người thuê. Ví dụ B phản ánh backend khi chưa có provider TV1/TV2. API mock chỉ có trong Android.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "incident_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "notification_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "contract_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "invoice_id",
+      "value": "101",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Tài khoản dev",
+      "item": [
+        {
+          "name": "Đăng nhập TENANT",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emailOrPhone\": \"tenant1@example.com\",\n  \"password\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{base_url}}/api/auth/login",
+                "auth": {
+                  "type": "noauth"
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"emailOrPhone\": \"tenant1@example.com\",\n  \"password\": \"123456\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Đăng nhập thành công\",\n  \"data\": {\n    \"accessToken\": \"<jwt>\",\n    \"tokenType\": \"Bearer\",\n    \"userId\": 1,\n    \"fullName\": \"Tài khoản dev\",\n    \"email\": \"tenant1@example.com\",\n    \"role\": \"TENANT\"\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.collectionVariables.set('token', pm.response.json().data.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Đăng nhập LANDLORD",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emailOrPhone\": \"landlord1@example.com\",\n  \"password\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{base_url}}/api/auth/login",
+                "auth": {
+                  "type": "noauth"
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"emailOrPhone\": \"landlord1@example.com\",\n  \"password\": \"123456\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Đăng nhập thành công\",\n  \"data\": {\n    \"accessToken\": \"<jwt>\",\n    \"tokenType\": \"Bearer\",\n    \"userId\": 1,\n    \"fullName\": \"Tài khoản dev\",\n    \"email\": \"landlord1@example.com\",\n    \"role\": \"LANDLORD\"\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.collectionVariables.set('token', pm.response.json().data.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "A1 · Hồ sơ",
+      "item": [
+        {
+          "name": "Xem hồ sơ",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/users/me"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/users/me"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"fullName\": \"Lê Văn C\",\n    \"email\": \"tenant1@example.com\",\n    \"phone\": \"0923456789\",\n    \"role\": \"TENANT\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cập nhật hồ sơ",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/me",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Lê Văn C\",\n  \"phone\": \"0923456789\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{base_url}}/api/users/me",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"Lê Văn C\",\n  \"phone\": \"0923456789\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"fullName\": \"Lê Văn C\",\n    \"email\": \"tenant1@example.com\",\n    \"phone\": \"0923456789\",\n    \"role\": \"TENANT\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Đổi mật khẩu",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/me/password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"123456\",\n  \"newPassword\": \"roomcare-demo-2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{base_url}}/api/users/me/password",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"123456\",\n  \"newPassword\": \"roomcare-demo-2026\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Đã đổi mật khẩu\",\n  \"data\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "A2 · Thông báo",
+      "item": [
+        {
+          "name": "Danh sách thông báo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/notifications?type=INCIDENT&unreadOnly=true&page=0&size=20"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/notifications?type=INCIDENT&unreadOnly=true&page=0&size=20"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"content\": [\n      {\n        \"id\": 1,\n        \"type\": \"INCIDENT\",\n        \"title\": \"Đã tiếp nhận sự cố\",\n        \"content\": \"Chủ nhà đã nhận báo cáo về vòi nước.\",\n        \"refId\": 1,\n        \"isRead\": false,\n        \"createdAt\": \"2026-11-18T10:05:00\"\n      }\n    ],\n    \"page\": 0,\n    \"size\": 20,\n    \"totalElements\": 1,\n    \"totalPages\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Đánh dấu đã đọc",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{base_url}}/api/notifications/{{notification_id}}/read"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "url": "{{base_url}}/api/notifications/{{notification_id}}/read"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Đã đọc thông báo\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Đọc tất cả",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{base_url}}/api/notifications/read-all"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "url": "{{base_url}}/api/notifications/read-all"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Đã đọc tất cả thông báo\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Đếm chưa đọc",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/notifications/unread-count"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/notifications/unread-count"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": 1\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "A3 · Báo sự cố",
+      "item": [
+        {
+          "name": "Danh sách sự cố",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/tenant/incidents?status=RECEIVED&page=0&size=20"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/tenant/incidents?status=RECEIVED&page=0&size=20"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"content\": [\n      {\n        \"id\": 1,\n        \"roomId\": null,\n        \"type\": \"WATER\",\n        \"title\": \"Vòi nước bị rò rỉ\",\n        \"description\": \"Vòi nước ở bồn rửa bị nhỏ giọt liên tục.\",\n        \"priority\": \"MEDIUM\",\n        \"status\": \"RECEIVED\",\n        \"imageUrl\": null,\n        \"landlordResponse\": null,\n        \"createdAt\": \"2026-11-18T10:05:00\",\n        \"updatedAt\": \"2026-11-18T10:05:00\"\n      }\n    ],\n    \"page\": 0,\n    \"size\": 20,\n    \"totalElements\": 1,\n    \"totalPages\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Tạo sự cố",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/tenant/incidents",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"WATER\",\n  \"title\": \"Vòi nước bị rò rỉ\",\n  \"description\": \"Vòi nước ở bồn rửa bị nhỏ giọt liên tục.\",\n  \"priority\": \"MEDIUM\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{base_url}}/api/tenant/incidents",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"WATER\",\n  \"title\": \"Vòi nước bị rò rỉ\",\n  \"description\": \"Vòi nước ở bồn rửa bị nhỏ giọt liên tục.\",\n  \"priority\": \"MEDIUM\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"id\": 1,\n    \"roomId\": null,\n    \"type\": \"WATER\",\n    \"title\": \"Vòi nước bị rò rỉ\",\n    \"description\": \"Vòi nước ở bồn rửa bị nhỏ giọt liên tục.\",\n    \"priority\": \"MEDIUM\",\n    \"status\": \"RECEIVED\",\n    \"imageUrl\": null,\n    \"landlordResponse\": null,\n    \"createdAt\": \"2026-11-18T10:05:00\",\n    \"updatedAt\": \"2026-11-18T10:05:00\"\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.collectionVariables.set('incident_id', pm.response.json().data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chi tiết sự cố",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/tenant/incidents/{{incident_id}}"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/tenant/incidents/{{incident_id}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"id\": 1,\n    \"roomId\": null,\n    \"type\": \"WATER\",\n    \"title\": \"Vòi nước bị rò rỉ\",\n    \"description\": \"Vòi nước ở bồn rửa bị nhỏ giọt liên tục.\",\n    \"priority\": \"MEDIUM\",\n    \"status\": \"RECEIVED\",\n    \"imageUrl\": null,\n    \"landlordResponse\": null,\n    \"createdAt\": \"2026-11-18T10:05:00\",\n    \"updatedAt\": \"2026-11-18T10:05:00\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Bổ sung sự cố",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/tenant/incidents/{{incident_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Rò rỉ mạnh hơn vào buổi tối.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{base_url}}/api/tenant/incidents/{{incident_id}}",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"description\": \"Rò rỉ mạnh hơn vào buổi tối.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"id\": 1,\n    \"roomId\": null,\n    \"type\": \"WATER\",\n    \"title\": \"Vòi nước bị rò rỉ\",\n    \"description\": \"Vòi nước ở bồn rửa bị nhỏ giọt liên tục.\\n\\nRò rỉ mạnh hơn vào buổi tối.\",\n    \"priority\": \"MEDIUM\",\n    \"status\": \"RECEIVED\",\n    \"imageUrl\": null,\n    \"landlordResponse\": null,\n    \"createdAt\": \"2026-11-18T10:05:00\",\n    \"updatedAt\": \"2026-11-18T10:05:00\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "B · Cổng người thuê",
+      "item": [
+        {
+          "name": "Trang chủ",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/tenant/dashboard"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/tenant/dashboard"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"fullName\": \"Lê Văn C\",\n    \"roomCode\": null,\n    \"amountDue\": null,\n    \"dueDate\": null,\n    \"unreadCount\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Phòng đang thuê",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/tenant/my-room"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/tenant/my-room"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"roomCode\": null,\n    \"address\": null,\n    \"rentPrice\": null,\n    \"amenities\": [],\n    \"landlordName\": null,\n    \"landlordPhone\": null\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Hợp đồng",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/tenant/my-contract"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/tenant/my-contract"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"id\": null,\n    \"status\": null,\n    \"startDate\": null,\n    \"endDate\": null,\n    \"rentPrice\": null,\n    \"deposit\": null,\n    \"terms\": null\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Yêu cầu gia hạn",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/tenant/contracts/{{contract_id}}/renewal-requests"
+          },
+          "response": [
+            {
+              "name": "Chưa tích hợp hoặc không tìm thấy",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": "{{base_url}}/api/tenant/contracts/{{contract_id}}/renewal-requests"
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Chưa có hợp đồng có thể gia hạn\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Danh sách hóa đơn",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/tenant/invoices?month=2026-11&status=UNPAID&page=0&size=20"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/tenant/invoices?month=2026-11&status=UNPAID&page=0&size=20"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"content\": [],\n    \"page\": 0,\n    \"size\": 20,\n    \"totalElements\": 0,\n    \"totalPages\": 0\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Chi tiết hóa đơn",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/tenant/invoices/{{invoice_id}}"
+          },
+          "response": [
+            {
+              "name": "Chưa tích hợp hoặc không tìm thấy",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/tenant/invoices/{{invoice_id}}"
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Không tìm thấy hóa đơn\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Thông tin chuyển khoản",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/tenant/invoices/{{invoice_id}}/payment-info"
+          },
+          "response": [
+            {
+              "name": "Chưa tích hợp hoặc không tìm thấy",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/tenant/invoices/{{invoice_id}}/payment-info"
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Chưa có thông tin thanh toán\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Lịch sử thanh toán",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/tenant/payments?page=0&size=20"
+          },
+          "response": [
+            {
+              "name": "Thành công",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/tenant/payments?page=0&size=20"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Success\",\n  \"data\": {\n    \"content\": [],\n    \"page\": 0,\n    \"size\": 20,\n    \"totalElements\": 0,\n    \"totalPages\": 0\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -26,6 +26,21 @@ class TenantPortalRepository {
         }
     }) { it.data }
 
+    suspend fun paymentInfo(invoiceId: Long) = apiResult({
+        val response = api.tenantPaymentInfo(invoiceId)
+        val sample = if (Constants.USE_MOCK_TENANT_DATA && response.code() == 404) MockData.paymentInfo(invoiceId) else null
+        if (sample == null) response else {
+            response.errorBody()?.close()
+            Response.success(ApiResponse(true, "", sample))
+        }
+    }) { it.data }
+
+    suspend fun payments(page: Int) = apiResult({ api.tenantPayments(page) }) { response ->
+        response.data?.let {
+            if (Constants.USE_MOCK_TENANT_DATA && it.totalElements == 0L) MockData.paymentPage(it) else it
+        }
+    }
+
     suspend fun contract() = apiResult({ api.myContract() }) { response ->
         response.data?.let { if (Constants.USE_MOCK_TENANT_DATA && it.id == null) MockData.contract else it }
     }

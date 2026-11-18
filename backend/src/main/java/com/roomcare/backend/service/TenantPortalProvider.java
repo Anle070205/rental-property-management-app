@@ -3,6 +3,8 @@ package com.roomcare.backend.service;
 import com.roomcare.backend.dto.tenant.MyContractResponse;
 import com.roomcare.backend.dto.tenant.MyRoomResponse;
 import com.roomcare.backend.dto.tenant.TenantInvoiceResponse;
+import com.roomcare.backend.dto.tenant.TenantPaymentInfoResponse;
+import com.roomcare.backend.dto.tenant.TenantPaymentResponse;
 import com.roomcare.backend.entity.Tenant;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -37,6 +39,15 @@ public interface TenantPortalProvider {
 
     default Optional<TenantInvoiceResponse> invoice(Tenant tenant, Long invoiceId) {
         return Optional.empty();
+    }
+
+    /** Supply the bank's transfer QR payload for an unpaid invoice owned by the tenant. */
+    default Optional<TenantPaymentInfoResponse> paymentInfo(Tenant tenant, Long invoiceId) {
+        return Optional.empty();
+    }
+
+    default Page<TenantPaymentResponse> payments(Tenant tenant, Pageable pageable) {
+        return Page.empty(pageable);
     }
 
     default Optional<AmountDue> amountDue(Tenant tenant) {
