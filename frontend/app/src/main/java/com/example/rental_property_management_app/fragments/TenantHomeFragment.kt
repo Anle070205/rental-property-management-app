@@ -25,6 +25,7 @@ class TenantHomeFragment : Fragment(R.layout.fragment_tenant_home) {
         _binding = FragmentTenantHomeBinding.bind(view)
         val nav = findNavController()
         binding.room.setOnClickListener { nav.navigate(R.id.action_tenantHome_to_room) }
+        binding.contract.setOnClickListener { nav.navigate(R.id.action_tenantHome_to_contract) }
         binding.profile.setOnClickListener { nav.navigate(R.id.profileFragment) }
         binding.notifications.setOnClickListener { nav.navigate(R.id.notificationFragment) }
         binding.incidents.setOnClickListener { nav.navigate(R.id.incidentListFragment) }

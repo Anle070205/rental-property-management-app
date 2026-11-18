@@ -231,4 +231,19 @@
     <string name="rc_room_landlord">Liên hệ chủ nhà: %1$s</string>
     <string name="rc_call_landlord">Gọi chủ nhà</string>
     <string name="rc_dial_unavailable">Thiết bị không có ứng dụng gọi điện</string>
+    <string name="rc_my_contract">Hợp đồng của tôi</string>
+    <string name="rc_no_contract">Chưa có hợp đồng</string>
+    <string name="rc_contract_active">Đang hiệu lực</string>
+    <string name="rc_contract_expired">Hết hạn</string>
+    <string name="rc_contract_terminated">Đã chấm dứt</string>
+    <string name="rc_contract_pending">Chờ xác nhận</string>
+    <string name="rc_contract_status">Trạng thái: %1$s</string>
+    <string name="rc_contract_start">Ngày bắt đầu: %1$s</string>
+    <string name="rc_contract_end">Ngày kết thúc: %1$s</string>
+    <string name="rc_contract_deposit">Tiền cọc: %1$s</string>
+    <string name="rc_contract_terms">Điều khoản</string>
+    <string name="rc_contract_renew">Yêu cầu gia hạn</string>
+    <string name="rc_contract_confirm_renew">Gửi yêu cầu gia hạn hợp đồng này cho chủ nhà?</string>
+    <string name="rc_contract_renew_sent">Đã gửi yêu cầu gia hạn</string>
+    <string name="rc_tenant_portal_sample">Dữ liệu minh họa</string>
 </resources>

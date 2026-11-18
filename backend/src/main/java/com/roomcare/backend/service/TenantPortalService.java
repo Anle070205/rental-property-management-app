@@ -1,5 +1,6 @@
 package com.roomcare.backend.service;
 
+import com.roomcare.backend.dto.tenant.MyContractResponse;
 import com.roomcare.backend.dto.tenant.MyRoomResponse;
 import com.roomcare.backend.dto.tenant.TenantDashboardResponse;
 import com.roomcare.backend.entity.Tenant;
@@ -32,6 +33,19 @@ public class TenantPortalService {
         Tenant tenant = tenantFor(user);
         TenantPortalProvider source = provider.getIfAvailable();
         return source == null ? MyRoomResponse.empty() : source.room(tenant).orElseGet(MyRoomResponse::empty);
+    }
+
+    public MyContractResponse contract(User user) {
+        Tenant tenant = tenantFor(user);
+        TenantPortalProvider source = provider.getIfAvailable();
+        return source == null ? MyContractResponse.empty() : source.contract(tenant).orElseGet(MyContractResponse::empty);
+    }
+
+    @Transactional
+    public boolean requestRenewal(User user, Long contractId) {
+        Tenant tenant = tenantFor(user);
+        TenantPortalProvider source = provider.getIfAvailable();
+        return source != null && source.requestRenewal(tenant, contractId);
     }
 
     private Tenant tenantFor(User user) {

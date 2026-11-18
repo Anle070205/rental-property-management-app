@@ -8,6 +8,12 @@ import retrofit2.http.*
  * Retrofit API Service Interface
  */
 interface ApiService {
+    @GET("api/tenant/my-contract")
+    suspend fun myContract(): Response<ApiResponse<MyContract>>
+
+    @POST("api/tenant/contracts/{id}/renewal-requests")
+    suspend fun requestContractRenewal(@Path("id") id: Long): Response<ApiResponse<Unit>>
+
     @GET("api/tenant/my-room")
     suspend fun myRoom(): Response<ApiResponse<MyRoom>>
 

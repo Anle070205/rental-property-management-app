@@ -14,3 +14,8 @@ data class MyRoom(
     val roomCode: String?, val address: String?, val rentPrice: BigDecimal?,
     val amenities: List<String>, val landlordName: String?, val landlordPhone: String?
 )
+
+data class MyContract(
+    val id: Long?, val status: String?, val startDate: String?, val endDate: String?,
+    val rentPrice: BigDecimal?, val deposit: BigDecimal?, val terms: String?
+)

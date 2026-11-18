@@ -171,6 +171,7 @@
         android:label="Dashboard - Người thuê">
         <action android:id="@+id/action_tenantHome_to_incidents" app:destination="@id/incidentListFragment" />
         <action android:id="@+id/action_tenantHome_to_room" app:destination="@id/myRoomFragment" />
+        <action android:id="@+id/action_tenantHome_to_contract" app:destination="@id/myContractFragment" />
     </fragment>
 
     <fragment
@@ -201,4 +202,6 @@
     </fragment>
     <fragment android:id="@+id/myRoomFragment"
         android:name="com.example.rental_property_management_app.fragments.MyRoomFragment" android:label="@string/rc_my_room" />
+    <fragment android:id="@+id/myContractFragment"
+        android:name="com.example.rental_property_management_app.fragments.MyContractFragment" android:label="@string/rc_my_contract" />
 </navigation>
