@@ -19,3 +19,13 @@ data class MyContract(
     val id: Long?, val status: String?, val startDate: String?, val endDate: String?,
     val rentPrice: BigDecimal?, val deposit: BigDecimal?, val terms: String?
 )
+
+enum class TenantInvoiceStatus { UNPAID, PARTIALLY_PAID, PAID, OVERDUE }
+
+data class TenantInvoice(
+    val id: Long, val invoiceCode: String, val billingMonth: String, val status: TenantInvoiceStatus,
+    val dueDate: String?, val roomRent: BigDecimal, val electricityAmount: BigDecimal, val waterAmount: BigDecimal,
+    val internetAmount: BigDecimal, val serviceAmount: BigDecimal, val otherFees: BigDecimal,
+    val previousDebt: BigDecimal, val discountAmount: BigDecimal, val totalAmount: BigDecimal,
+    val paidAmount: BigDecimal, val remainingAmount: BigDecimal
+)

@@ -246,4 +246,30 @@
     <string name="rc_contract_confirm_renew">Gửi yêu cầu gia hạn hợp đồng này cho chủ nhà?</string>
     <string name="rc_contract_renew_sent">Đã gửi yêu cầu gia hạn</string>
     <string name="rc_tenant_portal_sample">Dữ liệu minh họa</string>
+    <string name="rc_tenant_invoices">Hóa đơn</string>
+    <string name="rc_invoice_detail">Chi tiết hóa đơn</string>
+    <string name="rc_invoice_month_hint">Tháng (YYYY-MM)</string>
+    <string name="rc_invoice_month_error">Nhập tháng theo định dạng YYYY-MM</string>
+    <string name="rc_invoice_all_status">Tất cả trạng thái</string>
+    <string name="rc_invoice_filter">Lọc</string>
+    <string name="rc_invoice_empty">Chưa có hóa đơn</string>
+    <string name="rc_invoice_month">Kỳ hóa đơn: %1$s</string>
+    <string name="rc_invoice_charge">%1$s: %2$s</string>
+    <string name="rc_invoice_rent">Tiền phòng</string>
+    <string name="rc_invoice_electricity">Điện</string>
+    <string name="rc_invoice_water">Nước</string>
+    <string name="rc_invoice_internet">Internet</string>
+    <string name="rc_invoice_service">Dịch vụ</string>
+    <string name="rc_invoice_other">Phát sinh</string>
+    <string name="rc_invoice_previous_debt">Nợ cũ</string>
+    <string name="rc_invoice_discount">Giảm trừ</string>
+    <string name="rc_invoice_total">Tổng cộng</string>
+    <string name="rc_invoice_paid">Đã thanh toán</string>
+    <string name="rc_invoice_remaining">Còn phải trả</string>
+    <string-array name="rc_invoice_status">
+        <item>Chưa thanh toán</item>
+        <item>Thanh toán một phần</item>
+        <item>Đã thanh toán</item>
+        <item>Quá hạn</item>
+    </string-array>
 </resources>

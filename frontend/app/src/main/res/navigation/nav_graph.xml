@@ -172,6 +172,7 @@
         <action android:id="@+id/action_tenantHome_to_incidents" app:destination="@id/incidentListFragment" />
         <action android:id="@+id/action_tenantHome_to_room" app:destination="@id/myRoomFragment" />
         <action android:id="@+id/action_tenantHome_to_contract" app:destination="@id/myContractFragment" />
+        <action android:id="@+id/action_tenantHome_to_invoices" app:destination="@id/tenantInvoiceFragment" />
     </fragment>
 
     <fragment
@@ -204,4 +205,10 @@
         android:name="com.example.rental_property_management_app.fragments.MyRoomFragment" android:label="@string/rc_my_room" />
     <fragment android:id="@+id/myContractFragment"
         android:name="com.example.rental_property_management_app.fragments.MyContractFragment" android:label="@string/rc_my_contract" />
+    <fragment android:id="@+id/tenantInvoiceFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantInvoiceFragment" android:label="@string/rc_tenant_invoices" />
+    <fragment android:id="@+id/tenantInvoiceDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantInvoiceDetailFragment" android:label="@string/rc_invoice_detail">
+        <argument android:name="invoiceId" app:argType="long" />
+    </fragment>
 </navigation>
