@@ -1,6 +1,8 @@
 package com.roomcare.backend.config;
 
 import com.roomcare.backend.security.JwtAuthenticationFilter;
+import com.roomcare.backend.dto.ApiResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,6 +45,11 @@ public class SecurityConfig {
                 // Authenticated requests
                 .anyRequest().authenticated()
             )
+            .exceptionHandling(errors -> errors.authenticationEntryPoint((request, response, exception) -> {
+                response.setStatus(401);
+                response.setContentType("application/json");
+                objectMapper.writeValue(response.getOutputStream(), ApiResponse.error("Vui lòng đăng nhập lại"));
+            }))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
