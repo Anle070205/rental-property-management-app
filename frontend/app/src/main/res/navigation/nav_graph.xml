@@ -76,7 +76,24 @@
         <action
             android:id="@+id/action_landlordDashboard_to_tenantList"
             app:destination="@id/tenantListFragment" />
+        <action
+            android:id="@+id/action_landlordDashboard_to_invoiceFragment"
+            app:destination="@id/invoiceFragment" />
+        <action
+            android:id="@+id/action_landlordDashboard_to_utilityFragment"
+            app:destination="@id/utilityFragment" />
+        <action
+            android:id="@+id/action_landlordDashboard_to_debtFragment"
+            app:destination="@id/debtFragment" />
+        <action
+            android:id="@+id/action_landlordDashboard_to_healthScoreFragment"
+            app:destination="@id/healthScoreFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/landlordHomeFragment"
+        android:name="com.example.rental_property_management_app.fragments.LandlordHomeFragment"
+        android:label="@string/dashboard_home_title" />
 
     <!-- Phase 2: Room Management -->
     <fragment
@@ -170,6 +187,52 @@
         android:name="com.example.rental_property_management_app.fragments.TenantDashboardFragment"
         android:label="Dashboard - Người thuê">
         <!-- TODO: Add actions to other tenant screens in future phases -->
+    </fragment>
+
+    <!-- Phase 4: Member 2 - Finance, Utilities, Debt & Health Score -->
+    <fragment
+        android:id="@+id/invoiceFragment"
+        android:name="com.example.rental_property_management_app.fragments.InvoiceFragment"
+        android:label="@string/invoice_management">
+        <action
+            android:id="@+id/action_invoiceFragment_to_invoiceDetailFragment"
+            app:destination="@id/invoiceDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/invoiceDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.InvoiceDetailFragment"
+        android:label="@string/invoice_detail">
+        <argument
+            android:name="invoiceId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/utilityFragment"
+        android:name="com.example.rental_property_management_app.fragments.UtilityFragment"
+        android:label="@string/utility_management" />
+
+    <fragment
+        android:id="@+id/debtFragment"
+        android:name="com.example.rental_property_management_app.fragments.DebtFragment"
+        android:label="@string/debt_management">
+        <action
+            android:id="@+id/action_debtFragment_to_invoiceDetailFragment"
+            app:destination="@id/invoiceDetailFragment" />
+        <action
+            android:id="@+id/action_debtFragment_to_tenantDetailFragment"
+            app:destination="@id/tenantDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/healthScoreFragment"
+        android:name="com.example.rental_property_management_app.fragments.HealthScoreFragment"
+        android:label="@string/health_score_title">
+        <argument
+            android:name="roomId"
+            android:defaultValue="0L"
+            app:argType="long" />
     </fragment>
 
 </navigation>

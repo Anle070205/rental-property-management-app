@@ -87,7 +87,7 @@ class TenantListFragment : Fragment() {
                         binding.swipeRefresh.isRefreshing = false
                         hideAllStates()
                         
-                        val tenants = resource.data.content
+                        val tenants = resource.data?.content ?: emptyList()
                         if (tenants.isEmpty()) {
                             showEmptyState()
                         } else {

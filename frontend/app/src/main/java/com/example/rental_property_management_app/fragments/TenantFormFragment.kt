@@ -31,9 +31,9 @@ class TenantFormFragment : Fragment() {
     private val viewModel: TenantViewModel by viewModels()
     private val args: TenantFormFragmentArgs by navArgs()
 
-    private var selectedRoomId: Long? = null
+    private var selectedPropertyId: Long? = null
     private var isEditMode = false
-    private var selectedMoveInDate: Date? = null
+    private var selectedDateOfBirth: Date? = null
 
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
@@ -61,12 +61,7 @@ class TenantFormFragment : Fragment() {
         } else {
             isEditMode = false
             binding.toolbar.title = getString(R.string.add_tenant)
-            selectedRoomId = args.roomId.takeIf { it != 0L }
-            
-            if (selectedRoomId == null) {
-                // Room selection required - navigate to room selection
-                Snackbar.make(binding.root, getString(R.string.error_select_room), Snackbar.LENGTH_LONG).show()
-            }
+            selectedPropertyId = args.roomId.takeIf { it != 0L } ?: 1L
         }
     }
 
@@ -94,13 +89,13 @@ class TenantFormFragment : Fragment() {
 
     private fun showDatePicker() {
         val datePicker = MaterialDatePicker.Builder.datePicker()
-            .setTitleText(getString(R.string.select_move_in_date))
-            .setSelection(selectedMoveInDate?.time ?: MaterialDatePicker.todayInUtcMilliseconds())
+            .setTitleText("Chọn ngày sinh")
+            .setSelection(selectedDateOfBirth?.time ?: MaterialDatePicker.todayInUtcMilliseconds())
             .build()
 
         datePicker.addOnPositiveButtonClickListener { selection ->
-            selectedMoveInDate = Date(selection)
-            binding.etMoveInDate.setText(dateFormat.format(selectedMoveInDate!!))
+            selectedDateOfBirth = Date(selection)
+            binding.etMoveInDate.setText(dateFormat.format(selectedDateOfBirth!!))
         }
 
         datePicker.show(parentFragmentManager, "DATE_PICKER")
@@ -152,33 +147,32 @@ class TenantFormFragment : Fragment() {
     }
 
     private fun populateForm(tenant: com.example.rental_property_management_app.models.TenantResponse) {
-        selectedRoomId = tenant.roomId
+        selectedPropertyId = tenant.propertyId
 
         binding.etFullName.setText(tenant.fullName)
         binding.etPhone.setText(tenant.phone)
         binding.etEmail.setText(tenant.email)
-        binding.etIdCard.setText(tenant.idCard)
+        binding.etIdCard.setText(tenant.identityNumber)
 
-        // Parse and display move-in date
-        tenant.moveInDate?.let { dateStr ->
+        tenant.dateOfBirth?.let { dateStr ->
             try {
-                selectedMoveInDate = DateUtils.parseDate(dateStr)
-                binding.etMoveInDate.setText(dateFormat.format(selectedMoveInDate!!))
-            } catch (e: Exception) {
-                // Handle parse error
+                selectedDateOfBirth = DateUtils.parseApiDate(dateStr)
+                selectedDateOfBirth?.let {
+                    binding.etMoveInDate.setText(dateFormat.format(it))
+                }
+            } catch (_: Exception) {
             }
         }
 
         binding.etEmergencyContact.setText(tenant.emergencyContact)
-        binding.etNotes.setText(tenant.notes)
+        binding.etNotes.setText(tenant.address)
     }
 
     private fun validateForm(): Boolean {
         var isValid = true
 
-        // Validate room selection
-        if (selectedRoomId == null) {
-            showError(getString(R.string.error_select_room))
+        if (selectedPropertyId == null) {
+            showError(getString(R.string.error_select_property))
             return false
         }
 
@@ -221,9 +215,9 @@ class TenantFormFragment : Fragment() {
             binding.tilIdCard.error = null
         }
 
-        // Validate move-in date
-        if (selectedMoveInDate == null) {
-            binding.tilMoveInDate.error = getString(R.string.error_move_in_date_required)
+        // Validate date of birth
+        if (selectedDateOfBirth == null) {
+            binding.tilMoveInDate.error = "Vui lòng chọn ngày sinh"
             isValid = false
         } else {
             binding.tilMoveInDate.error = null
@@ -234,14 +228,14 @@ class TenantFormFragment : Fragment() {
 
     private fun createTenant() {
         val request = CreateTenantRequest(
-            roomId = selectedRoomId!!,
+            propertyId = selectedPropertyId!!,
             fullName = binding.etFullName.text.toString().trim(),
             phone = binding.etPhone.text.toString().trim(),
             email = binding.etEmail.text.toString().trim().ifEmpty { null },
-            idCard = binding.etIdCard.text.toString().trim(),
-            moveInDate = DateUtils.formatDate(selectedMoveInDate!!),
-            emergencyContact = binding.etEmergencyContact.text.toString().trim().ifEmpty { null },
-            notes = binding.etNotes.text.toString().trim().ifEmpty { null }
+            identityNumber = binding.etIdCard.text.toString().trim(),
+            dateOfBirth = selectedDateOfBirth?.let { DateUtils.formatToApiDate(it) },
+            address = binding.etNotes.text.toString().trim().ifEmpty { null },
+            emergencyContact = binding.etEmergencyContact.text.toString().trim().ifEmpty { null }
         )
 
         viewModel.createTenant(request)
@@ -252,10 +246,10 @@ class TenantFormFragment : Fragment() {
             fullName = binding.etFullName.text.toString().trim(),
             phone = binding.etPhone.text.toString().trim(),
             email = binding.etEmail.text.toString().trim().ifEmpty { null },
-            idCard = binding.etIdCard.text.toString().trim(),
-            moveInDate = DateUtils.formatDate(selectedMoveInDate!!),
-            emergencyContact = binding.etEmergencyContact.text.toString().trim().ifEmpty { null },
-            notes = binding.etNotes.text.toString().trim().ifEmpty { null }
+            identityNumber = binding.etIdCard.text.toString().trim(),
+            dateOfBirth = selectedDateOfBirth?.let { DateUtils.formatToApiDate(it) },
+            address = binding.etNotes.text.toString().trim().ifEmpty { null },
+            emergencyContact = binding.etEmergencyContact.text.toString().trim().ifEmpty { null }
         )
 
         viewModel.updateTenant(args.tenantId, request)

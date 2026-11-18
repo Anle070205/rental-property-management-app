@@ -141,4 +141,100 @@ interface ApiService {
     suspend fun deleteTenant(
         @Path("id") id: Long
     ): Response<ApiResponse<Unit>>
+
+    // ============================================
+    // PHASE 4 - INVOICE APIs (GĐ4.1)
+    // ============================================
+    @GET("api/landlord/invoices")
+    suspend fun getInvoices(
+        @Query("month") month: String? = null,
+        @Query("roomId") roomId: Long? = null,
+        @Query("propertyId") propertyId: Long? = null,
+        @Query("status") status: String? = null
+    ): Response<ApiResponse<List<InvoiceResponse>>>
+
+    @POST("api/landlord/invoices")
+    suspend fun createInvoice(
+        @Body request: CreateInvoiceRequest
+    ): Response<ApiResponse<InvoiceResponse>>
+
+    @POST("api/landlord/invoices/batch")
+    suspend fun batchCreateInvoices(
+        @Body request: BatchCreateInvoiceRequest
+    ): Response<ApiResponse<BatchCreateInvoiceResult>>
+
+    @GET("api/landlord/invoices/{id}")
+    suspend fun getInvoiceById(
+        @Path("id") id: Long
+    ): Response<ApiResponse<InvoiceResponse>>
+
+    @POST("api/landlord/invoices/{id}/payments")
+    suspend fun recordPayment(
+        @Path("id") id: Long,
+        @Body request: CreatePaymentRequest
+    ): Response<ApiResponse<InvoiceResponse>>
+
+    // ============================================
+    // PHASE 4 - UTILITY APIs (GĐ4.2)
+    // ============================================
+    @GET("api/landlord/utilities")
+    suspend fun getUtilities(
+        @Query("month") month: String? = null,
+        @Query("roomId") roomId: Long? = null,
+        @Query("propertyId") propertyId: Long? = null
+    ): Response<ApiResponse<List<UtilityRecordResponse>>>
+
+    @GET("api/landlord/utilities/previous-index")
+    suspend fun getPreviousUtilityIndex(
+        @Query("roomId") roomId: Long,
+        @Query("month") month: String? = null
+    ): Response<ApiResponse<PreviousUtilityIndexResponse>>
+
+    @POST("api/landlord/utilities")
+    suspend fun createUtility(
+        @Body request: CreateUtilityRequest
+    ): Response<ApiResponse<UtilityRecordResponse>>
+
+    @PUT("api/landlord/utilities/{id}")
+    suspend fun updateUtility(
+        @Path("id") id: Long,
+        @Body request: UpdateUtilityRequest
+    ): Response<ApiResponse<UtilityRecordResponse>>
+
+    // ============================================
+    // PHASE 4 - DEBT APIs (GĐ4.4)
+    // ============================================
+    @GET("api/landlord/debts")
+    suspend fun getDebts(
+        @Query("roomId") roomId: Long? = null,
+        @Query("tenantId") tenantId: Long? = null,
+        @Query("month") month: String? = null,
+        @Query("overdueLevel") overdueLevel: String? = null,
+        @Query("keyword") keyword: String? = null
+    ): Response<ApiResponse<DebtSummaryResponse>>
+
+    @GET("api/landlord/debts/{tenantId}")
+    suspend fun getTenantDebtDetail(
+        @Path("tenantId") tenantId: Long
+    ): Response<ApiResponse<RoomTenantDebtResponse>>
+
+    // ============================================
+    // PHASE 4 - HEALTH SCORE APIs (GĐ4.5)
+    // ============================================
+    @GET("api/landlord/health-scores")
+    suspend fun getHealthScores(
+        @Query("ratingLevel") ratingLevel: String? = null,
+        @Query("propertyId") propertyId: Long? = null
+    ): Response<ApiResponse<HealthScoreOverviewResponse>>
+
+    @GET("api/landlord/rooms/{id}/health-score")
+    suspend fun getRoomHealthScore(
+        @Path("id") roomId: Long
+    ): Response<ApiResponse<RoomHealthScoreResponse>>
+
+    // ============================================
+    // PHASE 4 - DASHBOARD API (GĐ4.6)
+    // ============================================
+    @GET("api/landlord/dashboard")
+    suspend fun getLandlordDashboard(): Response<ApiResponse<LandlordDashboardResponse>>
 }
