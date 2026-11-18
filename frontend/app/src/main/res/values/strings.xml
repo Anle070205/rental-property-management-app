@@ -165,4 +165,10 @@
     <string name="utility_empty">Chưa có bản ghi điện nước</string>
     <string name="utility_save">Lưu chỉ số kỳ này</string>
     <string name="utility_update">Cập nhật bản ghi</string>
+
+    <!-- GĐ4.3: Invoice Detail & Payment -->
+    <string name="invoice_detail">Chi tiết hóa đơn</string>
+    <string name="record_payment">Xác nhận ghi nhận thanh toán</string>
+    <string name="payment_history">Lịch sử thanh toán &amp; biên nhận</string>
+    <string name="no_payments">Chưa có giao dịch thanh toán nào</string>
 </resources>
