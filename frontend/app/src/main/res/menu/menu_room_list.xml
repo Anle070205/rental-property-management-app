@@ -4,14 +4,14 @@
 
     <item
         android:id="@+id/action_filter"
+        android:icon="@drawable/ic_search"
         android:title="Lọc"
-        android:icon="@android:drawable/ic_menu_search"
+        app:iconTint="@color/rc_ink"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_refresh"
         android:title="Làm mới"
-        android:icon="@android:drawable/ic_menu_rotate"
         app:showAsAction="never" />
 
 </menu>

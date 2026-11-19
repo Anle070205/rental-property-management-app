@@ -2,102 +2,126 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/RoomCare.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="5dp"
+    android:clickable="true"
+    android:focusable="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:padding="14dp">
 
-        <!-- Tenant Name -->
-        <TextView
-            android:id="@+id/tvTenantName"
-            android:layout_width="0dp"
+        <!-- Figma 6:21708 Tenant Item -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:ellipsize="end"
-            android:maxLines="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Nguyễn Văn A" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <!-- Phone -->
-        <TextView
-            android:id="@+id/tvPhone"
-            android:layout_width="wrap_content"
+            <FrameLayout
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/rc_badge">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_person"
+                    app:tint="@color/rc_brand" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTenantName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="Phạm Gia Bảo" />
+
+                <TextView
+                    android:id="@+id/tvPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="13sp"
+                    tools:text="0938 456 210" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvRoomInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rc_badge"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:textColor="@color/rc_brand"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="Phòng: P.305" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="10dp"
+            android:background="@color/rc_line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/rc_ink"
-            android:layout_marginTop="8dp"
-            android:drawablePadding="6dp"
-            app:drawableStartCompat="@drawable/ic_phone"
-            app:drawableTint="@color/rc_brand"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTenantName"
-            tools:text="0901234567" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <!-- Email -->
+            <TextView
+                android:id="@+id/tvPropertyName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/rc_brand"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="Nhà trọ An Phúc" />
+
+            <TextView
+                android:id="@+id/tvIdentity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/rc_muted"
+                android:textSize="12sp"
+                tools:text="CCCD: ****5678" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tvEmail"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:layout_marginTop="3dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/rc_muted"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvPhone"
-            tools:text="nguyenvana@example.com" />
-
-        <!-- Property Name -->
-        <TextView
-            android:id="@+id/tvPropertyName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/rc_brand"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvEmail"
-            tools:text="Nhà trọ Hoàng Anh" />
-
-        <!-- Room Info -->
-        <TextView
-            android:id="@+id/tvRoomInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginTop="4dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvPropertyName"
-            tools:text="Phòng: 101" />
+            tools:text="giabao.p@gmail.com" />
 
-        <!-- Identity Number -->
-        <TextView
-            android:id="@+id/tvIdentity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginStart="16dp"
-            app:layout_constraintStart_toEndOf="@id/tvRoomInfo"
-            app:layout_constraintTop_toTopOf="@id/tvRoomInfo"
-            tools:text="CMND: ****5678" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

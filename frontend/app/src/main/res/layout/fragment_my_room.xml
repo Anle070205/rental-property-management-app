@@ -1,19 +1,299 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/rc_canvas">
-    <com.google.android.material.appbar.MaterialToolbar style="@style/RoomCare.Toolbar" android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="wrap_content"
-        app:title="@string/rc_my_room" app:navigationIcon="@drawable/ic_arrow_back" />
-    <ProgressBar android:indeterminateTint="@color/rc_brand" android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-        <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="16dp" />
-    <com.google.android.material.button.MaterialButton style="@style/RoomCare.Button.Secondary" android:id="@+id/retry" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_retry" />
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-        <LinearLayout android:id="@+id/content" android:background="@drawable/rc_panel" android:layout_margin="12dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
-        <TextView android:id="@+id/sample" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_tenant_sample" />
-        <TextView android:id="@+id/roomCode" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/rc_brand" android:textSize="24sp" android:textStyle="bold" />
-        <TextView android:id="@+id/address" android:layout_width="match_parent" android:layout_height="wrap_content"  />
-        <TextView android:id="@+id/rentPrice" android:layout_width="match_parent" android:layout_height="wrap_content"  />
-        <TextView android:id="@+id/amenities" android:layout_width="match_parent" android:layout_height="wrap_content"  />
-        <TextView android:id="@+id/landlord" android:layout_width="match_parent" android:layout_height="wrap_content"  />
-            <com.google.android.material.button.MaterialButton style="@style/RoomCare.Button" android:id="@+id/dial" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_call_landlord" />
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/rc_canvas"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/RoomCare.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/rc_my_room"
+        app:titleTextAppearance="@style/RoomCare.Title" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/rc_line" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:indeterminateTint="@color/rc_brand"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:textColor="@color/rc_muted"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/retry"
+        style="@style/RoomCare.Button.Secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/rc_retry"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/sample"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/rc_soft_banner"
+                android:padding="10dp"
+                android:text="@string/rc_tenant_sample"
+                android:textColor="@color/rc_brand"
+                android:textSize="12sp" />
+
+            <!-- Room Hero Card (Figma 34:23805) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rc_panel"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/rc_badge_success"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp"
+                            android:text="Đang thuê"
+                            android:textColor="@color/success"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/roomCode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:textColor="@color/rc_ink"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            tools:text="P.305 · Tầng 3" />
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/rc_icon_box_tint">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_room"
+                            app:tint="@color/rc_brand" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="12dp"
+                    android:background="@color/rc_line" />
+
+                <TextView
+                    android:id="@+id/rentPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/rc_brand"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    tools:text="Giá thuê: 3.800.000 ₫" />
+            </LinearLayout>
+
+            <!-- Room Info Rows Card -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Thông tin phòng &amp; tiện nghi"
+                android:textColor="@color/rc_ink"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rc_panel"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingVertical="4dp">
+
+                    <FrameLayout
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/rc_icon_box_soft">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_home"
+                            app:tint="@color/rc_brand" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/address"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:textColor="@color/rc_ink"
+                        android:textSize="14sp"
+                        tools:text="Địa chỉ: Nhà trọ An Phúc, Bình Thạnh" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="10dp"
+                    android:background="@color/rc_line" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingVertical="4dp">
+
+                    <FrameLayout
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/rc_icon_box_soft">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_info"
+                            app:tint="@color/rc_brand" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/amenities"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:textColor="@color/rc_ink"
+                        android:textSize="14sp"
+                        tools:text="Tiện ích: Máy lạnh, Tủ lạnh, Wifi" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Landlord Contact Card -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Liên hệ chủ trọ"
+                android:textColor="@color/rc_ink"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/rc_panel"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/rc_icon_box_tint">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_person"
+                            app:tint="@color/rc_brand" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/landlord"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:textColor="@color/rc_ink"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        tools:text="Liên hệ chủ nhà: Tài Bình An · 0901 234 567" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/dial"
+                    style="@style/RoomCare.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/rc_call_landlord"
+                    app:icon="@drawable/ic_phone" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>

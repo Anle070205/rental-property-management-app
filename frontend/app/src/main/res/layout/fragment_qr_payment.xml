@@ -1,20 +1,207 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/rc_canvas">
-    <com.google.android.material.appbar.MaterialToolbar style="@style/RoomCare.Toolbar" android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="wrap_content" app:title="@string/rc_payment_qr" app:navigationIcon="@drawable/ic_arrow_back" />
-    <ProgressBar android:indeterminateTint="@color/rc_brand" android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-    <TextView android:id="@+id/error" android:layout_width="match_parent" android:layout_height="wrap_content"  />
-    <com.google.android.material.button.MaterialButton style="@style/RoomCare.Button.Secondary" android:id="@+id/retry" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_retry" />
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:id="@+id/content" android:background="@drawable/rc_panel" android:layout_margin="12dp" android:padding="24dp">
-    <TextView android:id="@+id/sample" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_payment_sample" android:textStyle="bold" />
-    <ImageView android:id="@+id/qr" android:layout_width="240dp" android:layout_height="240dp" android:layout_gravity="center_horizontal" android:contentDescription="@string/rc_payment_qr_image" />
-    <TextView android:id="@+id/qrError" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_payment_qr_error" />
-    <TextView android:id="@+id/bank" android:layout_width="match_parent" android:layout_height="wrap_content"  />
-    <TextView android:id="@+id/account" android:layout_width="match_parent" android:layout_height="wrap_content"  />
-    <TextView android:id="@+id/amount" android:layout_width="match_parent" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="20sp" android:textColor="@color/rc_brand" />
-    <TextView android:id="@+id/reference" android:layout_width="match_parent" android:layout_height="wrap_content"  />
-    <com.google.android.material.button.MaterialButton style="@style/RoomCare.Button.Secondary" android:id="@+id/copyAccount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_payment_copy_account" />
-    <com.google.android.material.button.MaterialButton style="@style/RoomCare.Button.Secondary" android:id="@+id/copyReference" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/rc_payment_copy_content" />
-    <TextView android:id="@+id/instructions" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_payment_instructions" />
-</LinearLayout>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/rc_canvas"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/RoomCare.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/rc_payment_qr"
+        app:titleTextAppearance="@style/RoomCare.Title" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/rc_line" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:indeterminateTint="@color/rc_brand"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:textColor="@color/rc_danger"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/retry"
+        style="@style/RoomCare.Button.Secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/rc_retry"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/sample"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/rc_badge_warning"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/rc_payment_sample"
+                android:textColor="@color/warning"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- VietQR Card (Figma 34:24123) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rc_panel"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rc_badge_success"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="5dp"
+                    android:text="VietQR · Đúng số tiền và nội dung"
+                    android:textColor="@color/success"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/rc_panel"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:id="@+id/qr"
+                        android:layout_width="220dp"
+                        android:layout_height="220dp"
+                        android:contentDescription="@string/rc_payment_qr_image" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/qrError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/rc_payment_qr_error"
+                    android:textColor="@color/rc_danger"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/amount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center"
+                    android:textColor="@color/rc_brand"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    tools:text="Số tiền: 5.300.000 ₫" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="14dp"
+                    android:background="@color/rc_line" />
+
+                <TextView
+                    android:id="@+id/bank"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="Ngân hàng: Vietcombank" />
+
+                <TextView
+                    android:id="@+id/account"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="14sp"
+                    tools:text="Số tài khoản: 0123 456 789" />
+
+                <TextView
+                    android:id="@+id/reference"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="13sp"
+                    tools:text="Nội dung chuyển khoản: P305 T10 2026" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/copyAccount"
+                        style="@style/RoomCare.Button.Secondary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:text="@string/rc_payment_copy_account"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/copyReference"
+                        style="@style/RoomCare.Button.Tonal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:text="@string/rc_payment_copy_content"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/instructions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/rc_soft_banner"
+                android:lineSpacingMultiplier="1.3"
+                android:padding="12dp"
+                android:text="@string/rc_payment_instructions"
+                android:textColor="@color/rc_brand"
+                android:textSize="12sp" />
+        </LinearLayout>
     </ScrollView>
+
 </LinearLayout>

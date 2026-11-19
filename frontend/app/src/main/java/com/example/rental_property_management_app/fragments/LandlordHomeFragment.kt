@@ -47,7 +47,10 @@ class LandlordHomeFragment : Fragment() {
 
         val userName = RoomCareApplication.prefsManager.getUserName()
         if (!userName.isNullOrBlank()) {
-            binding.tvWelcome.text = "Xin chào, $userName"
+            binding.tvWelcome.text = userName
+            binding.tvAvatar.text = profileInitials(userName)
+        } else {
+            binding.tvAvatar.text = "CN"
         }
 
         setupNavigationListeners()
@@ -58,7 +61,8 @@ class LandlordHomeFragment : Fragment() {
         super.onResume()
         val userName = RoomCareApplication.prefsManager.getUserName()
         if (!userName.isNullOrBlank()) {
-            binding.tvWelcome.text = "Xin chào, $userName"
+            binding.tvWelcome.text = userName
+            binding.tvAvatar.text = profileInitials(userName)
         }
         dashboardViewModel.loadDashboard()
     }

@@ -1,38 +1,322 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/rc_canvas">
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-<TextView android:id="@+id/avatar" android:layout_width="48dp" android:layout_height="48dp" android:gravity="center"
-    android:background="@drawable/rc_badge" android:textColor="@color/rc_brand" android:textStyle="bold" />
-<LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
-<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Caption" android:text="@string/rc_home_hello" />
-<TextView android:id="@+id/greeting" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Title" android:text="@string/rc_tenant_home" />
-</LinearLayout>
-<ImageButton android:id="@+id/notificationBell" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/rc_bell"
-    android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="@string/rc_notifications" />
-</LinearLayout>
-<ProgressBar android:id="@+id/progress" android:layout_width="32dp" android:layout_height="32dp" android:indeterminateTint="@color/rc_brand" android:visibility="gone" />
-<TextView android:id="@+id/error" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/rc_danger" android:visibility="gone" />
-<com.google.android.material.button.MaterialButton android:id="@+id/retry" style="@style/RoomCare.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_retry" android:visibility="gone" />
-<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Section" android:text="@string/rc_active_room" android:layout_marginTop="16dp" android:layout_marginBottom="6dp" />
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/rc_panel" android:padding="14dp" android:layout_marginBottom="10dp">
-<TextView android:id="@+id/roomCode" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Title" />
-<com.google.android.material.button.MaterialButton android:id="@+id/room" style="@style/RoomCare.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_my_room" app:icon="@drawable/ic_room" />
-</LinearLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/rc_panel" android:padding="14dp" android:layout_marginBottom="10dp">
-<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Caption" android:text="@string/rc_tenant_amount_due" />
-<TextView android:id="@+id/amount" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="28sp" android:textStyle="bold" android:textColor="@color/rc_ink" />
-<TextView android:id="@+id/dueDate" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/rc_danger" />
-<com.google.android.material.button.MaterialButton android:id="@+id/invoices" style="@style/RoomCare.Button" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_home_view_invoices" app:icon="@drawable/ic_card" android:layout_marginTop="8dp" />
-</LinearLayout>
-<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Section" android:text="@string/rc_home_updates" android:layout_marginTop="16dp" android:layout_marginBottom="6dp" />
-<com.google.android.material.button.MaterialButton android:id="@+id/notifications" style="@style/RoomCare.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_notifications" app:icon="@drawable/rc_bell" />
-<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Section" android:text="@string/rc_home_shortcuts" android:layout_marginTop="16dp" android:layout_marginBottom="6dp" />
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-<com.google.android.material.button.MaterialButton android:id="@+id/incidents" style="@style/RoomCare.Button.Secondary" android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/rc_incidents" android:layout_weight="1" android:layout_marginHorizontal="3dp" android:textSize="11sp" app:icon="@drawable/ic_info" app:iconGravity="top" />
-<com.google.android.material.button.MaterialButton android:id="@+id/contract" style="@style/RoomCare.Button.Secondary" android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/rc_home_contract" android:layout_weight="1" android:layout_marginHorizontal="3dp" android:textSize="11sp" app:icon="@drawable/ic_description" app:iconGravity="top" />
-<com.google.android.material.button.MaterialButton android:id="@+id/profile" style="@style/RoomCare.Button.Secondary" android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/rc_tenant_tab_profile" android:layout_weight="1" android:layout_marginHorizontal="3dp" android:textSize="11sp" app:icon="@drawable/ic_person" app:iconGravity="top" />
-</LinearLayout>
-<TextView android:id="@+id/sample" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/RoomCare.Caption" android:text="@string/rc_tenant_sample" android:layout_marginTop="8dp" />
-</LinearLayout>
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/rc_canvas"
+    android:clipToPadding="false"
+    android:paddingBottom="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Figma 34:23697 Top Header (Purple Avatar #EEE9F8 + Name + Notification Button) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:id="@+id/avatar"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/rc_badge_purple"
+                android:gravity="center"
+                android:textColor="@color/rc_purple"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="GB" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rc_home_hello"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/greeting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/rc_tenant_home"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/notificationBell"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/rc_panel"
+                android:contentDescription="@string/rc_notifications"
+                android:padding="9dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/rc_bell"
+                app:tint="@color/rc_ink" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:indeterminateTint="@color/rc_brand"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/rc_danger"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/retry"
+            style="@style/RoomCare.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/rc_retry"
+            android:visibility="gone" />
+
+        <!-- Active Room Card (Figma 34:23715) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rc_panel"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/rc_active_room"
+                        android:textColor="@color/rc_muted"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/roomCode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:textColor="@color/rc_ink"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        tools:text="P.305 · Tầng 3" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rc_badge_success"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    android:text="Đang thuê"
+                    android:textColor="@color/success"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="12dp"
+                android:background="@color/rc_line" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/room"
+                style="@style/RoomCare.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rc_my_room"
+                app:icon="@drawable/ic_room" />
+        </LinearLayout>
+
+        <!-- Payment Hero Card (Figma 34:23729) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/rc_panel"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/rc_tenant_amount_due"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rc_badge"
+                    android:paddingHorizontal="9dp"
+                    android:paddingVertical="4dp"
+                    android:text="Kỳ hiện tại"
+                    android:textColor="@color/rc_brand"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="@color/rc_ink"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                tools:text="5.300.000 ₫" />
+
+            <TextView
+                android:id="@+id/dueDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/rc_danger"
+                android:textSize="12sp"
+                tools:text="Hạn thanh toán: 05/10/2026" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/invoices"
+                style="@style/RoomCare.Button"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="14dp"
+                android:text="@string/rc_home_view_invoices"
+                app:icon="@drawable/ic_card" />
+        </LinearLayout>
+
+        <!-- Updates Section (Figma 34:23750) -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/rc_home_updates"
+            android:textColor="@color/rc_ink"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rc_panel"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/notifications"
+                style="@style/RoomCare.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rc_notifications"
+                app:icon="@drawable/rc_bell" />
+        </LinearLayout>
+
+        <!-- Quick Actions Section (Figma 34:23770) -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/rc_home_shortcuts"
+            android:textColor="@color/rc_ink"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/incidents"
+                style="@style/RoomCare.Button.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:minHeight="70dp"
+                android:text="@string/rc_incidents"
+                android:textSize="11sp"
+                app:icon="@drawable/ic_info"
+                app:iconGravity="top" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/contract"
+                style="@style/RoomCare.Button.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="4dp"
+                android:layout_weight="1"
+                android:minHeight="70dp"
+                android:text="@string/rc_home_contract"
+                android:textSize="11sp"
+                app:icon="@drawable/ic_description"
+                app:iconGravity="top" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/profile"
+                style="@style/RoomCare.Button.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:minHeight="70dp"
+                android:text="@string/rc_tenant_tab_profile"
+                android:textSize="11sp"
+                app:icon="@drawable/ic_person"
+                app:iconGravity="top" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/sample"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/rc_tenant_sample"
+            android:textAppearance="@style/RoomCare.Caption" />
+    </LinearLayout>
 </ScrollView>

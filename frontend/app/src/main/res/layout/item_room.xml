@@ -2,135 +2,169 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/RoomCare.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp"
-    app:strokeWidth="0dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="5dp"
+    android:clickable="true"
+    android:focusable="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:padding="14dp">
 
-        <!-- Room Code -->
-        <TextView
-            android:id="@+id/tvRoomCode"
-            android:layout_width="wrap_content"
+        <!-- Header Row (Figma 6:21214 Room Item) -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="101" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <!-- Status -->
-        <TextView
-            android:id="@+id/tvStatus"
-            android:layout_width="wrap_content"
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/rc_icon_box_tint">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_room"
+                    app:tint="@color/rc_brand" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvRoomCode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/rc_ink"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        tools:text="P.101" />
+
+                    <TextView
+                        android:id="@+id/tvFloor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textColor="@color/rc_muted"
+                        android:textSize="12sp"
+                        tools:text="Tầng 1" />
+
+                    <TextView
+                        android:id="@+id/tvArea"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textColor="@color/rc_muted"
+                        android:textSize="12sp"
+                        tools:text="24.0 m²" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvPropertyName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="12sp"
+                    tools:text="Nhà trọ An Phúc" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_badge_rounded"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="Đang thuê" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="10dp"
+            android:background="@color/rc_line" />
+
+        <!-- Price, Tenant & Actions -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:layout_marginStart="12dp"
-            app:layout_constraintStart_toEndOf="@id/tvRoomCode"
-            app:layout_constraintTop_toTopOf="@id/tvRoomCode"
-            app:layout_constraintBottom_toBottomOf="@id/tvRoomCode"
-            tools:text="Còn trống"
-            tools:textColor="@android:color/holo_green_dark" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <!-- Floor -->
-        <TextView
-            android:id="@+id/tvFloor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/black"
-            android:layout_marginTop="4dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvRoomCode"
-            tools:text="Tầng 1" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-        <!-- Area -->
-        <TextView
-            android:id="@+id/tvArea"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/black"
-            android:layout_marginStart="16dp"
-            app:layout_constraintStart_toEndOf="@id/tvFloor"
-            app:layout_constraintTop_toTopOf="@id/tvFloor"
-            tools:text="20.0 m²" />
+                <TextView
+                    android:id="@+id/tvRentPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/rc_brand"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="3.500.000 ₫" />
 
-        <!-- Property Name -->
-        <TextView
-            android:id="@+id/tvPropertyName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvFloor"
-            tools:text="Nhà trọ Hoàng Anh" />
+                <TextView
+                    android:id="@+id/tvTenantInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="12sp"
+                    tools:text="Khách: Nguyễn Hoàng Nam" />
+            </LinearLayout>
 
-        <!-- Rent Price -->
-        <TextView
-            android:id="@+id/tvRentPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/rc_brand"
-            android:layout_marginTop="12dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvPropertyName"
-            tools:text="2.500.000đ/tháng" />
+            <ImageButton
+                android:id="@+id/btnEdit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/rc_icon_box_soft"
+                android:contentDescription="Sửa"
+                android:padding="9dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_edit"
+                app:tint="@color/rc_brand" />
 
-        <!-- Tenant Info -->
-        <TextView
-            android:id="@+id/tvTenantInfo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@color/rc_muted"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnEdit"
-            app:layout_constraintTop_toBottomOf="@id/tvRentPrice"
-            tools:text="Khách: Nguyễn Văn A" />
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/rc_icon_box_danger"
+                android:contentDescription="Xóa"
+                android:padding="9dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_delete"
+                app:tint="@color/rc_danger" />
+        </LinearLayout>
 
-        <!-- Edit Button -->
-        <ImageButton
-            android:id="@+id/btnEdit"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_edit"
-            app:tint="@color/rc_brand"
-            android:contentDescription="Sửa"
-            app:layout_constraintEnd_toStartOf="@id/btnDelete"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <!-- Delete Button -->
-        <ImageButton
-            android:id="@+id/btnDelete"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_delete"
-            app:tint="@color/rc_danger"
-            android:contentDescription="Xóa"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -47,12 +47,11 @@ class AuthViewModel : ViewModel() {
             _registerState.value = Resource.Loading()
             
             val result = repository.register(fullName, email, phone, password, role)
-            _registerState.value = result
-            
-            // Save user data if success
+            // Save user data before notifying observers so role-based navigation sees persisted prefs
             if (result is Resource.Success && result.data != null) {
                 saveUserData(result.data)
             }
+            _registerState.value = result
         }
     }
     
@@ -64,12 +63,11 @@ class AuthViewModel : ViewModel() {
             _loginState.value = Resource.Loading()
             
             val result = repository.login(emailOrPhone, password)
-            _loginState.value = result
-            
-            // Save user data if success
+            // Save user data before notifying observers so role-based navigation sees persisted prefs
             if (result is Resource.Success && result.data != null) {
                 saveUserData(result.data)
             }
+            _loginState.value = result
         }
     }
     

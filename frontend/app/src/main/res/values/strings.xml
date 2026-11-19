@@ -295,8 +295,12 @@
     <string name="rc_payment_time_missing">Chưa có thời gian xác nhận</string>
     <string name="rc_tenant_tab_home">Trang chủ</string>
     <string name="rc_tenant_tab_room">Phòng</string>
+    <string name="rc_tenant_tab_my_room">Phòng tôi</string>
+    <string name="rc_landlord_tab_debt">Công nợ</string>
     <string name="rc_tenant_tab_profile">Cá nhân</string>
-    <string name="rc_home_hello">Xin chào,</string>
+    <string name="rc_home_hello">Chào buổi sáng,</string>
+    <string name="rc_brand_tagline">Quản lý nhà trọ gọn gàng, an tâm mỗi ngày</string>
+    <string name="rc_security_note">Dữ liệu của bạn được mã hóa và bảo mật</string>
     <string name="rc_home_updates">Cập nhật cho bạn</string>
     <string name="rc_home_shortcuts">Thao tác nhanh</string>
     <string name="rc_home_contract">Hợp đồng</string>

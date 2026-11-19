@@ -4,22 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light">
+    android:background="@color/rc_canvas">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
+            style="@style/RoomCare.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@android:color/white"
             app:title="@string/utility_management"
-            app:titleTextColor="@android:color/white" />
+            app:titleTextAppearance="@style/RoomCare.Title" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/rc_line" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -37,22 +42,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="@dimen/spacing_large">
+                android:paddingBottom="24dp">
 
-                <!-- Recording Form Card -->
+                <!-- Recording Form Card (Figma 6:22286) -->
                 <com.google.android.material.card.MaterialCardView
+                    style="@style/RoomCare.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/spacing_normal"
-                    app:cardBackgroundColor="@color/card_background"
-                    app:cardCornerRadius="@dimen/card_corner_radius"
-                    app:cardElevation="3dp">
+                    android:layout_margin="16dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="@dimen/spacing_normal">
+                        android:padding="16dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -66,8 +69,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="Ghi chỉ số điện, nước &amp; dịch vụ"
-                                android:textColor="@color/text_primary"
-                                android:textSize="@dimen/text_size_medium"
+                                android:textColor="@color/rc_ink"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
 
                             <com.google.android.material.button.MaterialButton
@@ -76,8 +79,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Hủy sửa"
+                                android:textColor="@color/rc_danger"
                                 android:visibility="gone" />
-
                         </LinearLayout>
 
                         <LinearLayout
@@ -97,22 +100,21 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Phòng *"
-                                    android:textColor="@color/text_secondary"
+                                    android:textColor="@color/rc_muted"
                                     android:textSize="12sp" />
 
                                 <Spinner
                                     android:id="@+id/spinnerRoom"
                                     android:layout_width="match_parent"
-                                    android:layout_height="46dp"
+                                    android:layout_height="48dp"
                                     android:layout_marginTop="4dp"
-                                    android:background="@drawable/bg_badge_rounded"
-                                    android:paddingHorizontal="8dp" />
-
+                                    android:background="@drawable/rc_panel"
+                                    android:paddingHorizontal="10dp" />
                             </LinearLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/tilBillingMonth"
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                style="@style/RoomCare.Input"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="6dp"
@@ -125,16 +127,14 @@
                                     android:layout_height="wrap_content"
                                     android:inputType="text"
                                     android:maxLines="1" />
-
                             </com.google.android.material.textfield.TextInputLayout>
-
                         </LinearLayout>
 
                         <!-- Electric Section -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="14dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
@@ -150,20 +150,19 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="6dp"
                                 android:text="Chỉ số điện (kWh)"
-                                android:textColor="@color/text_primary"
+                                android:textColor="@color/rc_ink"
                                 android:textStyle="bold" />
-
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="8dp"
                             android:orientation="horizontal">
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/tilPrevElectric"
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                style="@style/RoomCare.Input"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="4dp"
@@ -181,7 +180,7 @@
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/tilCurrElectric"
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                style="@style/RoomCare.Input"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginHorizontal="4dp"
@@ -198,7 +197,7 @@
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                style="@style/RoomCare.Input"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
@@ -213,14 +212,13 @@
                                     android:maxLines="1"
                                     android:text="3500" />
                             </com.google.android.material.textfield.TextInputLayout>
-
                         </LinearLayout>
 
                         <!-- Water Section -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="14dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
@@ -229,27 +227,26 @@
                                 android:layout_height="18dp"
                                 android:contentDescription="Nước"
                                 android:src="@drawable/ic_water"
-                                app:tint="@color/info" />
+                                app:tint="@color/rc_brand" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="6dp"
                                 android:text="Chỉ số nước (m³)"
-                                android:textColor="@color/text_primary"
+                                android:textColor="@color/rc_ink"
                                 android:textStyle="bold" />
-
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="8dp"
                             android:orientation="horizontal">
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/tilPrevWater"
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                style="@style/RoomCare.Input"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="4dp"
@@ -267,7 +264,7 @@
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/tilCurrWater"
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                style="@style/RoomCare.Input"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginHorizontal="4dp"
@@ -284,7 +281,7 @@
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                style="@style/RoomCare.Input"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
@@ -299,18 +296,17 @@
                                     android:maxLines="1"
                                     android:text="15000" />
                             </com.google.android.material.textfield.TextInputLayout>
-
                         </LinearLayout>
 
                         <!-- Fixed Service Fees -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
+                            android:layout_marginTop="12dp"
                             android:orientation="horizontal">
 
                             <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                style="@style/RoomCare.Input"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="6dp"
@@ -327,7 +323,7 @@
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                style="@style/RoomCare.Input"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="6dp"
@@ -342,23 +338,21 @@
                                     android:maxLines="1"
                                     android:text="50000" />
                             </com.google.android.material.textfield.TextInputLayout>
-
                         </LinearLayout>
 
-                        <!-- Adjustment Mode -->
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/switchAdjustment"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="8dp"
                             android:text="Điều chỉnh đồng hồ / chỉ số đặc biệt" />
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tilAdjustmentReason"
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            style="@style/RoomCare.Input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="6dp"
                             android:hint="Lý do điều chỉnh (bắt buộc khi chỉ số mới &lt; cũ)"
                             android:visibility="gone">
 
@@ -370,10 +364,10 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            style="@style/RoomCare.Input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="10dp"
                             android:hint="Ghi chú (tùy chọn)">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -383,12 +377,12 @@
                                 android:inputType="text" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <!-- Live Calculation Breakdown Table -->
+                        <!-- Live Calculation Breakdown -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:background="@drawable/bg_badge_rounded"
+                            android:layout_marginTop="14dp"
+                            android:background="@drawable/rc_icon_box_soft"
                             android:orientation="vertical"
                             android:padding="12dp">
 
@@ -396,7 +390,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Bảng tính chi tiết trước khi lưu"
-                                android:textColor="@color/text_primary"
+                                android:textColor="@color/rc_ink"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
 
@@ -405,7 +399,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="6dp"
-                                android:textColor="@color/text_secondary"
+                                android:textColor="@color/rc_muted"
                                 android:textSize="13sp"
                                 tools:text="Điện (0 kWh): 0 ₫" />
 
@@ -414,7 +408,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:textColor="@color/text_secondary"
+                                android:textColor="@color/rc_muted"
                                 android:textSize="13sp"
                                 tools:text="Nước (0 m³): 0 ₫" />
 
@@ -423,15 +417,15 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:textColor="@color/text_secondary"
+                                android:textColor="@color/rc_muted"
                                 android:textSize="13sp"
                                 tools:text="Internet + Dịch vụ: 150.000 ₫" />
 
                             <View
                                 android:layout_width="match_parent"
                                 android:layout_height="1dp"
-                                android:layout_marginVertical="6dp"
-                                android:background="@color/divider" />
+                                android:layout_marginVertical="8dp"
+                                android:background="@color/rc_line" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -443,7 +437,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="Tổng cộng:"
-                                    android:textColor="@color/text_primary"
+                                    android:textColor="@color/rc_ink"
                                     android:textStyle="bold" />
 
                                 <TextView
@@ -451,36 +445,32 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="150.000 ₫"
-                                    android:textColor="?attr/colorPrimary"
-                                    android:textSize="@dimen/text_size_large"
+                                    android:textColor="@color/rc_brand"
+                                    android:textSize="18sp"
                                     android:textStyle="bold" />
-
                             </LinearLayout>
-
                         </LinearLayout>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnSaveUtility"
+                            style="@style/RoomCare.Button"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="14dp"
                             android:text="@string/utility_save"
                             app:icon="@drawable/ic_check" />
-
                     </LinearLayout>
-
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Recorded Utility List Section -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/spacing_normal"
+                    android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginBottom="6dp"
+                    android:layout_marginBottom="8dp"
                     android:text="Danh sách chỉ số đã ghi"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <ProgressBar
@@ -489,6 +479,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="16dp"
+                    android:indeterminateTint="@color/rc_brand"
                     android:visibility="gone" />
 
                 <TextView
@@ -498,7 +489,7 @@
                     android:gravity="center"
                     android:padding="24dp"
                     android:text="@string/utility_empty"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/rc_muted"
                     android:visibility="gone" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -507,11 +498,8 @@
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
             </LinearLayout>
-
         </androidx.core.widget.NestedScrollView>
-
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

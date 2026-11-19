@@ -1,54 +1,67 @@
 # ROOMCARE – BÁO CÁO RÀ SOÁT & NÂNG CẤP UI/UX (UI REVIEW)
 
-## 1. Vấn đề UI/UX ban đầu sau khi merge code 3 thành viên
+## 1. Bối cảnh & Kiểm toán ban đầu
 
-1. **Đứt gãy giao diện Dashboard Chủ nhà:** Do xung đột merge ở commit `49adb8f`, người dùng đăng nhập `LANDLORD` bị đưa vào `LandlordDashboardFragment` bản sơ khai chỉ có 2 nút trắng/tím, không thấy được màn hình `LandlordHomeFragment` (biểu đồ doanh thu, thống kê phòng, hóa đơn, công nợ, Health Score).
-2. **Xung đột hai hệ thống màu sắc (Visual Identity Split):**
-   - Phần Auth (GĐ1) và Phòng/Khách thuê (GĐ2) dùng tím Material mặc định (`#6200EE` `purple_500`, nền `#FAFAFA`, chữ đen tuyền `#000000`, nhiều card dùng `@color/design_default_color_primary`).
-   - Phần Người thuê & Hồ sơ/Thông báo (GĐ5–GĐ6) dùng hệ **RoomCare Teal** hiện đại (`#10756D` `rc_brand`, nền `#F4F7F6` `rc_canvas`, chữ `#1B2927` `rc_ink`).
-3. **Biểu tượng (Icons) & Ngôn ngữ thiếu đồng bộ:** Một số màn hình GĐ1–GĐ2 vẫn dùng icon mặc định cũ của Android SDK (`@android:drawable/ic_menu_revert`, `ic_menu_edit`, `ic_menu_delete`, `stat_sys_phone_call`, `ic_menu_myplaces`), nút sửa/xóa trên item phòng nhỏ (`40dp < 48dp`), hộp thoại xác nhận còn lẫn nút `"Cancel"` tiếng Anh.
-4. **Thiếu điều hướng và bộ lọc trực quan:**
-   - Màn hình Chủ nhà không có lối vào nhanh `Thông báo` và `Hồ sơ cá nhân`.
-   - Màn hình `ProfileFragment` không có nút quay lại khi mở từ luồng Chủ nhà.
-   - `RoomListFragment` chưa có dãy Chip lọc trạng thái và thanh tìm kiếm chưa hoạt động; `TenantListFragment` và `TenantDetailFragment` thiếu nút Thêm/Sửa/Xóa.
+1. **Đứt gãy giao diện Dashboard Chủ nhà:** Do xung đột merge ở commit `49adb8f`, người dùng `LANDLORD` ban đầu bị đưa vào màn hình sơ khai, chưa có cấu trúc tổng quan và điều hướng thống nhất với luồng Người thuê.
+2. **Xung đột hệ thống màu sắc & component:** Các module GĐ1–GĐ2 trước đây còn dùng màu Material mặc định (`purple_500`), bo góc chưa đồng nhất, thiếu hệ thống container trạng thái và icon box theo thiết kế.
+3. **Thiếu đồng bộ với Figma & điều hướng:**
+   - Bảng màu, bo góc nút/input (`12dp`), viền card (`1dp` stroke, elevation `0dp`) và nhãn trạng thái chưa khớp hoàn toàn với file Figma `LTTD_QLNhaTro` (`L9hS7O7oLIp7iqyrwmr6Nq`, node `0:1`).
+   - Vai trò `LANDLORD` chưa có thanh điều hướng dưới (`BottomNavigationView`), trong khi `TENANT` đã có thanh 5 tab.
+   - Phát hiện thêm khi kiểm thử thực tế trên emulator:
+     - `AuthViewModel` phát `_loginState` / `_registerState` trước `saveUserData()`, làm `MainActivity` đọc `role` còn trống ngay thời điểm vừa đăng nhập nên thanh BottomNav không hiện ở màn hình Home đầu tiên cho tới khi chuyển tab khác.
+     - Nút `Lịch sử thanh toán` trên `fragment_tenant_invoice.xml` bị chia 2 dòng và cắt chữ ở chiều cao `46dp`.
 
 ---
 
-## 2. Design System thống nhất áp dụng cho RoomCare
+## 2. Design System thống nhất theo Figma RoomCare
 
-Chuẩn hóa xuyên suốt giữa Chủ nhà, Người thuê và Xác thực theo phong cách **Modern SaaS / Property Management**:
+Hệ thống giao diện được đối chiếu trực tiếp từ Figma (`Page 1`, 39 frame tổng thể, trích xuất chi tiết 18 frame trọng tâm của luồng Auth, Landlord và Tenant):
 
 - **Màu thương hiệu (Brand Palette):**
-  - Primary Teal: `#10756D` (`@color/rc_brand`)
-  - Primary Dark (Status Bar / Accent): `#0B5751` (`@color/rc_brand_dark`)
-  - Secondary / Biểu đồ: `#26A69A` (`@color/rc_brand_light`), `#80CBC4` (`@color/chart_billed`), `#10756D` (`@color/chart_collected`)
-- **Nền & Bề mặt (Surfaces):**
-  - Canvas tổng thể: `#F4F7F6` (`@color/rc_canvas` / `@color/background_light`)
-  - Card / Panel: `#FFFFFF` với viền mảnh `@color/rc_line` (`#E1E9E6`) và bo góc `10dp`–`12dp`
-- **Typography & Màu chữ:**
-  - Tiêu đề chính (`rc_ink`): `#1B2927`
-  - Nội dung phụ (`rc_muted`): `#516561`
-  - Ngữ nghĩa trạng thái: Xanh lá (`#4CAF50`), Xanh dương (`#2196F3`), Cam cảnh báo (`#FF9800`), Đỏ lỗi/nợ (`#F44336` / `#BC4143`)
-- **Kích thước vùng bấm & Khả năng sử dụng:**
-  - Nút hành động và icon button tối thiểu `44dp–48dp`, giữ định dạng tiền Việt (`1.000.000 ₫`) và ngày (`dd/MM/yyyy`).
+  - Primary Teal: `#0F766E` (`@color/rc_brand` / `@color/rc_primary`)
+  - Primary Dark: `#0B5751` (`@color/rc_brand_dark`)
+  - Brand Tint / Active Pill: `#DDF1EE` (`@color/rc_tint`) và Soft Tint `#E7F3F0` (`@color/rc_tint_soft`)
+  - Biểu đồ doanh thu: `#DDF1EE` (`@color/chart_billed`) và `#0F766E` (`@color/chart_collected`)
+- **Nền, Viền & Bề mặt (Surfaces):**
+  - Canvas tổng thể: `#F6F8F7` (`@color/rc_canvas` / `@color/background_light`)
+  - Bề mặt Card / Toolbar: `#FFFFFF` (`@color/surface`), bề mặt phụ `#EEF3F1` (`@color/surface_variant`)
+  - Viền phân tách mảnh: `#DDE5E2` (`@color/rc_line` / `@color/divider`, dày `1dp`, không đổ bóng `cardElevation="0dp"`)
+- **Typography & Màu ngữ nghĩa:**
+  - Chữ chính: `#17201E` (`@color/rc_ink`), chữ phụ: `#66736F` (`@color/rc_muted`), hint: `#98A39F` (`@color/text_hint`)
+  - Trạng thái: Thành công `#218A58` / nền `#E1F3E8`, Thông tin `#3E6091` / nền `#E5EDF9`, Cảnh báo `#B76B16` / nền `#FFF0D8`, Nguy hiểm/Nợ quá hạn `#C44747` / nền `#FBE8E7`, Tím accent `#7056A8` / nền `#EEE9F8`
+- **Style & Shape (`roomcare_ui.xml`):**
+  - `RoomCare.Card`: bo góc `16dp`, viền `1dp @color/rc_line`, elevation `0dp`.
+  - `RoomCare.Button`, `RoomCare.Button.Secondary`, `RoomCare.Button.Tonal`, `RoomCare.Button.Danger`: bo góc `12dp`, chiều cao tối thiểu `48dp`.
+  - `RoomCare.Input`: `OutlinedBox` bo góc `12dp`, viền `@color/rc_field_stroke`.
+  - `RoomCare.BottomNav.Indicator`: pill `#DDF1EE` bo tròn đồng bộ Material 3.
 
 ---
 
-## 3. Các màn hình đã nâng cấp & chuẩn hóa
+## 3. Các thành phần & màn hình đã nâng cấp
 
-- **Hệ thống Theme (`themes.xml`, `colors.xml`):** Chuyển `colorPrimary` toàn app sang `@color/rc_brand`, đồng bộ `statusBarColor`, màu nền `background_light`, màu chữ `text_primary`/`text_secondary` và màu biểu đồ doanh thu.
-- **`LoginFragment` (`fragment_login.xml`):** Đồng bộ nền `rc_canvas`, ô nhập `@style/RoomCare.Input`, nút `@style/RoomCare.Button`, thay vector icon thống nhất (`ic_email`, `ic_info`), tăng vùng chạm `Quên mật khẩu?` lên tối thiểu `48dp`.
-- **`RegisterFragment` (`fragment_register.xml`, `RegisterFragment.kt`):** Thiết kế lại form đăng ký đồng bộ `RoomCare.Input` & `RoomCare.Button`, bổ sung nhóm chọn **Loại tài khoản (`Chủ nhà` / `Người thuê`)**, thay thế toàn bộ icon SDK cũ.
-- **`LandlordHomeFragment` (`fragment_landlord_home.xml`, `LandlordHomeFragment.kt`):** Khôi phục làm màn hình Dashboard chính cho Chủ nhà với các thẻ tóm tắt phòng, tài chính, biểu đồ doanh thu theo tháng, hợp đồng sắp hết hạn, phòng cần chú ý; bổ sung nút `Thông báo` & `Hồ sơ` ngay trên header cùng hộp thoại xác nhận đăng xuất tiếng Việt.
-- **`RoomListFragment` & `item_room.xml`:** Thay toolbar có nút Quay lại, nâng cấp thanh tìm kiếm theo mã phòng/nhà trọ/người thuê, bổ sung hàng `ChipGroup` lọc nhanh theo trạng thái (`Tất cả`, `Trống`, `Đã thuê`, `Sắp hết hạn`, `Cần chú ý`), tăng kích thước nút `Sửa`/`Xóa` lên `48dp` với vector icon `ic_edit`/`ic_delete`.
-- **`RoomDetailFragment` (`fragment_room_detail.xml`):** Đồng bộ icon quay lại `ic_arrow_back` trên AppBar và nối điều hướng `navigateUp()`.
-- **`TenantListFragment`, `TenantDetailFragment`, `item_tenant.xml`:** Đồng bộ màu chữ/icon `rc_brand` & `ic_phone`, bổ sung `FloatingActionButton` thêm người thuê, hoàn thiện các nút `Chỉnh sửa thông tin` (`RoomCare.Button`), `Xóa người thuê` (`RoomCare.Button.Danger` có xác nhận) và `Quay lại` (`RoomCare.Button.Secondary`).
-- **`ProfileFragment` & `NotificationFragment`:** Bổ sung `MaterialToolbar` có nút quay lại cho Chủ nhà ở màn hình Cá nhân, đồng bộ thông báo tiếng Việt (`"Hủy"` thay cho `"Cancel"`), giữ nguyên trải nghiệm Bottom Navigation mượt mà cho Người thuê.
+- **Điều hướng động theo vai trò (`activity_main.xml`, `MainActivity.kt`, `landlord_navigation.xml`, `tenant_navigation.xml`):**
+  - Chủ nhà (`LANDLORD`): `Trang chủ` · `Phòng` · `Hóa đơn` · `Công nợ` · `Cá nhân`.
+  - Người thuê (`TENANT`): `Trang chủ` · `Phòng tôi` · `Hóa đơn` · `Thông báo` · `Cá nhân`.
+  - Đồng bộ status bar sáng `#F6F8F7` trên toàn app (trừ `splashFragment` giữ nền brand `#0F766E`).
+  - Sửa `AuthViewModel.kt` (`login` và `register`) để gọi `saveUserData(result.data)` trước khi phát `StateFlow`, giúp thanh BottomNav hiển thị ngay lập tức ở màn hình Home đầu tiên cho cả Chủ nhà và Người thuê.
+- **Nhóm Xác thực (`fragment_splash.xml`, `fragment_login.xml`, `fragment_register.xml`, `fragment_forgot_password.xml`):**
+  - Chuẩn hóa Splash brand teal với logo squircle trắng, card đăng nhập/đăng ký viền `1dp`, `RoomCare.Input` 12dp, thông điệp bảo mật ở footer.
+- **Nhóm Chủ nhà (`LandlordHomeFragment.kt` + toàn bộ layout GĐ2 & GĐ4):**
+  - `fragment_landlord_home.xml`: Thêm avatar chữ cái đầu (`tvAvatar`), 4 thẻ thống kê phòng (`rc_panel`), card Doanh thu & biểu đồ cột 3 tháng, 4 ô Thao tác & Quản lý nhanh.
+  - Quản lý Phòng & Khách thuê (`fragment_room_list.xml`, `item_room.xml`, `fragment_room_detail.xml`, `fragment_room_form.xml`, `fragment_tenant_list.xml`, `item_tenant.xml`, `fragment_tenant_detail.xml`, `fragment_tenant_form.xml`).
+  - Tài chính, Điện nước & Health Score (`fragment_invoice.xml`, `item_invoice.xml`, `fragment_invoice_detail.xml`, `fragment_debt.xml`, `item_debt.xml`, `fragment_health_score.xml`, `item_health_score.xml`, `fragment_utility.xml`, `item_utility_record.xml`), giữ nguyên `bg_badge_rounded` / `rc_icon_box_tint` để tương thích hoàn toàn với `backgroundTintList` trong các Adapter.
+- **Nhóm Người thuê & Dùng chung:**
+  - `fragment_tenant_home.xml`, `fragment_my_room.xml`, `fragment_my_contract.xml`, `fragment_tenant_invoice.xml` (sửa tỷ lệ weight `0.7 / 1.3` và `maxLines="1"` cho nút `Lịch sử thanh toán`), `item_tenant_invoice.xml`, `fragment_tenant_invoice_detail.xml`, `fragment_qr_payment.xml`, `fragment_payment_history.xml`, `item_tenant_payment.xml`, `fragment_incident_list.xml`, `item_incident.xml`, `fragment_incident_form.xml`, `fragment_incident_detail.xml`, `fragment_profile.xml`, `fragment_notification.xml`.
+  - Giữ nguyên 100% toàn bộ `android:id` ViewBinding và không thay đổi API contract/Backend.
 
 ---
 
-## 4. Thành phần UI được tái sử dụng & Khác biệt có chủ đích
+## 4. Kết quả kiểm thử & xác minh thực tế
 
-- **Tái sử dụng:** Giữ nguyên các style chung trong `roomcare_ui.xml` (`RoomCare.Button`, `RoomCare.Button.Secondary`, `RoomCare.Button.Danger`, `RoomCare.Input`, `RoomCare.Toolbar`), dùng chung `ProfileFragment` & `NotificationFragment` cho cả Chủ nhà và Người thuê, dùng chung `RoomFormFragment` và `TenantFormFragment` cho thêm mới và chỉnh sửa.
-- **Khác biệt & Giới hạn đối chiếu Figma:** Do không thể truy cập trực tiếp liên kết Figma từ môi trường kiểm thử tự động, nhóm đã đối chiếu gián tiếp qua các màn hình mẫu chuẩn của thành viên 3 (`roomcare_ui.xml`, `TenantHomeFragment`, `NotificationFragment`) đã dựng theo Figma và nhân rộng hệ thống thiết kế này cho toàn bộ ứng dụng.
-- **Kiểm chứng trên Emulator (`Medium_Phone_API_37.0`):** Toàn bộ các màn hình sau nâng cấp đã được build và chạy thực tế qua `uiautomator dump`, không bị tràn chữ, không che nút và không có `FATAL EXCEPTION` trong `adb logcat`.
+- **Unit Test & Build (`./gradlew testDebugUnitTest installDebug`):**
+  - `BUILD SUCCESSFUL` với JDK 17.
+  - Tổng cộng **5/5 unit test** đạt (`ExampleUnitTest`: 1/1, `FinanceHealthScoreUnitTest`: 4/4, `skipped=0`, `failures=0`, `errors=0`).
+- **Kiểm thử trực tiếp trên Android Emulator (`Medium_Phone_API_37.0` / `emulator-5554`) kết nối Backend Spring Boot (`:8080`) + MySQL (`:3306`):**
+  - Đăng nhập thật bằng `landlord1@example.com` và `tenant1@example.com`: BottomNav 5 tab hiển thị ngay sau khi đăng nhập cho cả hai vai trò.
+  - Kiểm tra ảnh chụp màn hình qua `adb shell screencap` trên Splash, Đăng nhập, Trang chủ Chủ nhà, Phòng, Hóa đơn Chủ nhà, Công nợ, Cá nhân, Trang chủ Người thuê, Phòng tôi, Hóa đơn Người thuê (nút `Lịch sử thanh toán` hiển thị trọn vẹn 1 dòng), Báo sự cố và Thông báo.
+  - `adb logcat -d *:E` không ghi nhận `FATAL EXCEPTION` nào từ ứng dụng.

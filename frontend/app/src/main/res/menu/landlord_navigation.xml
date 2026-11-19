@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@id/landlordDashboardFragment"
+        android:icon="@drawable/ic_home"
+        android:title="@string/rc_tenant_tab_home" />
+    <item
+        android:id="@id/roomListFragment"
+        android:icon="@drawable/ic_room"
+        android:title="@string/rc_tenant_tab_room" />
+    <item
+        android:id="@id/invoiceFragment"
+        android:icon="@drawable/ic_receipt"
+        android:title="@string/rc_tenant_invoices" />
+    <item
+        android:id="@id/debtFragment"
+        android:icon="@drawable/ic_card"
+        android:title="@string/rc_landlord_tab_debt" />
+    <item
+        android:id="@id/profileFragment"
+        android:icon="@drawable/ic_person"
+        android:title="@string/rc_tenant_tab_profile" />
+</menu>

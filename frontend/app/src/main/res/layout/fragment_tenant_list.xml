@@ -8,35 +8,42 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/surface">
+        android:background="@color/surface"
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
+            style="@style/RoomCare.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@android:color/white"
-            app:title="Quản lý người thuê"
-            app:titleTextColor="@android:color/white" />
+            app:title="Người thuê"
+            app:titleTextAppearance="@style/RoomCare.Title" />
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/RoomCare.Input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="10dp"
+            app:endIconMode="clear_text"
             app:startIconDrawable="@drawable/ic_search"
-            app:endIconMode="clear_text">
+            app:startIconTint="@color/rc_muted">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Tìm theo tên, SĐT..."
-                android:imeOptions="actionSearch" />
-
+                android:hint="Tìm tên, số điện thoại, phòng..."
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/rc_line" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
@@ -53,8 +60,10 @@
                 android:id="@+id/rvTenants"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingTop="8dp"
+                android:paddingBottom="96dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <ProgressBar
@@ -62,49 +71,75 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:indeterminateTint="@color/rc_brand"
             android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/layoutEmpty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:padding="32dp"
             android:visibility="gone">
+
+            <FrameLayout
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/rc_badge">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_people"
+                    app:tint="@color/rc_brand" />
+            </FrameLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
                 android:text="Chưa có khách thuê"
-                android:textSize="18sp" />
+                android:textColor="@color/rc_ink"
+                android:textSize="17sp"
+                android:textStyle="bold" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Nhấn nút + để thêm khách thuê mới"
+                android:textColor="@color/rc_muted"
+                android:textSize="13sp" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutError"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
+            android:padding="32dp"
             android:visibility="gone">
 
             <TextView
                 android:id="@+id/tvError"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@android:color/holo_red_dark" />
+                android:gravity="center"
+                android:textColor="@color/rc_danger"
+                android:textSize="15sp" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRetry"
+                style="@style/RoomCare.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thử lại"
-                android:layout_marginTop="16dp" />
-
+                android:layout_marginTop="14dp"
+                android:text="Thử lại" />
         </LinearLayout>
-
     </FrameLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -8,47 +8,46 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/surface">
+        android:background="@color/surface"
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
+            style="@style/RoomCare.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            app:menu="@menu/menu_room_list"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@android:color/white"
-            app:title="Danh sách phòng"
-            app:titleTextColor="@android:color/white"
-            app:menu="@menu/menu_room_list" />
+            app:title="Phòng"
+            app:titleTextAppearance="@style/RoomCare.Title" />
 
-        <!-- Search Bar -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilSearch"
             style="@style/RoomCare.Input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="12dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="4dp"
             app:endIconMode="clear_text"
-            app:startIconDrawable="@drawable/ic_search">
+            app:startIconDrawable="@drawable/ic_search"
+            app:startIconTint="@color/rc_muted">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Tìm theo mã phòng, nhà trọ, người thuê..."
+                android:hint="Tìm mã phòng, nhà trọ hoặc người thuê"
                 android:imeOptions="actionSearch"
-                android:inputType="text" />
-
+                android:inputType="text"
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Status Filter Chips -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:scrollbars="none">
 
             <com.google.android.material.chip.ChipGroup
@@ -65,40 +64,47 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="@string/all_status" />
+                    android:text="@string/all_status"
+                    app:chipBackgroundColor="@color/rc_chip_background" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipVacant"
                     style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/status_vacant" />
+                    android:text="@string/status_vacant"
+                    app:chipBackgroundColor="@color/rc_chip_background" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipOccupied"
                     style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/status_occupied" />
+                    android:text="@string/status_occupied"
+                    app:chipBackgroundColor="@color/rc_chip_background" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipExpiring"
                     style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/status_expiring_soon" />
+                    android:text="@string/status_expiring_soon"
+                    app:chipBackgroundColor="@color/rc_chip_background" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipAttention"
                     style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/status_needs_attention" />
-
+                    android:text="@string/status_needs_attention"
+                    app:chipBackgroundColor="@color/rc_chip_background" />
             </com.google.android.material.chip.ChipGroup>
-
         </HorizontalScrollView>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/rc_line" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
@@ -106,7 +112,6 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- RecyclerView -->
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefresh"
             android:layout_width="match_parent"
@@ -117,90 +122,88 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingBottom="80dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="96dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <!-- Loading -->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:indeterminateTint="@color/rc_brand"
             android:visibility="gone" />
 
-        <!-- Empty State -->
         <LinearLayout
             android:id="@+id/layoutEmpty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:padding="32dp"
             android:visibility="gone">
 
-            <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@android:drawable/ic_menu_gallery"
-                android:alpha="0.3" />
+            <FrameLayout
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/rc_badge">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_room"
+                    app:tint="@color/rc_brand" />
+            </FrameLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
                 android:text="Chưa có phòng nào"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginTop="16dp" />
+                android:textColor="@color/rc_ink"
+                android:textSize="17sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
                 android:text="Nhấn nút + để thêm phòng mới"
-                android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
-                android:layout_marginTop="8dp" />
-
+                android:textColor="@color/rc_muted"
+                android:textSize="13sp" />
         </LinearLayout>
 
-        <!-- Error State -->
         <LinearLayout
             android:id="@+id/layoutError"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:padding="32dp"
             android:visibility="gone">
-
-            <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@android:drawable/stat_notify_error"
-                android:alpha="0.3" />
 
             <TextView
                 android:id="@+id/tvError"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="Đã xảy ra lỗi"
-                android:textSize="16sp"
-                android:textColor="@android:color/holo_red_dark"
-                android:layout_marginTop="16dp" />
+                android:textColor="@color/rc_danger"
+                android:textSize="15sp" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRetry"
+                style="@style/RoomCare.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thử lại"
-                android:layout_marginTop="16dp" />
-
+                android:layout_marginTop="14dp"
+                android:text="Thử lại" />
         </LinearLayout>
-
     </FrameLayout>
 
-    <!-- FAB Add Room -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddRoom"
         android:layout_width="wrap_content"
