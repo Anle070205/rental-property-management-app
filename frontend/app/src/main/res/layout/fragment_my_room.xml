@@ -48,6 +48,17 @@
         android:text="@string/rc_retry"
         android:visibility="gone" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnExploreRooms"
+        style="@style/RoomCare.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:text="@string/rc_browse_properties"
+        android:visibility="gone"
+        app:icon="@drawable/ic_search" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -142,6 +153,19 @@
                     android:textSize="17sp"
                     android:textStyle="bold"
                     tools:text="Giá thuê: 3.800.000 ₫" />
+
+                <TextView
+                    android:id="@+id/tvHealthScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rc_badge_success"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:textColor="@color/health_good"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    tools:text="Health Score: 100/100" />
             </LinearLayout>
 
             <!-- Room Info Rows Card -->

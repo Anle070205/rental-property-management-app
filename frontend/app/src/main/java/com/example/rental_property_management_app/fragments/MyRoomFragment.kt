@@ -29,13 +29,18 @@ class MyRoomFragment : Fragment(R.layout.fragment_my_room) {
         _binding = FragmentMyRoomBinding.bind(view)
         binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
         binding.retry.setOnClickListener { viewModel.load() }
+        binding.btnExploreRooms.setOnClickListener {
+            findNavController().navigate(R.id.tenantPropertyListFragment)
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.room.collect { result ->
                 val room = result.data
                 binding.progress.isVisible = result is Resource.Loading
                 binding.retry.isVisible = result is Resource.Error
+                val hasNoRoom = result is Resource.Success && room?.roomCode == null
+                binding.btnExploreRooms.isVisible = hasNoRoom
                 binding.status.text = result.message ?: getString(R.string.rc_no_active_room)
-                binding.status.isVisible = result is Resource.Error || (result is Resource.Success && room?.roomCode == null)
+                binding.status.isVisible = result is Resource.Error || hasNoRoom
                 binding.content.isVisible = room?.roomCode != null
                 if (room?.roomCode != null) display(room)
             }
@@ -47,6 +52,8 @@ class MyRoomFragment : Fragment(R.layout.fragment_my_room) {
         binding.roomCode.text = room.roomCode
         binding.address.text = getString(R.string.rc_room_address, room.address.orEmpty())
         binding.rentPrice.text = getString(R.string.rc_room_rent, room.rentPrice?.let(CurrencyUtils::formatVND).orEmpty())
+        val score = room.healthScore ?: 100
+        binding.tvHealthScore.text = "Health Score: $score/100"
         binding.amenities.text = getString(R.string.rc_room_amenities, room.amenities.joinToString(", "))
         binding.landlord.text = getString(R.string.rc_room_landlord, listOfNotNull(room.landlordName, room.landlordPhone).joinToString(" · "))
         val phone = room.landlordPhone

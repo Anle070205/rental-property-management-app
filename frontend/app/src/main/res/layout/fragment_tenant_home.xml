@@ -138,6 +138,7 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/roomStatusBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rc_badge_success"
@@ -162,6 +163,24 @@
                 android:layout_height="wrap_content"
                 android:text="@string/rc_my_room"
                 app:icon="@drawable/ic_room" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBrowseProperties"
+                style="@style/RoomCare.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/rc_browse_properties"
+                app:icon="@drawable/ic_search" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMyBookings"
+                style="@style/RoomCare.Button.Tonal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/rc_my_bookings"
+                app:icon="@drawable/ic_description" />
         </LinearLayout>
 
         <!-- Payment Hero Card (Figma 34:23729) -->

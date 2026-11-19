@@ -12,7 +12,8 @@ data class TenantDashboard(
 
 data class MyRoom(
     val roomCode: String?, val address: String?, val rentPrice: BigDecimal?,
-    val amenities: List<String>, val landlordName: String?, val landlordPhone: String?
+    val amenities: List<String>, val landlordName: String?, val landlordPhone: String?,
+    val healthScore: Int? = null
 )
 
 data class MyContract(
