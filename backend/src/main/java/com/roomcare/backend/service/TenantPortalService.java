@@ -10,6 +10,7 @@ import com.roomcare.backend.dto.tenant.TenantPaymentResponse;
 import com.roomcare.backend.entity.Tenant;
 import com.roomcare.backend.entity.User;
 import com.roomcare.backend.repository.TenantRepository;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -21,43 +22,54 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class TenantPortalService {
     private final TenantRepository tenants;
     private final NotificationService notifications;
     private final ObjectProvider<TenantPortalProvider> provider;
 
     public TenantDashboardResponse dashboard(User user) {
-        Tenant tenant = tenantFor(user);
+        Optional<Tenant> tenantOpt = optionalTenantFor(user);
         TenantPortalProvider source = provider.getIfAvailable();
-        var amountDue = source == null ? null : source.amountDue(tenant).orElse(null);
-        return new TenantDashboardResponse(user.getFullName(),
-                source == null ? null : source.activeRoomCode(tenant).orElse(null),
-                amountDue == null ? null : amountDue.amount(), amountDue == null ? null : amountDue.dueDate(),
-                notifications.unreadCount(user));
+        if (tenantOpt.isEmpty() || source == null) {
+            return new TenantDashboardResponse(user.getFullName(), null, null, null, notifications.unreadCount(user));
+        }
+        Tenant tenant = tenantOpt.get();
+        var amountDue = source.amountDue(tenant).orElse(null);
+        return new TenantDashboardResponse(
+                user.getFullName(),
+                source.activeRoomCode(tenant).orElse(null),
+                amountDue == null ? null : amountDue.amount(),
+                amountDue == null ? null : amountDue.dueDate(),
+                notifications.unreadCount(user)
+        );
     }
 
     public MyRoomResponse room(User user) {
-        Tenant tenant = tenantFor(user);
+        Optional<Tenant> tenantOpt = optionalTenantFor(user);
         TenantPortalProvider source = provider.getIfAvailable();
-        return source == null ? MyRoomResponse.empty() : source.room(tenant).orElseGet(MyRoomResponse::empty);
+        if (tenantOpt.isEmpty() || source == null) {
+            return MyRoomResponse.empty();
+        }
+        return source.room(tenantOpt.get()).orElseGet(MyRoomResponse::empty);
     }
 
     public MyContractResponse contract(User user) {
-        Tenant tenant = tenantFor(user);
+        Optional<Tenant> tenantOpt = optionalTenantFor(user);
         TenantPortalProvider source = provider.getIfAvailable();
-        return source == null ? MyContractResponse.empty() : source.contract(tenant).orElseGet(MyContractResponse::empty);
+        if (tenantOpt.isEmpty() || source == null) {
+            return MyContractResponse.empty();
+        }
+        return source.contract(tenantOpt.get()).orElseGet(MyContractResponse::empty);
     }
 
-    @Transactional
     public boolean requestRenewal(User user, Long contractId) {
-        Tenant tenant = tenantFor(user);
+        Optional<Tenant> tenantOpt = optionalTenantFor(user);
         TenantPortalProvider source = provider.getIfAvailable();
-        return source != null && source.requestRenewal(tenant, contractId);
+        return tenantOpt.isPresent() && source != null && source.requestRenewal(tenantOpt.get(), contractId);
     }
 
     public PageResponse<TenantInvoiceResponse> invoices(User user, String month, String status, int page, int size) {
-        Tenant tenant = tenantFor(user);
         if (month != null && !month.matches("[0-9]{4}-(0[1-9]|1[0-2])")) {
             throw new RuntimeException("Tháng phải theo định dạng YYYY-MM");
         }
@@ -65,34 +77,44 @@ public class TenantPortalService {
             throw new RuntimeException("Trạng thái hóa đơn không hợp lệ");
         }
         var pageable = pageRequest(page, size);
+        Optional<Tenant> tenantOpt = optionalTenantFor(user);
         TenantPortalProvider source = provider.getIfAvailable();
-        Page<TenantInvoiceResponse> result = source == null ? Page.empty(pageable)
-                : source.invoices(tenant, month, status, pageable);
+        if (tenantOpt.isEmpty() || source == null) {
+            return PageResponse.of(List.of(), page, size, 0, 0);
+        }
+        Page<TenantInvoiceResponse> result = source.invoices(tenantOpt.get(), month, status, pageable);
         return PageResponse.of(result.getContent(), page, size, result.getTotalElements(), result.getTotalPages());
     }
 
     public Optional<TenantInvoiceResponse> invoice(User user, Long invoiceId) {
-        Tenant tenant = tenantFor(user);
-        return Optional.ofNullable(provider.getIfAvailable()).flatMap(source -> source.invoice(tenant, invoiceId));
+        Optional<Tenant> tenantOpt = optionalTenantFor(user);
+        TenantPortalProvider source = provider.getIfAvailable();
+        if (tenantOpt.isEmpty() || source == null) {
+            return Optional.empty();
+        }
+        return source.invoice(tenantOpt.get(), invoiceId);
     }
 
     public Optional<TenantPaymentInfoResponse> paymentInfo(User user, Long invoiceId) {
-        Tenant tenant = tenantFor(user);
+        Optional<Tenant> tenantOpt = optionalTenantFor(user);
         TenantPortalProvider source = provider.getIfAvailable();
-        if (source == null) {
+        if (tenantOpt.isEmpty() || source == null) {
             return Optional.empty();
         }
+        Tenant tenant = tenantOpt.get();
         return source.invoice(tenant, invoiceId)
                 .filter(invoice -> invoice.remainingAmount().signum() > 0)
                 .flatMap(invoice -> source.paymentInfo(tenant, invoiceId));
     }
 
     public PageResponse<TenantPaymentResponse> payments(User user, int page, int size) {
-        Tenant tenant = tenantFor(user);
         var pageable = pageRequest(page, size);
+        Optional<Tenant> tenantOpt = optionalTenantFor(user);
         TenantPortalProvider source = provider.getIfAvailable();
-        Page<TenantPaymentResponse> result = source == null ? Page.empty(pageable)
-                : source.payments(tenant, pageable);
+        if (tenantOpt.isEmpty() || source == null) {
+            return PageResponse.of(List.of(), page, size, 0, 0);
+        }
+        Page<TenantPaymentResponse> result = source.payments(tenantOpt.get(), pageable);
         return PageResponse.of(result.getContent(), page, size, result.getTotalElements(), result.getTotalPages());
     }
 
@@ -103,7 +125,7 @@ public class TenantPortalService {
         return PageRequest.of(page, size);
     }
 
-    private Tenant tenantFor(User user) {
+    private Optional<Tenant> optionalTenantFor(User user) {
         return tenants.findByUserId(user.getId())
                 .or(() -> tenants.findFirstByEmailIgnoreCaseOrPhone(user.getEmail(), user.getPhone())
                         .map(found -> {
@@ -112,7 +134,6 @@ public class TenantPortalService {
                                 return tenants.save(found);
                             }
                             return found;
-                        }))
-                .orElseThrow(() -> new RuntimeException("Tài khoản chưa được liên kết với người thuê"));
+                        }));
     }
 }

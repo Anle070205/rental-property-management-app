@@ -4,11 +4,13 @@ import com.roomcare.backend.dto.PageResponse;
 import com.roomcare.backend.dto.tenant.CreateTenantRequest;
 import com.roomcare.backend.dto.tenant.TenantResponse;
 import com.roomcare.backend.dto.tenant.UpdateTenantRequest;
+import com.roomcare.backend.entity.BookingRequest;
 import com.roomcare.backend.entity.Invoice;
 import com.roomcare.backend.entity.Property;
 import com.roomcare.backend.entity.Role;
 import com.roomcare.backend.entity.Tenant;
 import com.roomcare.backend.entity.User;
+import com.roomcare.backend.repository.BookingRequestRepository;
 import com.roomcare.backend.repository.InvoiceRepository;
 import com.roomcare.backend.repository.PropertyRepository;
 import com.roomcare.backend.repository.TenantRepository;
@@ -34,6 +36,7 @@ public class TenantService {
     private final PropertyRepository propertyRepository;
     private final UserRepository userRepository;
     private final InvoiceRepository invoiceRepository;
+    private final BookingRequestRepository bookingRequestRepository;
     
     @Transactional
     public TenantResponse createTenant(Long landlordId, CreateTenantRequest request) {
@@ -203,11 +206,26 @@ public class TenantService {
         response.setDateOfBirth(tenant.getDateOfBirth());
         response.setAddress(tenant.getAddress());
         response.setEmergencyContact(tenant.getEmergencyContact());
-        List<Invoice> tenantInvoices = invoiceRepository.findByTenantIdOrderByBillingMonthDescCreatedAtDesc(tenant.getId());
-        if (!tenantInvoices.isEmpty()) {
-            String roomCode = tenantInvoices.get(0).getRoom().getRoomCode();
-            response.setCurrentRoom("Phòng " + roomCode);
-            response.setCurrentContract("Đang hiệu lực - Phòng " + roomCode);
+        String resolvedRoomCode = null;
+        if (bookingRequestRepository != null && tenant.getUser() != null) {
+            resolvedRoomCode = bookingRequestRepository
+                    .findFirstByTenantUserIdAndRequestTypeAndStatusOrderByUpdatedAtDesc(
+                            tenant.getUser().getId(),
+                            BookingRequest.RequestType.BOOKING,
+                            BookingRequest.Status.APPROVED
+                    )
+                    .map(b -> b.getRoom().getRoomCode())
+                    .orElse(null);
+        }
+        if (resolvedRoomCode == null) {
+            List<Invoice> tenantInvoices = invoiceRepository.findByTenantIdOrderByBillingMonthDescCreatedAtDesc(tenant.getId());
+            if (!tenantInvoices.isEmpty()) {
+                resolvedRoomCode = tenantInvoices.get(0).getRoom().getRoomCode();
+            }
+        }
+        if (resolvedRoomCode != null) {
+            response.setCurrentRoom("Phòng " + resolvedRoomCode);
+            response.setCurrentContract("Đang hiệu lực - Phòng " + resolvedRoomCode);
         } else {
             response.setCurrentRoom(null);
             response.setCurrentContract(null);

@@ -4,9 +4,11 @@ import com.roomcare.backend.dto.dashboard.AttentionItemResponse;
 import com.roomcare.backend.dto.dashboard.LandlordDashboardResponse;
 import com.roomcare.backend.dto.dashboard.MonthlyRevenueResponse;
 import com.roomcare.backend.dto.health.RoomHealthScoreResponse;
+import com.roomcare.backend.entity.BookingRequest;
 import com.roomcare.backend.entity.Invoice;
 import com.roomcare.backend.entity.Room;
 import com.roomcare.backend.entity.RoomStatus;
+import com.roomcare.backend.repository.BookingRequestRepository;
 import com.roomcare.backend.repository.InvoiceRepository;
 import com.roomcare.backend.repository.PropertyRepository;
 import com.roomcare.backend.repository.RoomRepository;
@@ -29,6 +31,7 @@ public class DashboardService {
     private final RoomRepository roomRepository;
     private final InvoiceRepository invoiceRepository;
     private final HealthScoreService healthScoreService;
+    private final BookingRequestRepository bookingRequestRepository;
 
     @Transactional(readOnly = true)
     public LandlordDashboardResponse getLandlordDashboard(Long landlordId) {
@@ -159,6 +162,9 @@ public class DashboardService {
         }
 
         int issueRooms = Math.max(needsAttentionStatusCount, attentionRooms.size());
+        int pendingBookingCount = bookingRequestRepository != null
+                ? (int) bookingRequestRepository.countByLandlordIdAndStatus(landlordId, BookingRequest.Status.PENDING)
+                : 0;
 
         return new LandlordDashboardResponse(
                 totalProperties,
@@ -172,6 +178,7 @@ public class DashboardService {
                 uncollectedAmount,
                 collectionRate,
                 averageHealthScore,
+                pendingBookingCount,
                 monthlyRevenues,
                 expiringContracts,
                 attentionRooms

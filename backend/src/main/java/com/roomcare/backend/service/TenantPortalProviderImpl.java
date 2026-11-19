@@ -5,6 +5,7 @@ import com.roomcare.backend.dto.tenant.MyRoomResponse;
 import com.roomcare.backend.dto.tenant.TenantInvoiceResponse;
 import com.roomcare.backend.dto.tenant.TenantPaymentInfoResponse;
 import com.roomcare.backend.dto.tenant.TenantPaymentResponse;
+import com.roomcare.backend.entity.BookingRequest;
 import com.roomcare.backend.entity.Invoice;
 import com.roomcare.backend.entity.InvoiceStatus;
 import com.roomcare.backend.entity.NotificationType;
@@ -12,6 +13,7 @@ import com.roomcare.backend.entity.Payment;
 import com.roomcare.backend.entity.Room;
 import com.roomcare.backend.entity.RoomStatus;
 import com.roomcare.backend.entity.Tenant;
+import com.roomcare.backend.repository.BookingRequestRepository;
 import com.roomcare.backend.repository.InvoiceRepository;
 import com.roomcare.backend.repository.PaymentRepository;
 import com.roomcare.backend.repository.RoomRepository;
@@ -37,6 +39,7 @@ public class TenantPortalProviderImpl implements TenantPortalProvider {
     private final InvoiceRepository invoiceRepository;
     private final PaymentRepository paymentRepository;
     private final RoomRepository roomRepository;
+    private final BookingRequestRepository bookingRequestRepository;
     private final NotificationService notificationService;
 
     @Override
@@ -49,13 +52,15 @@ public class TenantPortalProviderImpl implements TenantPortalProvider {
                     .filter(s -> !s.isBlank())
                     .collect(Collectors.toList());
             String fullAddress = room.getProperty().getName() + " - " + room.getProperty().getAddress();
+            int healthScore = room.getHealthScore() != null ? room.getHealthScore() : 100;
             return new MyRoomResponse(
                     room.getRoomCode(),
                     fullAddress,
                     room.getRentPrice(),
                     amenities,
                     tenant.getLandlord().getFullName(),
-                    tenant.getLandlord().getPhone()
+                    tenant.getLandlord().getPhone(),
+                    healthScore
             );
         });
     }
@@ -65,12 +70,12 @@ public class TenantPortalProviderImpl implements TenantPortalProvider {
         return findActiveRoom(tenant).map(room -> {
             LocalDate startDate = tenant.getCreatedAt() != null
                     ? tenant.getCreatedAt().toLocalDate().withDayOfMonth(1)
-                    : LocalDate.now().minusMonths(6).withDayOfMonth(1);
+                    : LocalDate.now().withDayOfMonth(1);
             LocalDate endDate = startDate.plusYears(1).minusDays(1);
             if (!endDate.isAfter(LocalDate.now())) {
                 endDate = LocalDate.now().plusMonths(3);
             }
-            String status = room.getStatus() == RoomStatus.EXPIRING_SOON ? "ACTIVE" : "ACTIVE";
+            String status = "ACTIVE";
             String terms = "Hợp đồng thuê phòng " + room.getRoomCode() + " tại " + room.getProperty().getName()
                     + ". Thanh toán tiền phòng và điện nước định kỳ hàng tháng trước ngày hạn thanh toán. "
                     + "Giữ gìn vệ sinh chung, tài sản phòng và tuân thủ nội quy khu trọ.";
@@ -188,6 +193,17 @@ public class TenantPortalProviderImpl implements TenantPortalProvider {
     }
 
     private Optional<Room> findActiveRoom(Tenant tenant) {
+        if (bookingRequestRepository != null && tenant.getUser() != null) {
+            Optional<BookingRequest> approvedBooking = bookingRequestRepository
+                    .findFirstByTenantUserIdAndRequestTypeAndStatusOrderByUpdatedAtDesc(
+                            tenant.getUser().getId(),
+                            BookingRequest.RequestType.BOOKING,
+                            BookingRequest.Status.APPROVED
+                    );
+            if (approvedBooking.isPresent()) {
+                return Optional.of(approvedBooking.get().getRoom());
+            }
+        }
         List<Invoice> tenantInvoices = invoiceRepository
                 .findByTenantIdOrderByBillingMonthDescCreatedAtDesc(tenant.getId());
         if (!tenantInvoices.isEmpty()) {

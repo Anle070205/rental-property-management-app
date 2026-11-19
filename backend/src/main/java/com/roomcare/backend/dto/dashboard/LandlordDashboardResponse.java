@@ -23,6 +23,7 @@ public class LandlordDashboardResponse {
     private BigDecimal uncollectedAmount;
     private double collectionRate;
     private int averageHealthScore;
+    private int pendingBookingCount;
     private List<MonthlyRevenueResponse> monthlyRevenues = new ArrayList<>();
     private List<AttentionItemResponse> expiringContracts = new ArrayList<>();
     private List<AttentionItemResponse> attentionRooms = new ArrayList<>();
