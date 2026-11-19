@@ -3,6 +3,7 @@ package com.roomcare.backend.config;
 import com.roomcare.backend.entity.*;
 import com.roomcare.backend.dto.incident.CreateIncidentRequest;
 import com.roomcare.backend.repository.*;
+import com.roomcare.backend.service.HealthScoreService;
 import com.roomcare.backend.service.IncidentService;
 import com.roomcare.backend.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class DataSeeder {
     private final PasswordEncoder passwordEncoder;
     private final IncidentService incidentService;
     private final NotificationService notificationService;
+    private final HealthScoreService healthScoreService;
     
     @Bean
     public CommandLineRunner seedData() {
@@ -62,7 +64,36 @@ public class DataSeeder {
             if (incidentRepository.count() == 0) {
                 seedSampleIncidentsAndNotifications();
             }
+
+            syncAllRoomHealthScores();
         };
+    }
+
+    private void syncAllRoomHealthScores() {
+        List<Room> allRooms = roomRepository.findAll();
+        for (Room room : allRooms) {
+            boolean dirty = false;
+            if (room.getElectricityPrice() == null) {
+                room.setElectricityPrice(new BigDecimal("3500"));
+                dirty = true;
+            }
+            if (room.getWaterPrice() == null) {
+                room.setWaterPrice(new BigDecimal("15000"));
+                dirty = true;
+            }
+            if (room.getInternetFee() == null) {
+                room.setInternetFee(new BigDecimal("100000"));
+                dirty = true;
+            }
+            if (room.getServiceFee() == null) {
+                room.setServiceFee(new BigDecimal("50000"));
+                dirty = true;
+            }
+            if (dirty) {
+                roomRepository.save(room);
+            }
+            healthScoreService.syncRoomHealthScore(room);
+        }
     }
 
     private void repairSampleDataIfNeeded() {
