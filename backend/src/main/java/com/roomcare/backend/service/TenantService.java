@@ -4,9 +4,12 @@ import com.roomcare.backend.dto.PageResponse;
 import com.roomcare.backend.dto.tenant.CreateTenantRequest;
 import com.roomcare.backend.dto.tenant.TenantResponse;
 import com.roomcare.backend.dto.tenant.UpdateTenantRequest;
+import com.roomcare.backend.entity.Invoice;
 import com.roomcare.backend.entity.Property;
+import com.roomcare.backend.entity.Role;
 import com.roomcare.backend.entity.Tenant;
 import com.roomcare.backend.entity.User;
+import com.roomcare.backend.repository.InvoiceRepository;
 import com.roomcare.backend.repository.PropertyRepository;
 import com.roomcare.backend.repository.TenantRepository;
 import com.roomcare.backend.repository.UserRepository;
@@ -18,7 +21,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +33,7 @@ public class TenantService {
     private final TenantRepository tenantRepository;
     private final PropertyRepository propertyRepository;
     private final UserRepository userRepository;
+    private final InvoiceRepository invoiceRepository;
     
     @Transactional
     public TenantResponse createTenant(Long landlordId, CreateTenantRequest request) {
@@ -62,10 +68,26 @@ public class TenantService {
         tenant.setDateOfBirth(request.getDateOfBirth());
         tenant.setAddress(request.getAddress());
         tenant.setEmergencyContact(request.getEmergencyContact());
-        tenant.setUser(null); // Khách thuê chưa có tài khoản
+        tenant.setUser(resolveMatchingTenantUser(request.getEmail(), request.getPhone()).orElse(null));
         
         Tenant saved = tenantRepository.save(tenant);
         return mapToResponse(saved, false); // false = không mask CMND khi tạo mới
+    }
+
+    private Optional<User> resolveMatchingTenantUser(String email, String phone) {
+        if (email != null && !email.isBlank()) {
+            Optional<User> byEmail = userRepository.findByEmail(email.trim());
+            if (byEmail.isPresent() && byEmail.get().getRole() == Role.TENANT) {
+                return byEmail;
+            }
+        }
+        if (phone != null && !phone.isBlank()) {
+            Optional<User> byPhone = userRepository.findByPhone(phone.trim());
+            if (byPhone.isPresent() && byPhone.get().getRole() == Role.TENANT) {
+                return byPhone;
+            }
+        }
+        return Optional.empty();
     }
     
     @Transactional(readOnly = true)
@@ -140,6 +162,9 @@ public class TenantService {
         tenant.setDateOfBirth(request.getDateOfBirth());
         tenant.setAddress(request.getAddress());
         tenant.setEmergencyContact(request.getEmergencyContact());
+        if (tenant.getUser() == null) {
+            resolveMatchingTenantUser(request.getEmail(), request.getPhone()).ifPresent(tenant::setUser);
+        }
         
         Tenant updated = tenantRepository.save(tenant);
         return mapToResponse(updated, false);
@@ -154,10 +179,12 @@ public class TenantService {
             throw new RuntimeException("Bạn không có quyền xóa khách thuê này");
         }
         
-        // TODO: Phase 3 - Kiểm tra khách thuê có hợp đồng đang hoạt động không
-        // if (hasActiveContract(tenantId)) {
-        //     throw new RuntimeException("Không thể xóa khách thuê đang có hợp đồng hoạt động");
-        // }
+        List<Invoice> tenantInvoices = invoiceRepository.findByTenantIdOrderByBillingMonthDescCreatedAtDesc(tenantId);
+        boolean hasUnpaid = tenantInvoices.stream()
+                .anyMatch(inv -> inv.getRemainingAmount().compareTo(BigDecimal.ZERO) > 0);
+        if (hasUnpaid) {
+            throw new RuntimeException("Không thể xóa khách thuê đang còn hóa đơn chưa thanh toán");
+        }
         
         tenantRepository.delete(tenant);
     }
@@ -176,8 +203,15 @@ public class TenantService {
         response.setDateOfBirth(tenant.getDateOfBirth());
         response.setAddress(tenant.getAddress());
         response.setEmergencyContact(tenant.getEmergencyContact());
-        response.setCurrentRoom(null); // TODO: Phase 3
-        response.setCurrentContract(null); // TODO: Phase 3
+        List<Invoice> tenantInvoices = invoiceRepository.findByTenantIdOrderByBillingMonthDescCreatedAtDesc(tenant.getId());
+        if (!tenantInvoices.isEmpty()) {
+            String roomCode = tenantInvoices.get(0).getRoom().getRoomCode();
+            response.setCurrentRoom("Phòng " + roomCode);
+            response.setCurrentContract("Đang hiệu lực - Phòng " + roomCode);
+        } else {
+            response.setCurrentRoom(null);
+            response.setCurrentContract(null);
+        }
         response.setCreatedAt(tenant.getCreatedAt());
         response.setUpdatedAt(tenant.getUpdatedAt());
         

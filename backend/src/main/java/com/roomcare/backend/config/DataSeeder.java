@@ -37,6 +37,7 @@ public class DataSeeder {
     private final UtilityRecordRepository utilityRecordRepository;
     private final InvoiceRepository invoiceRepository;
     private final PaymentRepository paymentRepository;
+    private final IncidentRepository incidentRepository;
     private final PasswordEncoder passwordEncoder;
     private final IncidentService incidentService;
     private final NotificationService notificationService;
@@ -48,14 +49,87 @@ public class DataSeeder {
             if (userRepository.count() == 0) {
                 seedBaseData();
             } else {
-                System.out.println("Base data already exists. Skipping base seed.");
+                System.out.println("Base data already exists. Verifying sample credentials and encoding...");
+                repairSampleDataIfNeeded();
             }
 
             // Seed dữ liệu Phase 4 (Member 2) nếu chưa có hóa đơn
             if (invoiceRepository.count() == 0) {
                 seedFinanceAndHealthData();
             }
+
+            // Seed sự cố & thông báo mẫu nếu bảng incidents đang trống
+            if (incidentRepository.count() == 0) {
+                seedSampleIncidentsAndNotifications();
+            }
         };
+    }
+
+    private void repairSampleDataIfNeeded() {
+        Map<String, String> expectedNames = Map.of(
+                "landlord1@example.com", "Nguyễn Văn A",
+                "landlord2@example.com", "Trần Thị B",
+                "tenant1@example.com", "Lê Văn C"
+        );
+        expectedNames.forEach((email, fullName) -> userRepository.findByEmail(email).ifPresent(user -> {
+            boolean dirty = false;
+            if (!passwordEncoder.matches("123456", user.getPassword())) {
+                user.setPassword(passwordEncoder.encode("123456"));
+                dirty = true;
+            }
+            if (user.getFullName() == null || user.getFullName().contains("?")) {
+                user.setFullName(fullName);
+                dirty = true;
+            }
+            if (dirty) {
+                userRepository.save(user);
+            }
+        }));
+
+        List<Property> properties = propertyRepository.findAll();
+        for (Property p : properties) {
+            String fixed = null;
+            if (p.getName() != null && p.getName().contains("Ho??ng Anh")) fixed = "Nhà trọ Hoàng Anh";
+            else if (p.getName() != null && p.getName().contains("Minh Khang")) fixed = "Nhà trọ Minh Khang";
+            else if (p.getName() != null && p.getName().contains("B??nh An")) fixed = "Nhà trọ Bình An";
+            if (fixed != null) {
+                p.setName(fixed);
+                propertyRepository.save(p);
+            }
+        }
+
+        List<Tenant> tenants = tenantRepository.findAll();
+        for (Tenant t : tenants) {
+            if ("0923456789".equals(t.getPhone()) && t.getFullName().contains("?")) {
+                t.setFullName("Lê Văn C");
+                t.setAddress("Bình Dương");
+                tenantRepository.save(t);
+            } else if ("0934567890".equals(t.getPhone()) && t.getFullName().contains("?")) {
+                t.setFullName("Phạm Thị D");
+                tenantRepository.save(t);
+            } else if ("0945678901".equals(t.getPhone()) && t.getFullName().contains("?")) {
+                t.setFullName("Hoàng Văn E");
+                t.setAddress("Đồng Nai");
+                tenantRepository.save(t);
+            }
+        }
+    }
+
+    private void seedSampleIncidentsAndNotifications() {
+        User tenant1 = userRepository.findByEmail("tenant1@example.com").orElse(null);
+        if (tenant1 == null || tenantRepository.findByUserId(tenant1.getId()).isEmpty()) {
+            return;
+        }
+        var waterIncident = incidentService.create(tenant1, new CreateIncidentRequest(
+                Incident.Type.WATER, "Vòi nước bị rò rỉ", "Vòi nước ở bồn rửa bị nhỏ giọt liên tục.",
+                Incident.Priority.MEDIUM, null));
+        incidentService.create(tenant1, new CreateIncidentRequest(
+                Incident.Type.ELECTRIC, "Đèn hành lang chập chờn", "Đèn hành lang nhấp nháy vào buổi tối.",
+                Incident.Priority.HIGH, null));
+        notificationService.createNotification(tenant1, NotificationType.INCIDENT,
+                "Đã tiếp nhận sự cố", "Chủ nhà đã nhận báo cáo về vòi nước.", waterIncident.id());
+        notificationService.createNotification(tenant1, NotificationType.SYSTEM,
+                "Chào mừng đến RoomCare", "Bạn có thể theo dõi hóa đơn, thanh toán QR và báo sự cố trên ứng dụng.", null);
     }
 
     private void seedBaseData() {

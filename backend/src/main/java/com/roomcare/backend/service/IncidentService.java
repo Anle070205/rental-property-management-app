@@ -4,6 +4,7 @@ import com.roomcare.backend.dto.PageResponse;
 import com.roomcare.backend.dto.incident.*;
 import com.roomcare.backend.entity.*;
 import com.roomcare.backend.repository.IncidentRepository;
+import com.roomcare.backend.repository.InvoiceRepository;
 import com.roomcare.backend.repository.TenantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,7 @@ public class IncidentService {
     private final IncidentRepository incidents;
     private final TenantRepository tenants;
     private final NotificationService notifications;
+    private final InvoiceRepository invoiceRepository;
 
     @Transactional(readOnly = true)
     public PageResponse<IncidentResponse> list(User user, Incident.Status status, int page, int size) {
@@ -42,7 +44,12 @@ public class IncidentService {
         Tenant tenant = tenantFor(user);
         Incident incident = new Incident();
         incident.setTenant(tenant);
-        // TODO: Gán phòng từ hợp đồng ACTIVE khi module hợp đồng được tích hợp.
+        if (invoiceRepository != null) {
+            invoiceRepository.findByTenantIdOrderByBillingMonthDescCreatedAtDesc(tenant.getId())
+                    .stream()
+                    .findFirst()
+                    .ifPresent(inv -> incident.setRoom(inv.getRoom()));
+        }
         incident.setType(request.type());
         incident.setTitle(request.title().trim());
         incident.setDescription(request.description().trim());

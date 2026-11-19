@@ -4,9 +4,11 @@ import com.roomcare.backend.dto.PageResponse;
 import com.roomcare.backend.dto.room.CreateRoomRequest;
 import com.roomcare.backend.dto.room.RoomResponse;
 import com.roomcare.backend.dto.room.UpdateRoomRequest;
+import com.roomcare.backend.entity.Invoice;
 import com.roomcare.backend.entity.Property;
 import com.roomcare.backend.entity.Room;
 import com.roomcare.backend.entity.RoomStatus;
+import com.roomcare.backend.repository.InvoiceRepository;
 import com.roomcare.backend.repository.PropertyRepository;
 import com.roomcare.backend.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class RoomService {
     
     private final RoomRepository roomRepository;
     private final PropertyRepository propertyRepository;
+    private final InvoiceRepository invoiceRepository;
     
     @Transactional
     public RoomResponse createRoom(Long landlordId, CreateRoomRequest request) {
@@ -195,14 +198,24 @@ public class RoomService {
             throw new RuntimeException("Bạn không có quyền xóa phòng này");
         }
         
-        // TODO: Phase 3 - Kiểm tra phòng có hợp đồng đang hoạt động không
-        // if (hasActiveContract(roomId)) {
-        //     throw new RuntimeException("Không thể xóa phòng đang có hợp đồng hoạt động");
-        // }
-        
+        if (room.getStatus() == RoomStatus.OCCUPIED) {
+            throw new RuntimeException("Không thể xóa phòng đang có người thuê");
+        }
+
+        List<Invoice> roomInvoices = invoiceRepository.findByRoomIdOrderByBillingMonthDesc(roomId);
+        boolean hasUnpaid = roomInvoices.stream()
+                .anyMatch(inv -> inv.getRemainingAmount().compareTo(BigDecimal.ZERO) > 0);
+        if (hasUnpaid) {
+            throw new RuntimeException("Không thể xóa phòng đang còn hóa đơn chưa thanh toán");
+        }
+
+        if (!roomInvoices.isEmpty()) {
+            throw new RuntimeException("Phòng đã phát sinh hóa đơn lịch sử, không thể xóa trực tiếp");
+        }
+
         roomRepository.delete(room);
     }
-    
+
     private RoomResponse mapToResponse(Room room) {
         RoomResponse response = new RoomResponse();
         response.setId(room.getId());
@@ -218,8 +231,15 @@ public class RoomService {
         response.setDescription(room.getDescription());
         response.setImageUrl(room.getImageUrl());
         response.setStatus(room.getStatus());
-        response.setCurrentContract(null); // TODO: Phase 3
-        response.setCurrentTenant(null); // TODO: Phase 3
+        List<Invoice> roomInvoices = invoiceRepository.findByRoomIdOrderByBillingMonthDesc(room.getId());
+        String tenantLabel = roomInvoices.stream()
+                .map(Invoice::getTenant)
+                .filter(java.util.Objects::nonNull)
+                .findFirst()
+                .map(t -> t.getFullName() + " (" + t.getPhone() + ")")
+                .orElse(null);
+        response.setCurrentContract(room.getStatus() == RoomStatus.VACANT ? null : "Đang hiệu lực");
+        response.setCurrentTenant(tenantLabel);
         response.setCreatedAt(room.getCreatedAt());
         response.setUpdatedAt(room.getUpdatedAt());
         return response;

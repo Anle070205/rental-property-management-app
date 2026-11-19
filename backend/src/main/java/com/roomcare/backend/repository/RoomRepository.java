@@ -10,11 +10,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
     
     Page<Room> findByPropertyId(Long propertyId, Pageable pageable);
+
+    List<Room> findByPropertyIdAndStatusInOrderByRoomCodeAsc(Long propertyId, List<RoomStatus> statuses);
     
     @Query("SELECT r FROM Room r WHERE r.property.landlord.id = :landlordId")
     Page<Room> findByLandlordId(@Param("landlordId") Long landlordId, Pageable pageable);

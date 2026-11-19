@@ -52,6 +52,13 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     List<Invoice> findByRoomIdOrderByBillingMonthDesc(Long roomId);
 
+    List<Invoice> findByTenantIdOrderByBillingMonthDescCreatedAtDesc(Long tenantId);
+
+    List<Invoice> findByTenantIdAndRemainingAmountGreaterThanOrderByDueDateAsc(
+        Long tenantId,
+        BigDecimal minRemaining
+    );
+
     List<Invoice> findByLandlordIdAndRemainingAmountGreaterThanOrderByDueDateAsc(
         Long landlordId,
         BigDecimal minRemaining

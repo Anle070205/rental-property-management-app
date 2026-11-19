@@ -12,6 +12,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TenantRepository extends JpaRepository<Tenant, Long> {
     Optional<Tenant> findByUserId(Long userId);
+
+    Optional<Tenant> findFirstByEmailIgnoreCaseOrPhone(String email, String phone);
+
+    Optional<Tenant> findFirstByPropertyIdOrderByIdAsc(Long propertyId);
     
     Page<Tenant> findByLandlordId(Long landlordId, Pageable pageable);
     

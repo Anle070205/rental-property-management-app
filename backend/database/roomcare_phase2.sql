@@ -99,9 +99,9 @@ CREATE TABLE tenants (
 -- BCrypt hash được generate bởi Spring Security BCryptPasswordEncoder
 -- Chạy backend lần đầu với DataSeeder để tạo hash, hoặc dùng hash dưới đây:
 INSERT INTO users (full_name, email, phone, password, role, is_active) VALUES
-('Nguyễn Văn A', 'landlord1@example.com', '0901234567', '$2a$10$N9qo8uLOickgx2ZMRZoMye1pHPWKjLLsCJgFBN9xKcCflGJRJq.8q', 'LANDLORD', TRUE),
-('Trần Thị B', 'landlord2@example.com', '0912345678', '$2a$10$N9qo8uLOickgx2ZMRZoMye1pHPWKjLLsCJgFBN9xKcCflGJRJq.8q', 'LANDLORD', TRUE),
-('Lê Văn C', 'tenant1@example.com', '0923456789', '$2a$10$N9qo8uLOickgx2ZMRZoMye1pHPWKjLLsCJgFBN9xKcCflGJRJq.8q', 'TENANT', TRUE);
+('Nguyễn Văn A', 'landlord1@example.com', '0901234567', '$2a$10$GiWwmnRbxhp0yNAQHemop.rTWz3.rueGEdUHGxks3GoY5UM/KuJfS', 'LANDLORD', TRUE),
+('Trần Thị B', 'landlord2@example.com', '0912345678', '$2a$10$GiWwmnRbxhp0yNAQHemop.rTWz3.rueGEdUHGxks3GoY5UM/KuJfS', 'LANDLORD', TRUE),
+('Lê Văn C', 'tenant1@example.com', '0923456789', '$2a$10$GiWwmnRbxhp0yNAQHemop.rTWz3.rueGEdUHGxks3GoY5UM/KuJfS', 'TENANT', TRUE);
 
 -- 2. Insert Properties
 INSERT INTO properties (landlord_id, name, address, description) VALUES

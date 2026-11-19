@@ -62,10 +62,10 @@ public class TenantController {
     }
     
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTenant(
+    public ApiResponse<Void> deleteTenant(
             @AuthenticationPrincipal User landlord,
             @PathVariable Long id) {
         tenantService.deleteTenant(landlord.getId(), id);
+        return ApiResponse.success("Đã xóa khách thuê thành công");
     }
 }

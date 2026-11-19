@@ -105,6 +105,14 @@ public class TenantPortalService {
 
     private Tenant tenantFor(User user) {
         return tenants.findByUserId(user.getId())
+                .or(() -> tenants.findFirstByEmailIgnoreCaseOrPhone(user.getEmail(), user.getPhone())
+                        .map(found -> {
+                            if (found.getUser() == null) {
+                                found.setUser(user);
+                                return tenants.save(found);
+                            }
+                            return found;
+                        }))
                 .orElseThrow(() -> new RuntimeException("Tài khoản chưa được liên kết với người thuê"));
     }
 }
