@@ -59,7 +59,15 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
                         NotificationType.INVOICE -> if (refId != null) {
                             nav.navigate(R.id.tenantInvoiceDetailFragment, bundleOf("invoiceId" to refId))
                         }
-                        NotificationType.CONTRACT -> nav.navigate(R.id.myContractFragment)
+                        NotificationType.CONTRACT -> {
+                            val isBookingOrContact = item.title.contains("đặt phòng", ignoreCase = true) ||
+                                item.title.contains("liên hệ", ignoreCase = true)
+                            if (isBookingOrContact) {
+                                nav.navigate(R.id.tenantBookingListFragment)
+                            } else {
+                                nav.navigate(R.id.myContractFragment)
+                            }
+                        }
                         NotificationType.PAYMENT -> nav.navigate(R.id.paymentHistoryFragment)
                         else -> Unit
                     }
@@ -70,10 +78,16 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
                         } else {
                             nav.navigate(R.id.invoiceFragment)
                         }
-                        NotificationType.CONTRACT -> if (refId != null) {
-                            nav.navigate(R.id.roomDetailFragment, bundleOf("roomId" to refId))
-                        } else {
-                            nav.navigate(R.id.roomListFragment)
+                        NotificationType.CONTRACT -> {
+                            val isBookingOrContact = item.title.contains("đặt phòng", ignoreCase = true) ||
+                                item.title.contains("liên hệ", ignoreCase = true)
+                            if (isBookingOrContact) {
+                                nav.navigate(R.id.landlordBookingListFragment)
+                            } else if (refId != null) {
+                                nav.navigate(R.id.roomDetailFragment, bundleOf("roomId" to refId))
+                            } else {
+                                nav.navigate(R.id.roomListFragment)
+                            }
                         }
                         NotificationType.INCIDENT, NotificationType.MAINTENANCE ->
                             nav.navigate(R.id.healthScoreFragment)

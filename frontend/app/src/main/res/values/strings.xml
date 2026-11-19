@@ -351,5 +351,36 @@
     <string name="dashboard_home_title">Tổng quan Chủ nhà</string>
     <string name="dashboard_no_attention">Không có phòng nào gặp sự cố hoặc nợ xấu</string>
     <string name="dashboard_no_expiring">Chưa có hợp đồng sắp hết hạn</string>
+
+    <!-- Marketplace, Booking & Health Score = 100 -->
+    <string name="rc_my_properties">Nhà trọ của tôi</string>
+    <string name="rc_add_property">Thêm nhà trọ</string>
+    <string name="rc_edit_property">Cập nhật nhà trọ</string>
+    <string name="rc_property_saved">Đã lưu thông tin nhà trọ</string>
+    <string name="rc_default_health_score_title">Health Score mặc định: 100/100</string>
+    <string name="rc_default_health_score_desc">Mọi phòng mới đều bắt đầu ở mức 100 điểm làm cơ sở đánh giá khi người thuê báo cáo hư hỏng/sự cố.</string>
+    <string name="rc_error_floor_invalid">Số tầng phải lớn hơn hoặc bằng 0</string>
+    <string name="rc_error_deposit_required">Vui lòng nhập tiền đặt cọc</string>
+    <string name="rc_error_deposit_invalid">Tiền đặt cọc phải lớn hơn hoặc bằng 0</string>
+    <string name="rc_error_amount_invalid">Số tiền phải lớn hơn hoặc bằng 0</string>
+    <string name="rc_browse_properties">Tìm nhà trọ &amp; Đặt phòng</string>
+    <string name="rc_my_bookings">Yêu cầu đặt phòng &amp; Liên hệ</string>
+    <string name="rc_booking_requests">Đặt phòng &amp; Liên hệ</string>
+    <string name="rc_no_booking_requests">Chưa có yêu cầu đặt phòng hoặc liên hệ nào</string>
+    <string name="rc_booking_updated">Đã cập nhật phản hồi yêu cầu</string>
+    <string name="rc_booking_cancelled">Đã hủy yêu cầu</string>
+    <string name="rc_landlord_note_hint">Ghi chú phản hồi cho người thuê (tùy chọn)</string>
+    <string name="rc_no_room_badge">Chưa có phòng</string>
+    <string name="rc_tenant_health_score_explain">Điểm tình trạng phòng mặc định 100/100 cho phòng mới. Khi phát sinh hư hỏng hoặc sự cố trong quá trình thuê, điểm sẽ được đối chiếu và trừ theo mức độ thực tế.</string>
+    <string name="rc_contact_landlord">Liên hệ chủ nhà</string>
+    <string name="rc_book_room_now">Đặt phòng ngay</string>
+    <string name="rc_booking_already_pending">Đã gửi yêu cầu đặt phòng</string>
+    <string name="rc_contact_message_hint">Nội dung liên hệ / hẹn xem phòng</string>
+    <string name="rc_send_request">Gửi yêu cầu</string>
+    <string name="rc_move_in_date_hint">Ngày dự kiến dọn vào (yyyy-MM-dd)</string>
+    <string name="rc_confirm_booking">Gửi yêu cầu đặt phòng</string>
+    <string name="rc_booking_sent_success">Đã gửi yêu cầu đặt phòng tới chủ nhà</string>
+    <string name="rc_contact_sent_success">Đã gửi tin nhắn liên hệ tới chủ nhà</string>
+    <string name="rc_view_requests">Xem yêu cầu</string>
 </resources>
 

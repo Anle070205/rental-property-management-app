@@ -75,14 +75,11 @@ class AuthViewModel : ViewModel() {
      * Logout user
      */
     fun logout() {
+        RoomCareApplication.prefsManager.clearAllData()
         viewModelScope.launch {
             _logoutState.value = Resource.Loading()
-            
             val result = repository.logout()
             _logoutState.value = result
-            
-            // Clear user data
-            RoomCareApplication.prefsManager.clearAllData()
         }
     }
     
