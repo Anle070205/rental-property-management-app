@@ -93,11 +93,19 @@ class RoomDetailFragment : Fragment() {
             tvFloor.text = "Tầng ${room.floor}"
             tvArea.text = "${room.area} m²"
             tvRentPrice.text = CurrencyUtils.formatVND(room.rentPrice.toLong())
+            tvHealthScoreBadge.text = "Health Score: ${room.healthScore}/100"
             tvDeposit.text = "Cọc: ${CurrencyUtils.formatVND(room.deposit.toLong())}"
             tvCapacity.text = "Sức chứa: ${room.capacity} người"
             tvStatus.text = room.status.getDisplayName()
             tvPropertyName.text = room.propertyName
             tvAmenities.text = room.amenities ?: "Chưa có thông tin"
+            val fees = listOfNotNull(
+                room.electricityPrice?.let { "Điện: ${CurrencyUtils.formatVND(it)}/kWh" },
+                room.waterPrice?.let { "Nước: ${CurrencyUtils.formatVND(it)}/m³" },
+                room.internetFee?.let { "Wifi: ${CurrencyUtils.formatVND(it)}" },
+                room.serviceFee?.let { "Dịch vụ: ${CurrencyUtils.formatVND(it)}" }
+            )
+            tvUtilityRates.text = if (fees.isNotEmpty()) fees.joinToString(" • ") else "Chưa khai báo đơn giá dịch vụ"
             tvDescription.text = room.description ?: "Chưa có mô tả"
             
             // Tenant info

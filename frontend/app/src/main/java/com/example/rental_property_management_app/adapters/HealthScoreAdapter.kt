@@ -94,6 +94,7 @@ class HealthScoreAdapter(
 
         private fun shortFactorName(name: String): String {
             return when {
+                name.contains("Sự cố", ignoreCase = true) || name.contains("Tình trạng", ignoreCase = true) -> "Sự cố"
                 name.contains("Thanh toán") -> "Thanh toán"
                 name.contains("Hợp đồng") -> "Hợp đồng"
                 name.contains("điện nước", ignoreCase = true) -> "Điện nước"

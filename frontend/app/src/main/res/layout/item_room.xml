@@ -140,6 +140,19 @@
                     android:textColor="@color/rc_muted"
                     android:textSize="12sp"
                     tools:text="Khách: Nguyễn Hoàng Nam" />
+
+                <TextView
+                    android:id="@+id/tvHealthScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/rc_badge_success"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:textColor="@color/health_good"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    tools:text="Health Score: 100/100" />
             </LinearLayout>
 
             <ImageButton

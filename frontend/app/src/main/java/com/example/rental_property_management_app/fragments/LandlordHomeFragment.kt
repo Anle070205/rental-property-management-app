@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -116,6 +117,15 @@ class LandlordHomeFragment : Fragment() {
         binding.cardTenantManagement.setOnClickListener {
             findNavController().navigate(R.id.tenantListFragment)
         }
+        binding.cardPropertyManagement.setOnClickListener {
+            findNavController().navigate(
+                R.id.propertySelectionFragment,
+                bundleOf("selectMode" to false)
+            )
+        }
+        binding.cardBookingRequests.setOnClickListener {
+            findNavController().navigate(R.id.landlordBookingListFragment)
+        }
     }
 
     private fun observeStates() {
@@ -154,6 +164,7 @@ class LandlordHomeFragment : Fragment() {
             tvExpiringRooms.text = "Sắp hết hạn: ${data.expiringSoonRooms}"
             tvIssueRooms.text = "Cần chú ý: ${data.issueRooms}"
             tvAvgHealthScore.text = "Health: ${data.averageHealthScore}/100"
+            tvBookingRequestsSubtitle.text = "${data.pendingBookingCount} yêu cầu chờ duyệt"
 
             tvTotalRevenue.text = CurrencyUtils.formatVND(data.totalRevenue)
             tvCollectedAmount.text = CurrencyUtils.formatVND(data.collectedAmount)
