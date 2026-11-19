@@ -45,4 +45,16 @@ public class CreateRoomRequest {
     private String description;
     
     private String imageUrl;
+
+    @DecimalMin(value = "0.00", message = "Đơn giá điện phải lớn hơn hoặc bằng 0")
+    private BigDecimal electricityPrice;
+
+    @DecimalMin(value = "0.00", message = "Đơn giá nước phải lớn hơn hoặc bằng 0")
+    private BigDecimal waterPrice;
+
+    @DecimalMin(value = "0.00", message = "Phí internet phải lớn hơn hoặc bằng 0")
+    private BigDecimal internetFee;
+
+    @DecimalMin(value = "0.00", message = "Phí dịch vụ phải lớn hơn hoặc bằng 0")
+    private BigDecimal serviceFee;
 }

@@ -57,6 +57,11 @@ CREATE TABLE rooms (
     description TEXT,
     image_url VARCHAR(255),
     status VARCHAR(20) NOT NULL DEFAULT 'VACANT',
+    health_score INT NOT NULL DEFAULT 100,
+    electricity_price DECIMAL(15,2),
+    water_price DECIMAL(15,2),
+    internet_fee DECIMAL(15,2),
+    service_fee DECIMAL(15,2),
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE,
@@ -89,6 +94,35 @@ CREATE TABLE tenants (
     INDEX idx_property (property_id),
     INDEX idx_phone (phone),
     INDEX idx_identity (identity_number)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- 5. BOOKING_REQUESTS TABLE (Đặt phòng & Liên hệ)
+-- =====================================================
+CREATE TABLE booking_requests (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    room_id BIGINT NOT NULL,
+    property_id BIGINT NOT NULL,
+    landlord_id BIGINT NOT NULL,
+    tenant_user_id BIGINT NOT NULL,
+    request_type VARCHAR(20) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    tenant_name VARCHAR(100) NOT NULL,
+    tenant_phone VARCHAR(20) NOT NULL,
+    tenant_email VARCHAR(100),
+    identity_number VARCHAR(20),
+    move_in_date DATE,
+    message TEXT,
+    landlord_note TEXT,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
+    FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE,
+    FOREIGN KEY (landlord_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (tenant_user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_booking_landlord_created (landlord_id, created_at),
+    INDEX idx_booking_tenant_created (tenant_user_id, created_at),
+    INDEX idx_booking_room_status (room_id, status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
