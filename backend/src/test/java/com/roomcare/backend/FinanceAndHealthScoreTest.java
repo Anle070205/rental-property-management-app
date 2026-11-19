@@ -13,6 +13,8 @@ import com.roomcare.backend.repository.*;
 import com.roomcare.backend.service.DebtService;
 import com.roomcare.backend.service.HealthScoreService;
 import com.roomcare.backend.service.InvoiceService;
+import com.roomcare.backend.service.NotificationService;
+import com.roomcare.backend.service.TenantPortalProviderImpl;
 import com.roomcare.backend.service.UtilityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,11 +43,13 @@ class FinanceAndHealthScoreTest {
     @Mock private TenantRepository tenantRepository;
     @Mock private UserRepository userRepository;
     @Mock private UtilityRecordRepository utilityRecordRepository;
+    @Mock private NotificationService notificationService;
 
     @InjectMocks private InvoiceService invoiceService;
     @InjectMocks private UtilityService utilityService;
     @InjectMocks private DebtService debtService;
     @InjectMocks private HealthScoreService healthScoreService;
+    @InjectMocks private TenantPortalProviderImpl tenantPortalProvider;
 
     private User landlord;
     private Property property;
@@ -372,5 +376,51 @@ class FinanceAndHealthScoreTest {
         assertEquals("RISK", riskScore.getRatingLevel());
         assertFalse(riskScore.getReasonsForDeduction().isEmpty());
         assertFalse(riskScore.getRecommendations().isEmpty());
+    }
+
+    @Test
+    void tenantPortalProvider_scopesDataAndNeverMarksPaidOnQrView() {
+        Invoice inv = new Invoice();
+        inv.setId(501L);
+        inv.setInvoiceCode("INV-202611-102-R100");
+        inv.setLandlord(landlord);
+        inv.setProperty(property);
+        inv.setRoom(roomOccupied);
+        inv.setTenant(tenant);
+        inv.setBillingMonth(YearMonth.now().toString());
+        inv.setRoomRent(new BigDecimal("3000000"));
+        inv.setElectricityAmount(new BigDecimal("350000"));
+        inv.setWaterAmount(new BigDecimal("90000"));
+        inv.setInternetAmount(new BigDecimal("100000"));
+        inv.setServiceAmount(new BigDecimal("50000"));
+        inv.setOtherFees(BigDecimal.ZERO);
+        inv.setPreviousDebt(BigDecimal.ZERO);
+        inv.setDiscountAmount(BigDecimal.ZERO);
+        inv.setTotalAmount(new BigDecimal("3590000"));
+        inv.setPaidAmount(BigDecimal.ZERO);
+        inv.setRemainingAmount(new BigDecimal("3590000"));
+        inv.setStatus(InvoiceStatus.UNPAID);
+        inv.setDueDate(LocalDate.now().plusDays(5));
+
+        when(invoiceRepository.findById(501L)).thenReturn(Optional.of(inv));
+        when(invoiceRepository.findByTenantIdOrderByBillingMonthDescCreatedAtDesc(50L)).thenReturn(List.of(inv));
+
+        // 1. Opening QR payment info returns exact transfer amount/content and keeps status UNPAID
+        var qrInfo = tenantPortalProvider.paymentInfo(tenant, 501L).orElseThrow();
+        assertEquals(new BigDecimal("3590000"), qrInfo.amount());
+        assertTrue(qrInfo.transferContent().contains("INV-202611-102-R100"));
+        assertEquals(InvoiceStatus.UNPAID, inv.getStatus());
+        verify(invoiceRepository, never()).save(any());
+
+        // 2. Cross-tenant isolation: another tenant cannot read tenant 50's invoice or QR
+        Tenant otherTenant = new Tenant();
+        otherTenant.setId(99L);
+        assertTrue(tenantPortalProvider.invoice(otherTenant, 501L).isEmpty());
+        assertTrue(tenantPortalProvider.paymentInfo(otherTenant, 501L).isEmpty());
+
+        // 3. Contract renewal sends notification to landlord
+        boolean sent = tenantPortalProvider.requestRenewal(tenant, roomOccupied.getId());
+        assertTrue(sent);
+        verify(notificationService).createNotification(eq(landlord), eq(NotificationType.CONTRACT), anyString(), anyString(), eq(roomOccupied.getId()));
     }
 }
