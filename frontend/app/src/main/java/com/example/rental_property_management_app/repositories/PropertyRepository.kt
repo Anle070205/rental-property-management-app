@@ -82,7 +82,7 @@ class PropertyRepository {
                 Resource.Error(apiResponse?.message ?: "Lỗi không xác định")
             }
         } else {
-            Resource.Error("HTTP ${response.code()}: ${response.message()}")
+            Resource.Error(ApiResultHandler.extractErrorMessage(response))
         }
     }
 }

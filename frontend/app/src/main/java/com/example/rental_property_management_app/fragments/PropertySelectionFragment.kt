@@ -76,8 +76,9 @@ class PropertySelectionFragment : Fragment() {
     }
 
     private fun onPropertySelected(property: PropertyResponse) {
-        // Send result back to RoomFormFragment
-        findNavController().previousBackStackEntry?.savedStateHandle?.set("selected_property_id", property.id)
+        val handle = findNavController().previousBackStackEntry?.savedStateHandle
+        handle?.set("selected_property_id", property.id)
+        handle?.set("selected_property_name", property.name)
         findNavController().navigateUp()
     }
 

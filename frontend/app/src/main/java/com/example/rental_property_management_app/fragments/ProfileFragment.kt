@@ -28,16 +28,27 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentProfileBinding.bind(view)
+        if (com.example.rental_property_management_app.RoomCareApplication.prefsManager.getUserRole() != "TENANT") {
+            binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+            binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
+        }
         binding.retry.setOnClickListener { profile.load() }
         binding.save.setOnClickListener {
-            profile.save(UpdateProfileRequest(binding.fullName.text.toString().trim(), binding.phone.text.toString().trim()))
+            val name = binding.fullName.text.toString().trim()
+            val phone = binding.phone.text.toString().trim()
+            when {
+                name.isBlank() -> binding.fullName.error = getString(R.string.error_full_name_required)
+                !com.example.rental_property_management_app.utils.ValidationUtils.isValidPhone(phone) ->
+                    binding.phone.error = getString(R.string.error_phone_invalid)
+                else -> profile.save(UpdateProfileRequest(name, phone))
+            }
         }
         binding.password.setOnClickListener { requestPassword() }
         binding.logout.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.rc_logout)
                 .setMessage(R.string.rc_logout_confirm)
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.rc_logout) { _, _ -> auth.logout() }
                 .show()
         }
@@ -85,7 +96,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.rc_change_password)
             .setView(fields.root)
-            .setNegativeButton(android.R.string.cancel, null)
+            .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.rc_save, null)
             .show()
         dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {

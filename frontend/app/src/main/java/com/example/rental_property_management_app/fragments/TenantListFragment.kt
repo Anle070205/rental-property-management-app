@@ -40,13 +40,20 @@ class TenantListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
+        setupToolbar()
         setupRecyclerView()
         setupSearchView()
         setupClickListeners()
         observeTenantsState()
         
         // Load initial data
-        viewModel.loadTenants()
+        viewModel.loadTenants(size = 50)
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
     
     private fun setupRecyclerView() {
@@ -59,22 +66,27 @@ class TenantListFragment : Fragment() {
     
     private fun setupSearchView() {
         binding.etSearch.addTextChangedListener { text ->
-            val keyword = text?.toString()
-            if (!keyword.isNullOrEmpty() && keyword.length >= 2) {
+            val keyword = text?.toString()?.trim().orEmpty()
+            if (keyword.isNotEmpty()) {
                 viewModel.searchTenants(keyword)
-            } else if (keyword.isNullOrEmpty()) {
-                viewModel.loadTenants()
+            } else {
+                viewModel.loadTenants(size = 50)
             }
         }
     }
     
     private fun setupClickListeners() {
+        binding.fabAddTenant.setOnClickListener {
+            val action = TenantListFragmentDirections.actionTenantListToTenantForm(tenantId = 0L)
+            findNavController().navigate(action)
+        }
+
         binding.swipeRefresh.setOnRefreshListener {
-            viewModel.loadTenants()
+            viewModel.loadTenants(size = 50)
         }
         
         binding.btnRetry.setOnClickListener {
-            viewModel.loadTenants()
+            viewModel.loadTenants(size = 50)
         }
     }
     

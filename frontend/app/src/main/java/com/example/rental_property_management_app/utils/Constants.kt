@@ -6,7 +6,7 @@ object Constants {
 
     const val BASE_URL = "http://10.0.2.2:8080/" // Android emulator host loopback
     const val API_PREFIX = "api/"
-    const val USE_MOCK_TENANT_DATA = true
+    const val USE_MOCK_TENANT_DATA = false
     
     // API Endpoints
     object Endpoints {

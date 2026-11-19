@@ -37,7 +37,7 @@ object ApiResultHandler {
         return Resource.Error(extractErrorMessage(response))
     }
 
-    private fun extractErrorMessage(response: Response<*>): String {
+    fun extractErrorMessage(response: Response<*>): String {
         val raw = try {
             response.errorBody()?.string()
         } catch (e: Exception) {

@@ -46,6 +46,10 @@ class RoomDetailFragment : Fragment() {
     }
     
     private fun setupClickListeners() {
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
         binding.btnEdit.setOnClickListener {
             val action = RoomDetailFragmentDirections.actionRoomDetailToRoomForm(args.roomId)
             findNavController().navigate(action)

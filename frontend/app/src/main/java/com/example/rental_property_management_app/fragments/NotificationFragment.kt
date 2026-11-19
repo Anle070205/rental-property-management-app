@@ -49,19 +49,36 @@ class NotificationFragment : Fragment(R.layout.fragment_notification) {
             viewModel.opened.collect { item ->
                 if (item == null) return@collect
                 viewModel.consumeOpened()
-                val incidentId = item.refId
-                if (RoomCareApplication.prefsManager.getUserRole() != "TENANT") return@collect
+                val refId = item.refId
                 val nav = findNavController()
-                when (item.type) {
-                    NotificationType.INCIDENT -> if (incidentId != null) {
-                        nav.navigate(R.id.incidentDetailFragment, bundleOf("incidentId" to incidentId))
+                if (RoomCareApplication.prefsManager.getUserRole() == "TENANT") {
+                    when (item.type) {
+                        NotificationType.INCIDENT -> if (refId != null) {
+                            nav.navigate(R.id.incidentDetailFragment, bundleOf("incidentId" to refId))
+                        }
+                        NotificationType.INVOICE -> if (refId != null) {
+                            nav.navigate(R.id.tenantInvoiceDetailFragment, bundleOf("invoiceId" to refId))
+                        }
+                        NotificationType.CONTRACT -> nav.navigate(R.id.myContractFragment)
+                        NotificationType.PAYMENT -> nav.navigate(R.id.paymentHistoryFragment)
+                        else -> Unit
                     }
-                    NotificationType.INVOICE -> if (incidentId != null) {
-                        nav.navigate(R.id.tenantInvoiceDetailFragment, bundleOf("invoiceId" to incidentId))
+                } else {
+                    when (item.type) {
+                        NotificationType.INVOICE, NotificationType.PAYMENT -> if (refId != null) {
+                            nav.navigate(R.id.invoiceDetailFragment, bundleOf("invoiceId" to refId))
+                        } else {
+                            nav.navigate(R.id.invoiceFragment)
+                        }
+                        NotificationType.CONTRACT -> if (refId != null) {
+                            nav.navigate(R.id.roomDetailFragment, bundleOf("roomId" to refId))
+                        } else {
+                            nav.navigate(R.id.roomListFragment)
+                        }
+                        NotificationType.INCIDENT, NotificationType.MAINTENANCE ->
+                            nav.navigate(R.id.healthScoreFragment)
+                        else -> Unit
                     }
-                    NotificationType.CONTRACT -> nav.navigate(R.id.myContractFragment)
-                    NotificationType.PAYMENT -> nav.navigate(R.id.paymentHistoryFragment)
-                    else -> Unit
                 }
             }
         }

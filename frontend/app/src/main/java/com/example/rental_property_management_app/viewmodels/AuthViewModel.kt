@@ -34,13 +34,19 @@ class AuthViewModel : ViewModel() {
     val forgotPasswordState: StateFlow<Resource<String>?> = _forgotPasswordState
     
     /**
-     * Register new user (LANDLORD only)
+     * Register new user (LANDLORD or TENANT)
      */
-    fun register(fullName: String, email: String, phone: String, password: String) {
+    fun register(
+        fullName: String,
+        email: String,
+        phone: String,
+        password: String,
+        role: String = "LANDLORD"
+    ) {
         viewModelScope.launch {
             _registerState.value = Resource.Loading()
             
-            val result = repository.register(fullName, email, phone, password)
+            val result = repository.register(fullName, email, phone, password, role)
             _registerState.value = result
             
             // Save user data if success

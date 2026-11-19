@@ -105,10 +105,16 @@ class RoomFormFragment : Fragment() {
         }
 
         // Listen for property selection result
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Long>("selected_property_id")
+        val savedState = findNavController().currentBackStackEntry?.savedStateHandle
+        savedState?.getLiveData<Long>("selected_property_id")
             ?.observe(viewLifecycleOwner) { propertyId ->
                 selectedPropertyId = propertyId
-                binding.propertySelectionGroup.visibility = View.GONE
+                val propName = savedState.get<String>("selected_property_name")
+                binding.btnSelectProperty.text = if (!propName.isNullOrBlank()) {
+                    "Nhà trọ: $propName"
+                } else {
+                    getString(R.string.property_selected)
+                }
                 Snackbar.make(binding.root, getString(R.string.property_selected), Snackbar.LENGTH_SHORT).show()
             }
     }

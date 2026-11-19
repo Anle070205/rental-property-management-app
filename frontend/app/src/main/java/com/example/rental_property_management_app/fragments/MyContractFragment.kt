@@ -70,7 +70,7 @@ class MyContractFragment : Fragment(R.layout.fragment_my_contract) {
         binding.renew.setOnClickListener {
             val id = contract.id ?: return@setOnClickListener
             MaterialAlertDialogBuilder(requireContext()).setMessage(R.string.rc_contract_confirm_renew)
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.rc_contract_renew) { _, _ -> viewModel.requestRenewal(id) }
                 .show()
         }

@@ -21,6 +21,7 @@ import com.example.rental_property_management_app.utils.CurrencyUtils
 import com.example.rental_property_management_app.utils.Resource
 import com.example.rental_property_management_app.viewmodels.AuthViewModel
 import com.example.rental_property_management_app.viewmodels.DashboardViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -51,7 +52,14 @@ class LandlordHomeFragment : Fragment() {
 
         setupNavigationListeners()
         observeStates()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        val userName = RoomCareApplication.prefsManager.getUserName()
+        if (!userName.isNullOrBlank()) {
+            binding.tvWelcome.text = "Xin chào, $userName"
+        }
         dashboardViewModel.loadDashboard()
     }
 
@@ -64,12 +72,26 @@ class LandlordHomeFragment : Fragment() {
             dashboardViewModel.loadDashboard()
         }
 
+        binding.btnNotifications.setOnClickListener {
+            findNavController().navigate(R.id.notificationFragment)
+        }
+        binding.btnProfile.setOnClickListener {
+            findNavController().navigate(R.id.profileFragment)
+        }
+
         binding.btnLogout.setOnClickListener {
-            authViewModel.logout()
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.nav_graph, true)
-                .build()
-            findNavController().navigate(R.id.loginFragment, null, navOptions)
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.rc_logout)
+                .setMessage(R.string.rc_logout_confirm)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.rc_logout) { _, _ ->
+                    authViewModel.logout()
+                    val navOptions = NavOptions.Builder()
+                        .setPopUpTo(R.id.nav_graph, true)
+                        .build()
+                    findNavController().navigate(R.id.loginFragment, null, navOptions)
+                }
+                .show()
         }
 
         binding.cardInvoices.setOnClickListener {

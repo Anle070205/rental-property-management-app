@@ -15,6 +15,7 @@ import com.example.rental_property_management_app.models.CreateTenantRequest
 import com.example.rental_property_management_app.models.UpdateTenantRequest
 import com.example.rental_property_management_app.utils.DateUtils
 import com.example.rental_property_management_app.utils.ValidationUtils
+import com.example.rental_property_management_app.viewmodels.PropertyViewModel
 import com.example.rental_property_management_app.viewmodels.TenantViewModel
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
@@ -29,9 +30,11 @@ class TenantFormFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: TenantViewModel by viewModels()
+    private val propertyViewModel: PropertyViewModel by viewModels()
     private val args: TenantFormFragmentArgs by navArgs()
 
     private var selectedPropertyId: Long? = null
+    private var selectedPropertyName: String? = null
     private var isEditMode = false
     private var selectedDateOfBirth: Date? = null
 
@@ -67,13 +70,21 @@ class TenantFormFragment : Fragment() {
             binding.selectProperty.setOnClickListener {
                 navController.navigate(R.id.propertySelectionFragment)
             }
-            navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Long>("selected_property_id")
-                ?.observe(viewLifecycleOwner) {
-                    selectedPropertyId = it
-                    binding.selectProperty.setText(R.string.property_selected)
+            val savedState = navController.currentBackStackEntry?.savedStateHandle
+            savedState?.getLiveData<Long>("selected_property_id")?.observe(viewLifecycleOwner) { propId ->
+                selectedPropertyId = propId
+                val propName = savedState.get<String>("selected_property_name")
+                binding.selectProperty.text = if (!propName.isNullOrBlank()) {
+                    "Nhà trọ: $propName"
+                } else {
+                    getString(R.string.property_selected)
                 }
+            }
 
-            selectedPropertyId = args.roomId.takeIf { it != 0L } ?: 1L
+            if (args.roomId != 0L) {
+                selectedPropertyId = args.roomId
+            }
+            propertyViewModel.loadProperties()
         }
     }
 
@@ -114,6 +125,18 @@ class TenantFormFragment : Fragment() {
     }
 
     private fun observeStates() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            propertyViewModel.propertiesState.collect { state ->
+                val list = state.data
+                if (!isEditMode && selectedPropertyId == null && !list.isNullOrEmpty()) {
+                    val first = list.first()
+                    selectedPropertyId = first.id
+                    selectedPropertyName = first.name
+                    binding.selectProperty.text = "Nhà trọ: ${first.name}"
+                }
+            }
+        }
+
         // Observe tenant detail for edit mode
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.tenantDetailState.collect { state ->

@@ -5,11 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.databinding.FragmentTenantDetailBinding
 import com.example.rental_property_management_app.models.TenantResponse
 import com.example.rental_property_management_app.utils.DateUtils
@@ -39,13 +41,53 @@ class TenantDetailFragment : Fragment() {
         
         setupClickListeners()
         observeTenantDetail()
+        observeDeleteState()
         
         viewModel.loadTenantDetail(args.tenantId)
     }
     
     private fun setupClickListeners() {
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        binding.btnEdit.setOnClickListener {
+            val action = TenantDetailFragmentDirections.actionTenantDetailToTenantForm(tenantId = args.tenantId)
+            findNavController().navigate(action)
+        }
+
+        binding.btnDelete.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.confirm)
+                .setMessage(R.string.confirm_delete_tenant)
+                .setPositiveButton(R.string.delete) { _, _ ->
+                    viewModel.deleteTenant(args.tenantId)
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        }
+
         binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
+        }
+    }
+
+    private fun observeDeleteState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.deleteState.collectLatest { state ->
+                when {
+                    state.isLoading -> Unit
+                    state.data != null -> {
+                        Toast.makeText(context, getString(R.string.tenant_deleted), Toast.LENGTH_SHORT).show()
+                        viewModel.resetDeleteState()
+                        findNavController().navigateUp()
+                    }
+                    state.error != null -> {
+                        Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+                        viewModel.resetDeleteState()
+                    }
+                }
+            }
         }
     }
     

@@ -35,16 +35,17 @@ class AuthRepository {
     }
     
     /**
-     * Register new user (LANDLORD only)
+     * Register new user (LANDLORD or TENANT)
      */
     suspend fun register(
         fullName: String,
         email: String,
         phone: String,
-        password: String
+        password: String,
+        role: String = "LANDLORD"
     ): Resource<AuthResponse> = withContext(Dispatchers.IO) {
         try {
-            val request = RegisterRequest(fullName, email, phone, password)
+            val request = RegisterRequest(fullName, email, phone, password, role)
             val response = apiService.register(request)
             
             handleAuthResponse(response)
@@ -116,7 +117,7 @@ class AuthRepository {
                 Resource.Error(apiResponse.message)
             }
         } else {
-            Resource.Error(Constants.ErrorMessages.SERVER_ERROR)
+            Resource.Error(ApiResultHandler.extractErrorMessage(response))
         }
     }
 }
