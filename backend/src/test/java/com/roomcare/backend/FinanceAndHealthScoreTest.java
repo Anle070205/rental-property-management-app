@@ -43,6 +43,8 @@ class FinanceAndHealthScoreTest {
     @Mock private TenantRepository tenantRepository;
     @Mock private UserRepository userRepository;
     @Mock private UtilityRecordRepository utilityRecordRepository;
+    @Mock private IncidentRepository incidentRepository;
+    @Mock private BookingRequestRepository bookingRequestRepository;
     @Mock private NotificationService notificationService;
 
     @InjectMocks private InvoiceService invoiceService;
@@ -311,27 +313,34 @@ class FinanceAndHealthScoreTest {
 
         when(invoiceRepository.findByRoomIdOrderByBillingMonthDesc(100L)).thenReturn(List.of(paidInv));
         when(utilityRecordRepository.findByRoomIdOrderByBillingMonthDesc(100L)).thenReturn(List.of(utilGood));
+        when(incidentRepository.findByRoomIdOrderByCreatedAtDesc(100L)).thenReturn(List.of());
 
         RoomHealthScoreResponse goodScore = healthScoreService.calculateRoomHealthScore(roomOccupied);
         assertEquals(100, goodScore.getTotalScore());
         assertEquals("GOOD", goodScore.getRatingLevel());
 
-        // WARNING scenario (Expiring soon + 1 overdue invoice 5 days + missing utility 16/20 -> 28+15+16+15 = 74)
+        // WARNING scenario (Expiring soon 10 + 1 overdue invoice >15d 14 + open MEDIUM incident 34 + missing utility 15 -> 73)
         Invoice overdueCurr = new Invoice();
         overdueCurr.setStatus(InvoiceStatus.OVERDUE);
         overdueCurr.setRemainingAmount(new BigDecimal("3000000"));
         overdueCurr.setPaidAmount(BigDecimal.ZERO);
         overdueCurr.setTotalAmount(new BigDecimal("3000000"));
-        overdueCurr.setDueDate(LocalDate.now().minusDays(5));
+        overdueCurr.setDueDate(LocalDate.now().minusDays(20));
+
+        Incident mediumDamage = new Incident();
+        mediumDamage.setTitle("Hỏng khóa cửa");
+        mediumDamage.setPriority(Incident.Priority.MEDIUM);
+        mediumDamage.setStatus(Incident.Status.RECEIVED);
 
         when(invoiceRepository.findByRoomIdOrderByBillingMonthDesc(101L)).thenReturn(List.of(overdueCurr));
         when(utilityRecordRepository.findByRoomIdOrderByBillingMonthDesc(101L)).thenReturn(List.of());
+        when(incidentRepository.findByRoomIdOrderByCreatedAtDesc(101L)).thenReturn(List.of(mediumDamage));
 
         RoomHealthScoreResponse warningScore = healthScoreService.calculateRoomHealthScore(roomExpiring);
-        assertEquals(74, warningScore.getTotalScore());
+        assertEquals(73, warningScore.getTotalScore());
         assertEquals("WARNING", warningScore.getRatingLevel());
 
-        // Missing-data fallback scenario (VACANT room with no invoices & no utilities -> 35+12+16+15 = 78)
+        // Brand-new VACANT room defaults strictly to 100/100 (GOOD)
         Room roomVacant = new Room();
         roomVacant.setId(103L);
         roomVacant.setProperty(property);
@@ -339,11 +348,22 @@ class FinanceAndHealthScoreTest {
         roomVacant.setStatus(RoomStatus.VACANT);
         when(invoiceRepository.findByRoomIdOrderByBillingMonthDesc(103L)).thenReturn(List.of());
         when(utilityRecordRepository.findByRoomIdOrderByBillingMonthDesc(103L)).thenReturn(List.of());
-        RoomHealthScoreResponse missingDataScore = healthScoreService.calculateRoomHealthScore(roomVacant);
-        assertEquals(78, missingDataScore.getTotalScore());
-        assertTrue(missingDataScore.getFactors().get(0).getDetail().contains("điểm cơ sở"));
+        when(incidentRepository.findByRoomIdOrderByCreatedAtDesc(103L)).thenReturn(List.of());
+        RoomHealthScoreResponse brandNewScore = healthScoreService.calculateRoomHealthScore(roomVacant);
+        assertEquals(100, brandNewScore.getTotalScore());
+        assertEquals("GOOD", brandNewScore.getRatingLevel());
 
-        // RISK scenario (NEEDS_ATTENTION + 2 overdue > 15 days + spike > 50%)
+        // Damage deduction check from 100 baseline: open HIGH incident drops score by 10 -> 90
+        Incident highDamage = new Incident();
+        highDamage.setTitle("Vỡ ống nước nhà vệ sinh");
+        highDamage.setPriority(Incident.Priority.HIGH);
+        highDamage.setStatus(Incident.Status.RECEIVED);
+        when(incidentRepository.findByRoomIdOrderByCreatedAtDesc(103L)).thenReturn(List.of(highDamage));
+        RoomHealthScoreResponse afterDamage = healthScoreService.calculateRoomHealthScore(roomVacant);
+        assertEquals(90, afterDamage.getTotalScore());
+        assertTrue(afterDamage.getReasonsForDeduction().stream().anyMatch(r -> r.contains("Vỡ ống nước")));
+
+        // RISK scenario (NEEDS_ATTENTION + 2 overdue > 15 days + spike > 50% + open URGENT incident)
         Invoice od1 = new Invoice();
         od1.setStatus(InvoiceStatus.OVERDUE);
         od1.setRemainingAmount(new BigDecimal("2500000"));
@@ -368,8 +388,14 @@ class FinanceAndHealthScoreTest {
         uOld.setWaterUsage(new BigDecimal("6"));
         uOld.setIsAdjustment(false);
 
+        Incident urgentDamage = new Incident();
+        urgentDamage.setTitle("Chập điện cháy ổ cắm");
+        urgentDamage.setPriority(Incident.Priority.URGENT);
+        urgentDamage.setStatus(Incident.Status.IN_PROGRESS);
+
         when(invoiceRepository.findByRoomIdOrderByBillingMonthDesc(102L)).thenReturn(List.of(od2, od1));
         when(utilityRecordRepository.findByRoomIdOrderByBillingMonthDesc(102L)).thenReturn(List.of(uNew, uOld));
+        when(incidentRepository.findByRoomIdOrderByCreatedAtDesc(102L)).thenReturn(List.of(urgentDamage));
 
         RoomHealthScoreResponse riskScore = healthScoreService.calculateRoomHealthScore(roomAttention);
         assertTrue(riskScore.getTotalScore() < 50);
