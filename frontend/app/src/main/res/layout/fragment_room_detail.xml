@@ -15,7 +15,8 @@
             android:background="?attr/colorPrimary"
             app:title="Chi tiết phòng"
             app:titleTextColor="@android:color/white"
-            app:navigationIcon="@android:drawable/ic_menu_revert" />
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@android:color/white" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

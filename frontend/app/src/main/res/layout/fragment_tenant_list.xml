@@ -2,27 +2,31 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/rc_canvas">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/surface">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:title="Quản lý khách thuê"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@android:color/white"
+            app:title="Quản lý người thuê"
             app:titleTextColor="@android:color/white" />
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/RoomCare.Input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:startIconDrawable="@android:drawable/ic_menu_search"
-            app:endIconMode="clear_text"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+            android:layout_margin="10dp"
+            app:startIconDrawable="@drawable/ic_search"
+            app:endIconMode="clear_text">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etSearch"
@@ -102,5 +106,16 @@
         </LinearLayout>
 
     </FrameLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddTenant"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/add_tenant"
+        app:backgroundTint="@color/rc_brand"
+        app:srcCompat="@drawable/ic_add"
+        app:tint="@android:color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -64,12 +64,32 @@
 
                         </LinearLayout>
 
+                        <ImageButton
+                            android:id="@+id/btnNotifications"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/rc_notifications"
+                            android:src="@drawable/rc_bell"
+                            app:tint="@android:color/white" />
+
+                        <ImageButton
+                            android:id="@+id/btnProfile"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/rc_profile"
+                            android:src="@drawable/ic_person"
+                            app:tint="@android:color/white" />
+
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnLogout"
                             style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Đăng xuất"
+                            android:minWidth="48dp"
+                            android:paddingHorizontal="8dp"
+                            android:text="Thoát"
                             android:textColor="@android:color/white"
                             android:textSize="12sp" />
 
@@ -706,7 +726,7 @@
                                 android:layout_height="28dp"
                                 android:contentDescription="@string/tenant_management"
                                 android:src="@drawable/ic_people"
-                                app:tint="@color/purple_700" />
+                                app:tint="@color/rc_brand" />
 
                             <TextView
                                 android:layout_width="wrap_content"

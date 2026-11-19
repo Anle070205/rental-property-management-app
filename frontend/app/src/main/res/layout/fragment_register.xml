@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/rc_canvas"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,24 +16,26 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="Đăng ký tài khoản"
+            android:textColor="@color/rc_ink"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="24dp" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Full Name Input -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_full_name"
+            style="@style/RoomCare.Input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:hint="Họ và tên"
-            app:startIconDrawable="@android:drawable/ic_menu_myplaces"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_title"
-            android:layout_marginTop="24dp">
+            app:startIconDrawable="@drawable/ic_person">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_full_name"
@@ -45,14 +48,15 @@
         <!-- Email Input -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_email"
+            style="@style/RoomCare.Input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
             android:hint="Email"
-            app:startIconDrawable="@android:drawable/ic_dialog_email"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/til_full_name"
-            android:layout_marginTop="16dp">
+            app:startIconDrawable="@drawable/ic_email">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_email"
@@ -65,14 +69,15 @@
         <!-- Phone Input -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_phone"
+            style="@style/RoomCare.Input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
             android:hint="Số điện thoại"
-            app:startIconDrawable="@android:drawable/stat_sys_phone_call"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/til_email"
-            android:layout_marginTop="16dp">
+            app:startIconDrawable="@drawable/ic_phone">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_phone"
@@ -85,15 +90,16 @@
         <!-- Password Input -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_password"
+            style="@style/RoomCare.Input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
             android:hint="Mật khẩu"
-            app:startIconDrawable="@android:drawable/ic_lock_lock"
             app:endIconMode="password_toggle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/til_phone"
-            android:layout_marginTop="16dp">
+            app:startIconDrawable="@drawable/ic_info">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_password"
@@ -106,15 +112,16 @@
         <!-- Confirm Password Input -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_confirm_password"
+            style="@style/RoomCare.Input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
             android:hint="Xác nhận mật khẩu"
-            app:startIconDrawable="@android:drawable/ic_lock_lock"
             app:endIconMode="password_toggle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/til_password"
-            android:layout_marginTop="16dp">
+            app:startIconDrawable="@drawable/ic_check">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_confirm_password"
@@ -124,21 +131,60 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Account Role Selection (LANDLORD / TENANT) -->
+        <TextView
+            android:id="@+id/tv_role_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Loại tài khoản"
+            android:textColor="@color/rc_ink"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_confirm_password" />
 
+        <RadioGroup
+            android:id="@+id/rg_role"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_role_label">
 
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rb_landlord"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="Chủ nhà"
+                android:textColor="@color/rc_ink" />
 
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rb_tenant"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Người thuê"
+                android:textColor="@color/rc_ink" />
+
+        </RadioGroup>
 
         <!-- Register Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_register"
+            style="@style/RoomCare.Button"
             android:layout_width="0dp"
-            android:layout_height="56dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="18dp"
             android:text="Đăng ký"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/til_confirm_password"
-            android:layout_marginTop="24dp" />
+            app:layout_constraintTop_toBottomOf="@id/rg_role" />
 
         <!-- Progress Bar -->
         <ProgressBar

@@ -9,12 +9,14 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:title="Chi tiết khách thuê"
+            app:title="Chi tiết người thuê"
             app:titleTextColor="@android:color/white"
-            app:navigationIcon="@android:drawable/ic_menu_revert" />
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@android:color/white" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -94,12 +96,31 @@
                 android:textSize="16sp"
                 android:layout_marginTop="8dp" />
 
-            <Button
-                android:id="@+id/btnBack"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEdit"
+                style="@style/RoomCare.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Quay lại"
-                android:layout_marginTop="24dp" />
+                android:layout_marginTop="24dp"
+                android:text="Chỉnh sửa thông tin"
+                app:icon="@drawable/ic_edit" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDelete"
+                style="@style/RoomCare.Button.Danger"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Xóa người thuê"
+                app:icon="@drawable/ic_delete" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBack"
+                style="@style/RoomCare.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Quay lại" />
 
         </LinearLayout>
 
