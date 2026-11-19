@@ -78,11 +78,7 @@ class RoomListFragment : Fragment() {
     private fun setupClickListeners() {
         // FAB - Add new room
         binding.fabAddRoom.setOnClickListener {
-          
-            val action = RoomListFragmentDirections.actionRoomListToRoomForm()
-
             val action = RoomListFragmentDirections.actionRoomListToRoomForm(roomId = 0L)
-
             findNavController().navigate(action)
         }
         
@@ -115,8 +111,6 @@ class RoomListFragment : Fragment() {
                         binding.swipeRefresh.isRefreshing = false
                         hideAllStates()
                         
-
-                        val rooms = resource.data?.content.orEmpty()
 
                         val rooms = resource.data?.content ?: emptyList()
 

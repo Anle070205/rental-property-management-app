@@ -304,8 +304,6 @@
     <string name="rc_profile_settings">Tài khoản và bảo mật</string>
     <string name="rc_notification_done_title">Bạn đã xem hết rồi</string>
     <string name="rc_notification_done_body">Thông báo về hóa đơn, thanh toán, hợp đồng và sự cố sẽ xuất hiện tại đây.</string>
-</resources>
-
 
     <!-- GĐ4.1: Invoice Management -->
     <string name="invoice_management">Quản lý hóa đơn</string>

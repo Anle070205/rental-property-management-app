@@ -88,8 +88,6 @@ class TenantListFragment : Fragment() {
                         hideAllStates()
                         
 
-                        val tenants = resource.data?.content.orEmpty()
-
                         val tenants = resource.data?.content ?: emptyList()
 
                         if (tenants.isEmpty()) {

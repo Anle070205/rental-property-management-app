@@ -4,12 +4,7 @@ object Constants {
     
     // API Configuration
 
-    const val BASE_URL = "http://10.0.2.2:8081/" // Android emulator host loopback
-
-    // 10.0.2.2 trỏ về localhost:8080 trên máy host khi chạy Android Emulator
-    // (Nếu chạy thiết bị thật cùng mạng LAN, đổi thành IP LAN của máy backend)
-    const val BASE_URL = "http://10.0.2.2:8080/"
-
+    const val BASE_URL = "http://10.0.2.2:8080/" // Android emulator host loopback
     const val API_PREFIX = "api/"
     const val USE_MOCK_TENANT_DATA = true
     

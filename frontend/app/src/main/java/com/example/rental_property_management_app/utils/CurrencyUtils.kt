@@ -3,7 +3,6 @@ package com.example.rental_property_management_app.utils
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
-import java.math.BigDecimal
 import java.text.DecimalFormatSymbols
 import java.util.*
 
@@ -28,13 +27,6 @@ object CurrencyUtils {
         return "${vndFormat.format(amount)} ₫"
     }
 
-    fun formatVND(amount: BigDecimal): String {
-        val decimalFormat = (vndFormat.clone() as DecimalFormat).apply {
-            maximumFractionDigits = 2
-        }
-        return "${decimalFormat.format(amount)} ₫"
-    }
-    
     /**
      * Format số thành chuỗi tiền VND với ký hiệu ₫
      * Ví dụ: 1000000.0 -> "1.000.000 ₫"
