@@ -304,6 +304,28 @@
                     android:textColor="@color/rc_muted"
                     android:textSize="12sp"
                     tools:text="Hợp đồng: HD-202611-P101 (Đang hiệu lực)" />
+
+                <TextView
+                    android:id="@+id/tvRoommatesInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="13sp"
+                    android:visibility="gone"
+                    tools:text="Người ở cùng: Trần Minh Em (Em trai)" />
+
+                <TextView
+                    android:id="@+id/tvOccupancyNotice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rc_badge_warning"
+                    android:padding="10dp"
+                    android:textColor="@color/warning"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    tools:text="Phòng đã đủ số người thuê (2/2). Không thể thêm người thuê mới." />
             </LinearLayout>
 
             <!-- Amenities & Description Card -->
@@ -393,6 +415,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Thêm người thuê vào phòng"
+                app:icon="@drawable/ic_person" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnManageRoommates"
+                style="@style/RoomCare.Button.Tonal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Quản lý người ở cùng (Hợp đồng hiện tại)"
+                android:visibility="gone"
                 app:icon="@drawable/ic_person" />
 
             <com.google.android.material.button.MaterialButton

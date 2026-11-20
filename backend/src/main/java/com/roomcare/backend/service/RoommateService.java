@@ -67,13 +67,20 @@ public class RoommateService {
             if (contract.getStatus() == ContractStatus.TERMINATED || contract.getStatus() == ContractStatus.EXPIRED) {
                 throw new RuntimeException("Không thể thêm người ở cùng vào hợp đồng đã kết thúc");
             }
+        } else {
+            contract = contractRepository
+                    .findFirstByRoomIdAndStatusInOrderByActivatedAtDescCreatedAtDesc(
+                            room.getId(), List.of(ContractStatus.ACTIVE, ContractStatus.SIGNED))
+                    .orElseThrow(() -> new RuntimeException(
+                            "Phòng " + room.getRoomCode() + " chưa có hợp đồng hiệu lực hoặc đã ký. Không thể thêm người ở cùng."));
+            if (!Objects.equals(contract.getTenant().getId(), tenant.getId())) {
+                throw new RuntimeException("Người ở cùng phải gắn với khách thuê đại diện của hợp đồng hiện tại");
+            }
         }
 
-        long existingCount = contract != null
-                ? roommateRepository.countByContractId(contract.getId())
-                : roommateRepository.countByRoomId(room.getId());
+        long existingCount = roommateRepository.countByContractId(contract.getId());
         if (room.getCapacity() != null && (1 + existingCount + 1) > room.getCapacity()) {
-            throw new RuntimeException("Phòng " + room.getRoomCode() + " đã đạt sức chứa tối đa (" + room.getCapacity() + " người)");
+            throw new RuntimeException("Phòng đã đủ số người thuê (" + room.getCapacity() + " người). Không thể thêm người ở cùng.");
         }
 
         String normalizedIdentity = trimOrNull(request.getIdentityNumber());

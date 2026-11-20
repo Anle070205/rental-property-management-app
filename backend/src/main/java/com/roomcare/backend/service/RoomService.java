@@ -17,6 +17,7 @@ import com.roomcare.backend.repository.ContractRepository;
 import com.roomcare.backend.repository.InvoiceRepository;
 import com.roomcare.backend.repository.PropertyRepository;
 import com.roomcare.backend.repository.RoomRepository;
+import com.roomcare.backend.repository.RoommateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,9 @@ public class RoomService {
 
     @Autowired(required = false)
     private ContractRepository contractRepository;
+
+    @Autowired(required = false)
+    private RoommateRepository roommateRepository;
 
     @Transactional
     public RoomResponse createRoom(Long landlordId, CreateRoomRequest request) {
@@ -303,7 +307,7 @@ public class RoomService {
                 Contract c = primaryContract.get();
                 currentContractId = c.getId();
                 currentContractStatus = c.getStatus().name();
-                currentContractLabel = c.getContractCode() + " (" + c.getStatus().name() + ")";
+                currentContractLabel = c.getContractCode();
                 Tenant t = c.getTenant();
                 currentTenantId = t.getId();
                 String contact = t.getPhone() != null && !t.getPhone().isBlank() ? t.getPhone() : t.getEmail();
@@ -346,6 +350,50 @@ public class RoomService {
                 : (room.getStatus() == RoomStatus.VACANT ? null : "Đang hiệu lực"));
         response.setCurrentTenantId(currentTenantId);
         response.setCurrentTenant(tenantLabel);
+
+        boolean hasActiveOrSignedContract = currentContractId != null
+                && ("ACTIVE".equals(currentContractStatus) || "SIGNED".equals(currentContractStatus));
+        List<String> roommateLabels = new java.util.ArrayList<>();
+        if (hasActiveOrSignedContract && roommateRepository != null) {
+            roommateLabels = roommateRepository.findByContractIdOrderByCreatedAtAsc(currentContractId)
+                    .stream()
+                    .map(rm -> rm.getRelationship() != null && !rm.getRelationship().isBlank()
+                            ? rm.getFullName() + " (" + rm.getRelationship() + ")"
+                            : rm.getFullName())
+                    .collect(Collectors.toList());
+        }
+        int capacity = room.getCapacity() != null && room.getCapacity() > 0 ? room.getCapacity() : 1;
+        int currentOccupants = hasActiveOrSignedContract
+                ? (1 + roommateLabels.size())
+                : (currentTenantId != null && room.getStatus() != RoomStatus.VACANT ? 1 : 0);
+        boolean canAddPrimaryTenant = room.getStatus() == RoomStatus.VACANT
+                && !hasActiveOrSignedContract
+                && currentTenantId == null;
+        boolean canAddRoommate = hasActiveOrSignedContract && currentOccupants < capacity;
+
+        String occupancyMessage = null;
+        if (!canAddPrimaryTenant) {
+            if (hasActiveOrSignedContract && currentOccupants >= capacity) {
+                occupancyMessage = "Phòng đã đủ số người thuê (" + currentOccupants + "/" + capacity
+                        + "). Không thể thêm người thuê mới.";
+            } else if (hasActiveOrSignedContract) {
+                String stLabel = "ACTIVE".equals(currentContractStatus) ? "đang hiệu lực" : "đã ký";
+                occupancyMessage = "Phòng đang có hợp đồng " + stLabel + " (" + currentOccupants + "/" + capacity
+                        + " người). Chỉ có thể bổ sung người ở cùng trong hợp đồng hiện tại.";
+            } else if (currentOccupants >= capacity) {
+                occupancyMessage = "Phòng đã đủ số người thuê (" + currentOccupants + "/" + capacity
+                        + "). Không thể thêm người thuê mới.";
+            } else {
+                occupancyMessage = "Phòng hiện không ở trạng thái trống để thêm người thuê chính mới.";
+            }
+        }
+
+        response.setCurrentOccupants(currentOccupants);
+        response.setCurrentRoommates(roommateLabels);
+        response.setCanAddPrimaryTenant(canAddPrimaryTenant);
+        response.setCanAddRoommate(canAddRoommate);
+        response.setOccupancyMessage(occupancyMessage);
+
         response.setCreatedAt(room.getCreatedAt());
         response.setUpdatedAt(room.getUpdatedAt());
         return response;

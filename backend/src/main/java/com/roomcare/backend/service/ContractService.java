@@ -231,6 +231,7 @@ public class ContractService {
         if (!existingActive.isEmpty()) {
             throw new RuntimeException("Phòng " + contract.getRoom().getRoomCode() + " đang có hợp đồng hiệu lực khác. Vui lòng kết thúc hợp đồng cũ trước.");
         }
+        validateContractDatesAndOverlap(contract.getRoom(), contract.getStartDate(), contract.getEndDate(), contractId);
 
         contract.setStatus(ContractStatus.ACTIVE);
         contract.setActivatedAt(LocalDateTime.now());

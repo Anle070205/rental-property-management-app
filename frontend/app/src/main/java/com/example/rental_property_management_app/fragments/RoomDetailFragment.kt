@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -46,6 +47,11 @@ class RoomDetailFragment : Fragment() {
         // Load room detail
         viewModel.loadRoomDetail(args.roomId)
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadRoomDetail(args.roomId)
+    }
     
     private fun setupClickListeners() {
         binding.toolbar.setNavigationOnClickListener {
@@ -70,6 +76,14 @@ class RoomDetailFragment : Fragment() {
                     "roomId" to args.roomId,
                     "roomCode" to (currentRoom?.roomCode ?: "")
                 )
+            )
+        }
+
+        binding.btnManageRoommates.setOnClickListener {
+            val contractId = currentRoom?.currentContractId ?: return@setOnClickListener
+            findNavController().navigate(
+                R.id.contractDetailFragment,
+                bundleOf("contractId" to contractId)
             )
         }
 
@@ -117,7 +131,7 @@ class RoomDetailFragment : Fragment() {
             tvRentPrice.text = CurrencyUtils.formatVND(room.rentPrice.toLong())
             tvHealthScoreBadge.text = "Health Score: ${room.healthScore}/100"
             tvDeposit.text = "Cọc: ${CurrencyUtils.formatVND(room.deposit.toLong())}"
-            tvCapacity.text = "Sức chứa: ${room.capacity} người"
+            tvCapacity.text = "Đang ở: ${room.currentOccupants}/${room.capacity} người"
             tvStatus.text = room.status.getDisplayName()
             tvPropertyName.text = room.propertyName
             tvAmenities.text = room.amenities ?: "Chưa có thông tin"
@@ -129,20 +143,39 @@ class RoomDetailFragment : Fragment() {
             )
             tvUtilityRates.text = if (fees.isNotEmpty()) fees.joinToString(" • ") else "Chưa khai báo đơn giá dịch vụ"
             tvDescription.text = room.description ?: "Chưa có mô tả"
-            
-            // Tenant info
+
             if (!room.currentTenant.isNullOrEmpty()) {
-                tvTenantInfo.text = "Khách thuê: ${room.currentTenant}"
+                tvTenantInfo.text = "Khách thuê chính: ${room.currentTenant}"
             } else {
                 tvTenantInfo.text = "Chưa có khách thuê"
             }
 
             tvContractSummary.text = if (!room.currentContract.isNullOrBlank()) {
-                val st = room.currentContractStatus?.let { " ($it)" } ?: ""
-                "Hợp đồng hiện tại: ${room.currentContract}$st"
+                val statusVi = when (room.currentContractStatus?.uppercase()) {
+                    "ACTIVE" -> "Đang hiệu lực"
+                    "SIGNED" -> "Đã ký"
+                    "DRAFT" -> "Nháp"
+                    "EXPIRED" -> "Hết hạn"
+                    "TERMINATED" -> "Đã kết thúc"
+                    else -> room.currentContractStatus
+                }
+                val suffix = statusVi?.takeIf { !room.currentContract.contains(it, ignoreCase = true) }
+                    ?.let { " ($it)" } ?: ""
+                "Hợp đồng hiện tại: ${room.currentContract}$suffix"
             } else {
                 "Chưa có hợp đồng đang gắn với phòng"
             }
+
+            tvRoommatesInfo.isVisible = room.currentRoommates.isNotEmpty()
+            tvRoommatesInfo.text = if (room.currentRoommates.isNotEmpty()) {
+                "Người ở cùng: ${room.currentRoommates.joinToString(", ")}"
+            } else ""
+
+            tvOccupancyNotice.isVisible = !room.occupancyMessage.isNullOrBlank()
+            tvOccupancyNotice.text = room.occupancyMessage.orEmpty()
+
+            btnAddTenant.isVisible = room.canAddPrimaryTenant
+            btnManageRoommates.isVisible = room.canAddRoommate && room.currentContractId != null
         }
     }
     

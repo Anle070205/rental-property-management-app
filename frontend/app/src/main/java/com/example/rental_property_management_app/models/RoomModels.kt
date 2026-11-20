@@ -119,7 +119,22 @@ data class RoomResponse(
 
     @SerializedName("currentTenantId")
     val currentTenantId: Long? = null,
-    
+
+    @SerializedName("currentOccupants")
+    val currentOccupants: Int = 0,
+
+    @SerializedName("currentRoommates")
+    val currentRoommates: List<String> = emptyList(),
+
+    @SerializedName("canAddPrimaryTenant")
+    val canAddPrimaryTenant: Boolean = true,
+
+    @SerializedName("canAddRoommate")
+    val canAddRoommate: Boolean = false,
+
+    @SerializedName("occupancyMessage")
+    val occupancyMessage: String? = null,
+
     @SerializedName("createdAt")
     val createdAt: String,
     
