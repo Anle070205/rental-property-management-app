@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -75,7 +76,7 @@ class RegisterFragment : Fragment() {
             isValid = false
         }
         
-        val emailError = ValidationUtils.getEmailError(email)
+        val emailError = ValidationUtils.getGmailError(email)
         if (emailError != null) {
             binding.tilEmail.showError(emailError)
             isValid = false
@@ -128,20 +129,42 @@ class RegisterFragment : Fragment() {
                         showLoading(false)
                         val authResponse = resource.data
                         if (authResponse != null) {
-                            requireContext().showToast("Đăng ký thành công!")
-                            when (authResponse.role) {
-                                Constants.Roles.TENANT -> findNavController().navigate(
-                                    R.id.action_registerFragment_to_tenantDashboardFragment
+                            if (authResponse.requiresEmailVerification || authResponse.accessToken.isNullOrBlank()) {
+                                requireContext().showLongToast(getString(R.string.rc_register_check_gmail))
+                                findNavController().navigate(
+                                    R.id.action_registerFragment_to_verifyEmailFragment,
+                                    bundleOf(
+                                        "email" to authResponse.email,
+                                        "cooldownSeconds" to (authResponse.resendCooldownSeconds ?: 60)
+                                    )
                                 )
-                                else -> findNavController().navigate(
-                                    R.id.action_registerFragment_to_landlordDashboardFragment
-                                )
+                            } else {
+                                requireContext().showToast("Đăng ký thành công!")
+                                when (authResponse.role) {
+                                    Constants.Roles.TENANT -> findNavController().navigate(
+                                        R.id.action_registerFragment_to_tenantDashboardFragment
+                                    )
+                                    else -> findNavController().navigate(
+                                        R.id.action_registerFragment_to_landlordDashboardFragment
+                                    )
+                                }
                             }
                         }
                     }
                     is Resource.Error -> {
                         showLoading(false)
-                        view?.showSnackbar(resource.message ?: Constants.ErrorMessages.UNKNOWN_ERROR)
+                        val message = resource.message ?: Constants.ErrorMessages.UNKNOWN_ERROR
+                        val pendingEmail = viewModel.unverifiedEmail.value
+                        if (!pendingEmail.isNullOrBlank()) {
+                            view?.showSnackbarWithAction(message, getString(R.string.rc_verify_now)) {
+                                findNavController().navigate(
+                                    R.id.action_registerFragment_to_verifyEmailFragment,
+                                    bundleOf("email" to pendingEmail, "cooldownSeconds" to 0)
+                                )
+                            }
+                        } else {
+                            view?.showSnackbar(message)
+                        }
                     }
                     null -> {
                         // Initial state

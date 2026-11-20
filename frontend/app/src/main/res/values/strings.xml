@@ -382,5 +382,34 @@
     <string name="rc_booking_sent_success">Đã gửi yêu cầu đặt phòng tới chủ nhà</string>
     <string name="rc_contact_sent_success">Đã gửi tin nhắn liên hệ tới chủ nhà</string>
     <string name="rc_view_requests">Xem yêu cầu</string>
+
+    <!-- Gmail Verification & Password Reset -->
+    <string name="rc_verify_now">Xác thực ngay</string>
+    <string name="rc_register_check_gmail">Đăng ký thành công. Vui lòng kiểm tra Gmail để nhập mã OTP.</string>
+    <string name="rc_verify_subtitle">Xác thực tài khoản Gmail</string>
+    <string name="rc_verify_title">Xác thực Gmail</string>
+    <string name="rc_verify_desc">Mã OTP 6 chữ số đã được gửi tới địa chỉ Gmail:</string>
+    <string name="rc_otp_label">Mã xác thực OTP (6 chữ số) *</string>
+    <string name="rc_otp_hint">Nhập 6 chữ số OTP</string>
+    <string name="rc_verify_button">Xác thực Gmail</string>
+    <string name="rc_resend_button">Gửi lại mã xác thực</string>
+    <string name="rc_resend_countdown">Gửi lại mã (%1$ds)</string>
+    <string name="rc_back_to_login">← Quay lại đăng nhập</string>
+    <string name="rc_verify_tip">Kiểm tra hộp thư đến hoặc thư mục Spam trên Gmail. Mã OTP chỉ có hiệu lực trong 10 phút và chỉ dùng 1 lần.</string>
+    <string name="rc_verify_success">Xác thực Gmail thành công! Vui lòng đăng nhập.</string>
+    <string name="rc_forgot_otp_sent">Nếu địa chỉ email tồn tại, mã OTP đã được gửi đến Gmail của bạn.</string>
+    <string name="rc_reset_subtitle">Khôi phục mật khẩu qua Gmail</string>
+    <string name="rc_reset_title">Đặt lại mật khẩu</string>
+    <string name="rc_reset_desc">Vui lòng nhập mã OTP 6 chữ số vừa gửi đến Gmail:</string>
+    <string name="rc_reset_desc_step2">Mã OTP hợp lệ. Hãy tạo mật khẩu mới cho tài khoản:</string>
+    <string name="rc_reset_step1_label">Bước 1/2 • Xác minh mã OTP Gmail</string>
+    <string name="rc_reset_step2_label">Bước 2/2 • Đặt mật khẩu mới</string>
+    <string name="rc_verify_otp_button">Xác nhận mã OTP</string>
+    <string name="rc_verify_otp_success">Xác minh OTP thành công! Vui lòng nhập mật khẩu mới.</string>
+    <string name="rc_new_password_hint">Mật khẩu mới *</string>
+    <string name="rc_confirm_new_password_hint">Xác nhận mật khẩu mới *</string>
+    <string name="rc_password_rule">Tối thiểu 6 ký tự, không dùng lại mật khẩu dễ đoán.</string>
+    <string name="rc_reset_password_button">Đặt lại mật khẩu</string>
+    <string name="rc_reset_password_success">Đặt lại mật khẩu thành công! Vui lòng đăng nhập với mật khẩu mới.</string>
 </resources>
 

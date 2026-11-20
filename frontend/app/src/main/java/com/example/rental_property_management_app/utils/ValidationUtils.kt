@@ -6,12 +6,36 @@ import android.util.Patterns
  * Utility class để validate input data
  */
 object ValidationUtils {
-    
+
+    private val EMAIL_FALLBACK_REGEX =
+        "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
+    private val GMAIL_REGEX =
+        "^[A-Za-z0-9._%+-]+@gmail\\.com$".toRegex(RegexOption.IGNORE_CASE)
+    private val OTP_REGEX = "^\\d{6}$".toRegex()
+
     /**
-     * Validate email format
+     * Validate email format (JVM-safe fallback when Android Patterns is unavailable)
      */
     fun isValidEmail(email: String): Boolean {
-        return email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        val trimmed = email.trim()
+        if (trimmed.isBlank()) return false
+        val pattern = Patterns.EMAIL_ADDRESS
+        return pattern?.matcher(trimmed)?.matches() ?: EMAIL_FALLBACK_REGEX.matches(trimmed)
+    }
+
+    /**
+     * Validate personal Gmail address (@gmail.com)
+     */
+    fun isValidGmail(email: String): Boolean {
+        val trimmed = email.trim()
+        return trimmed.isNotBlank() && isValidEmail(trimmed) && GMAIL_REGEX.matches(trimmed)
+    }
+
+    /**
+     * Validate 6-digit OTP code
+     */
+    fun isValidOtp(otp: String): Boolean {
+        return OTP_REGEX.matches(otp.trim())
     }
     
     /**
@@ -65,6 +89,29 @@ object ValidationUtils {
         return when {
             email.isBlank() -> "Email không được để trống"
             !isValidEmail(email) -> "Email không hợp lệ"
+            else -> null
+        }
+    }
+
+    /**
+     * Get validation error message for Gmail registration
+     */
+    fun getGmailError(email: String): String? {
+        return when {
+            email.isBlank() -> "Địa chỉ Gmail không được để trống"
+            !isValidEmail(email) -> "Địa chỉ email không hợp lệ"
+            !isValidGmail(email) -> "Vui lòng nhập địa chỉ Gmail (@gmail.com) đang hoạt động"
+            else -> null
+        }
+    }
+
+    /**
+     * Get validation error message for 6-digit OTP
+     */
+    fun getOtpError(otp: String): String? {
+        return when {
+            otp.isBlank() -> "Mã OTP không được để trống"
+            !isValidOtp(otp) -> "Mã OTP phải gồm đúng 6 chữ số"
             else -> null
         }
     }

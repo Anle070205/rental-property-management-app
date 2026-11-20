@@ -38,10 +38,10 @@ data class LoginRequest(
  */
 data class AuthResponse(
     @SerializedName("accessToken")
-    val accessToken: String,
+    val accessToken: String? = null,
     
     @SerializedName("tokenType")
-    val tokenType: String,
+    val tokenType: String? = null,
     
     @SerializedName("userId")
     val userId: Long,
@@ -53,7 +53,67 @@ data class AuthResponse(
     val email: String,
     
     @SerializedName("role")
-    val role: String
+    val role: String,
+
+    @SerializedName("emailVerified")
+    val emailVerified: Boolean = true,
+
+    @SerializedName("requiresEmailVerification")
+    val requiresEmailVerification: Boolean = false,
+
+    @SerializedName("resendCooldownSeconds")
+    val resendCooldownSeconds: Int? = null
+)
+
+data class VerifyEmailRequest(
+    @SerializedName("email")
+    val email: String,
+
+    @SerializedName("otp")
+    val otp: String
+)
+
+data class ResendVerificationRequest(
+    @SerializedName("email")
+    val email: String
+)
+
+data class ForgotPasswordRequest(
+    @SerializedName("email")
+    val email: String
+)
+
+data class VerifyResetOtpRequest(
+    @SerializedName("email")
+    val email: String,
+
+    @SerializedName("otp")
+    val otp: String
+)
+
+data class VerifyResetOtpResponse(
+    @SerializedName("email")
+    val email: String,
+
+    @SerializedName("resetToken")
+    val resetToken: String,
+
+    @SerializedName("expiresInMinutes")
+    val expiresInMinutes: Int
+)
+
+data class ResetPasswordRequest(
+    @SerializedName("email")
+    val email: String,
+
+    @SerializedName("resetToken")
+    val resetToken: String,
+
+    @SerializedName("newPassword")
+    val newPassword: String,
+
+    @SerializedName("confirmPassword")
+    val confirmPassword: String
 )
 
 /**

@@ -135,6 +135,16 @@ interface ApiService {
     suspend fun register(
         @Body request: RegisterRequest
     ): Response<ApiResponse<AuthResponse>>
+
+    @POST("api/auth/verify-email")
+    suspend fun verifyEmail(
+        @Body request: VerifyEmailRequest
+    ): Response<ApiResponse<Unit>>
+
+    @POST("api/auth/resend-verification")
+    suspend fun resendVerification(
+        @Body request: ResendVerificationRequest
+    ): Response<ApiResponse<Unit>>
     
     @POST("api/auth/login")
     suspend fun login(
@@ -146,7 +156,17 @@ interface ApiService {
     
     @POST("api/auth/forgot-password")
     suspend fun forgotPassword(
-        @Query("email") email: String
+        @Body request: ForgotPasswordRequest
+    ): Response<ApiResponse<Unit>>
+
+    @POST("api/auth/forgot-password/verify-otp")
+    suspend fun verifyResetOtp(
+        @Body request: VerifyResetOtpRequest
+    ): Response<ApiResponse<VerifyResetOtpResponse>>
+
+    @POST("api/auth/reset-password")
+    suspend fun resetPassword(
+        @Body request: ResetPasswordRequest
     ): Response<ApiResponse<Unit>>
     
     // ============================================

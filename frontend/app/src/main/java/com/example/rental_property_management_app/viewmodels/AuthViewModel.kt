@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.rental_property_management_app.RoomCareApplication
 import com.example.rental_property_management_app.models.AuthResponse
+import com.example.rental_property_management_app.models.VerifyResetOtpResponse
 import com.example.rental_property_management_app.repositories.AuthRepository
 import com.example.rental_property_management_app.utils.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 /**
- * Auth ViewModel - Quản lý authentication state và logic
+ * Auth ViewModel - Quản lý authentication, xác thực Gmail và đặt lại mật khẩu
  */
 class AuthViewModel : ViewModel() {
     
@@ -24,6 +25,9 @@ class AuthViewModel : ViewModel() {
     // Login state
     private val _loginState = MutableStateFlow<Resource<AuthResponse>?>(null)
     val loginState: StateFlow<Resource<AuthResponse>?> = _loginState
+
+    private val _unverifiedEmail = MutableStateFlow<String?>(null)
+    val unverifiedEmail: StateFlow<String?> = _unverifiedEmail
     
     // Logout state
     private val _logoutState = MutableStateFlow<Resource<Unit>?>(null)
@@ -32,6 +36,22 @@ class AuthViewModel : ViewModel() {
     // Forgot password state
     private val _forgotPasswordState = MutableStateFlow<Resource<String>?>(null)
     val forgotPasswordState: StateFlow<Resource<String>?> = _forgotPasswordState
+
+    // Verify registration Gmail OTP state
+    private val _verifyEmailState = MutableStateFlow<Resource<String>?>(null)
+    val verifyEmailState: StateFlow<Resource<String>?> = _verifyEmailState
+
+    // Resend OTP state (shared by VerifyEmail & ResetPassword screens)
+    private val _resendVerificationState = MutableStateFlow<Resource<String>?>(null)
+    val resendVerificationState: StateFlow<Resource<String>?> = _resendVerificationState
+
+    // Verify forgot-password OTP state
+    private val _verifyResetOtpState = MutableStateFlow<Resource<VerifyResetOtpResponse>?>(null)
+    val verifyResetOtpState: StateFlow<Resource<VerifyResetOtpResponse>?> = _verifyResetOtpState
+
+    // Reset password state
+    private val _resetPasswordState = MutableStateFlow<Resource<String>?>(null)
+    val resetPasswordState: StateFlow<Resource<String>?> = _resetPasswordState
     
     /**
      * Register new user (LANDLORD or TENANT)
@@ -44,11 +64,16 @@ class AuthViewModel : ViewModel() {
         role: String = "LANDLORD"
     ) {
         viewModelScope.launch {
+            _unverifiedEmail.value = null
             _registerState.value = Resource.Loading()
             
-            val result = repository.register(fullName, email, phone, password, role)
-            // Save user data before notifying observers so role-based navigation sees persisted prefs
-            if (result is Resource.Success && result.data != null) {
+            val outcome = repository.register(fullName, email, phone, password, role)
+            _unverifiedEmail.value = outcome.unverifiedEmail
+            val result = outcome.resource
+            // Chỉ lưu token nếu backend thực sự đã xác thực và cấp accessToken
+            if (result is Resource.Success && result.data != null &&
+                !result.data.requiresEmailVerification && !result.data.accessToken.isNullOrBlank()
+            ) {
                 saveUserData(result.data)
             }
             _registerState.value = result
@@ -60,11 +85,13 @@ class AuthViewModel : ViewModel() {
      */
     fun login(emailOrPhone: String, password: String) {
         viewModelScope.launch {
+            _unverifiedEmail.value = null
             _loginState.value = Resource.Loading()
             
-            val result = repository.login(emailOrPhone, password)
-            // Save user data before notifying observers so role-based navigation sees persisted prefs
-            if (result is Resource.Success && result.data != null) {
+            val outcome = repository.login(emailOrPhone, password)
+            _unverifiedEmail.value = outcome.unverifiedEmail
+            val result = outcome.resource
+            if (result is Resource.Success && result.data != null && !result.data.accessToken.isNullOrBlank()) {
                 saveUserData(result.data)
             }
             _loginState.value = result
@@ -82,6 +109,20 @@ class AuthViewModel : ViewModel() {
             _logoutState.value = result
         }
     }
+
+    fun verifyEmail(email: String, otp: String) {
+        viewModelScope.launch {
+            _verifyEmailState.value = Resource.Loading()
+            _verifyEmailState.value = repository.verifyEmail(email, otp)
+        }
+    }
+
+    fun resendVerification(email: String) {
+        viewModelScope.launch {
+            _resendVerificationState.value = Resource.Loading()
+            _resendVerificationState.value = repository.resendVerification(email)
+        }
+    }
     
     /**
      * Forgot password
@@ -89,9 +130,21 @@ class AuthViewModel : ViewModel() {
     fun forgotPassword(email: String) {
         viewModelScope.launch {
             _forgotPasswordState.value = Resource.Loading()
-            
-            val result = repository.forgotPassword(email)
-            _forgotPasswordState.value = result
+            _forgotPasswordState.value = repository.forgotPassword(email)
+        }
+    }
+
+    fun verifyResetOtp(email: String, otp: String) {
+        viewModelScope.launch {
+            _verifyResetOtpState.value = Resource.Loading()
+            _verifyResetOtpState.value = repository.verifyResetOtp(email, otp)
+        }
+    }
+
+    fun resetPassword(email: String, resetToken: String, newPassword: String, confirmPassword: String) {
+        viewModelScope.launch {
+            _resetPasswordState.value = Resource.Loading()
+            _resetPasswordState.value = repository.resetPassword(email, resetToken, newPassword, confirmPassword)
         }
     }
     
@@ -99,9 +152,10 @@ class AuthViewModel : ViewModel() {
      * Save user data to SharedPreferences
      */
     private fun saveUserData(authResponse: AuthResponse) {
+        val token = authResponse.accessToken ?: return
         RoomCareApplication.prefsManager.saveUserData(
-            accessToken = authResponse.accessToken,
-            refreshToken = null, // TODO: implement refresh token
+            accessToken = token,
+            refreshToken = null,
             userId = authResponse.userId,
             role = authResponse.role,
             name = authResponse.fullName,
@@ -109,31 +163,37 @@ class AuthViewModel : ViewModel() {
         )
     }
     
-    /**
-     * Reset register state
-     */
     fun resetRegisterState() {
         _registerState.value = null
+        _unverifiedEmail.value = null
     }
     
-    /**
-     * Reset login state
-     */
     fun resetLoginState() {
         _loginState.value = null
+        _unverifiedEmail.value = null
     }
     
-    /**
-     * Reset logout state
-     */
     fun resetLogoutState() {
         _logoutState.value = null
     }
     
-    /**
-     * Reset forgot password state
-     */
     fun resetForgotPasswordState() {
         _forgotPasswordState.value = null
+    }
+
+    fun resetVerifyEmailState() {
+        _verifyEmailState.value = null
+    }
+
+    fun resetResendVerificationState() {
+        _resendVerificationState.value = null
+    }
+
+    fun resetVerifyResetOtpState() {
+        _verifyResetOtpState.value = null
+    }
+
+    fun resetPasswordResetState() {
+        _resetPasswordState.value = null
     }
 }

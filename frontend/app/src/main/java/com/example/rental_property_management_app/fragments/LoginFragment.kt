@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -32,6 +33,10 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val prefillEmail = arguments?.getString("prefillEmail")?.trim()
+        if (!prefillEmail.isNullOrBlank()) {
+            binding.tilEmail.setText(prefillEmail)
+        }
         setupClickListeners()
         observeLoginState()
     }
@@ -120,7 +125,18 @@ class LoginFragment : Fragment() {
                     }
                     is Resource.Error -> {
                         showLoading(false)
-                        view?.showSnackbar(resource.message ?: Constants.ErrorMessages.UNKNOWN_ERROR)
+                        val message = resource.message ?: Constants.ErrorMessages.UNKNOWN_ERROR
+                        val pendingEmail = viewModel.unverifiedEmail.value
+                        if (!pendingEmail.isNullOrBlank()) {
+                            view?.showSnackbarWithAction(message, getString(R.string.rc_verify_now)) {
+                                findNavController().navigate(
+                                    R.id.action_loginFragment_to_verifyEmailFragment,
+                                    bundleOf("email" to pendingEmail, "cooldownSeconds" to 0)
+                                )
+                            }
+                        } else {
+                            view?.showSnackbar(message)
+                        }
                     }
                     null -> {
                         // Initial state

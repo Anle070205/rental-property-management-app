@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.databinding.FragmentForgotPasswordBinding
 import com.example.rental_property_management_app.utils.*
 import com.example.rental_property_management_app.viewmodels.AuthViewModel
@@ -19,6 +21,7 @@ class ForgotPasswordFragment : Fragment() {
     private val binding get() = _binding!!
     
     private val viewModel: AuthViewModel by viewModels()
+    private var requestedEmail: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,8 +70,9 @@ class ForgotPasswordFragment : Fragment() {
         }
         
         // Call forgot password API
+        requestedEmail = email.trim()
         binding.root.hideKeyboard()
-        viewModel.forgotPassword(email)
+        viewModel.forgotPassword(requestedEmail)
     }
 
     private fun observeForgotPasswordState() {
@@ -80,9 +84,13 @@ class ForgotPasswordFragment : Fragment() {
                     }
                     is Resource.Success -> {
                         showLoading(false)
-                        val message = resource.data ?: "Yêu cầu đã được gửi"
+                        val message = resource.data ?: getString(R.string.rc_forgot_otp_sent)
                         requireContext().showLongToast(message)
-                        findNavController().navigateUp()
+                        val emailToPass = requestedEmail.ifBlank { binding.tilEmail.getText() }
+                        findNavController().navigate(
+                            R.id.action_forgotPasswordFragment_to_resetPasswordFragment,
+                            bundleOf("email" to emailToPass, "cooldownSeconds" to 60)
+                        )
                     }
                     is Resource.Error -> {
                         showLoading(false)
