@@ -50,6 +50,15 @@ public class Incident {
     @Column(columnDefinition = "TEXT")
     private String landlordResponse;
 
+    @Column(name = "resolved_by_id")
+    private Long resolvedById;
+
+    @Column(name = "resolved_by_name", length = 100)
+    private String resolvedByName;
+
+    @Column(name = "resolved_at")
+    private LocalDateTime resolvedAt;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
