@@ -37,6 +37,37 @@ public class AuthController {
     @Autowired(required = false)
     private TenantAccountService tenantAccountService;
 
+    @PostMapping("/register/validate")
+    public ResponseEntity<ApiResponse<Void>> validateBeforeRegister(
+            @Valid @RequestBody RegisterRequest request
+    ) {
+        authService.validateBeforeRegister(request);
+        return ResponseEntity.ok(ApiResponse.success("Thông tin đăng ký hợp lệ. Vui lòng chọn phương thức xác thực."));
+    }
+
+    public record SwitchChannelRequest(
+            @jakarta.validation.constraints.NotNull AuthVerificationToken.Channel currentChannel,
+            @jakarta.validation.constraints.NotBlank String currentTarget,
+            @jakarta.validation.constraints.NotNull AuthVerificationToken.Channel newChannel
+    ) {}
+
+    @PostMapping("/register/switch-channel")
+    public ResponseEntity<ApiResponse<AuthResponse>> switchRegistrationChannel(
+            @Valid @RequestBody SwitchChannelRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        AuthResponse response = authService.switchRegistrationChannel(
+                request.currentChannel(),
+                request.currentTarget(),
+                request.newChannel(),
+                resolveClientIp(httpRequest)
+        );
+        String message = AuthVerificationToken.Channel.PHONE.name().equals(response.getVerificationChannel())
+                ? "Đã chuyển sang SMS OTP. Vui lòng kiểm tra tin nhắn trên số điện thoại của bạn."
+                : "Đã chuyển sang Gmail. Vui lòng kiểm tra hộp thư để lấy mã OTP.";
+        return ResponseEntity.ok(ApiResponse.success(message, response));
+    }
+
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(
             @Valid @RequestBody RegisterRequest request,

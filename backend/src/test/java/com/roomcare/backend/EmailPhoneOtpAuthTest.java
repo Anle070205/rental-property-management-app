@@ -895,4 +895,97 @@ class EmailPhoneOtpAuthTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false));
     }
+
+    @Test
+    void twoStepRegisterValidate_registerBothContacts_switchChannel_andVerifyWithoutDuplicate() throws Exception {
+        // 1. Pre-validate valid 5-field Landlord payload -> 200 OK
+        RegisterRequest validReq = new RegisterRequest(
+                "Chu Tro Hai Buoc",
+                "twostep@gmail.com",
+                "0911222333",
+                "Pass123",
+                "LANDLORD"
+        );
+        mockMvc.perform(post("/api/auth/register/validate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validReq)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        // Ensure validate does not create a user
+        assertEquals(0, userStore.size());
+
+        // 2. Register with EMAIL verification while storing both email & phone
+        validReq.setVerificationMethod("EMAIL");
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validReq)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.verificationChannel").value("EMAIL"));
+
+        assertEquals(1, userStore.size());
+        assertEquals(1, sentEmails.size());
+        assertEquals(0, sentSms.size());
+
+        // 3. Validate duplicate email & duplicate phone on unverified account -> 403 Forbidden
+        RegisterRequest dupEmailReq = new RegisterRequest("Dup Email", "twostep@gmail.com", "0988777666", "Pass123", "LANDLORD");
+        mockMvc.perform(post("/api/auth/register/validate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dupEmailReq)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false));
+
+        RegisterRequest dupPhoneReq = new RegisterRequest("Dup Phone", "other@gmail.com", "0911222333", "Pass123", "LANDLORD");
+        mockMvc.perform(post("/api/auth/register/validate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dupPhoneReq)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false));
+
+        // 4. Switch verification channel EMAIL -> PHONE on existing unverified account (no duplicate user)
+        AuthController.SwitchChannelRequest switchReq = new AuthController.SwitchChannelRequest(
+                AuthVerificationToken.Channel.EMAIL,
+                "twostep@gmail.com",
+                AuthVerificationToken.Channel.PHONE
+        );
+        mockMvc.perform(post("/api/auth/register/switch-channel")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(switchReq)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.verificationChannel").value("PHONE"));
+
+        assertEquals(1, userStore.size());
+        assertEquals(1, sentSms.size());
+
+        // 5. Verify OTP received via SMS -> 200 OK & login succeeds
+        String smsOtp = sentSms.get(0).otpOrNull();
+        mockMvc.perform(post("/api/auth/verify-otp")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new VerifyOtpRequest(AuthVerificationToken.Channel.PHONE, "+84911222333", smsOtp))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new LoginRequest("0911222333", "Pass123"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.accessToken").isNotEmpty())
+                .andExpect(jsonPath("$.data.phoneVerified").value(true));
+
+        // 6. Validate duplicate email & duplicate phone on verified account -> 400 Bad Request
+        mockMvc.perform(post("/api/auth/register/validate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dupEmailReq)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
+
+        mockMvc.perform(post("/api/auth/register/validate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dupPhoneReq)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
+    }
 }

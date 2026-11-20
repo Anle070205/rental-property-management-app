@@ -60,6 +60,84 @@ public class AuthService {
     @Value("${roomcare.auth.app-base-url:http://localhost:8080}")
     private String appBaseUrl;
 
+    @Transactional(readOnly = true)
+    public void validateBeforeRegister(RegisterRequest request) {
+        String requestedRole = request.getRole() != null && !request.getRole().isBlank()
+                ? request.getRole().trim().toUpperCase(Locale.ROOT)
+                : "LANDLORD";
+        if ("TENANT".equals(requestedRole)) {
+            throw new RuntimeException("Đăng ký công khai chỉ dành cho Chủ nhà trọ. Tài khoản Người thuê do Chủ nhà trọ cấp trực tiếp.");
+        }
+        if ("ADMIN".equals(requestedRole)) {
+            throw new RuntimeException("Không thể tự đăng ký tài khoản Quản trị viên (ADMIN).");
+        }
+        if (!"LANDLORD".equals(requestedRole)) {
+            throw new RuntimeException("Vai trò không hợp lệ. Đăng ký công khai chỉ hỗ trợ Chủ nhà trọ.");
+        }
+        if (request.getPassword() == null || request.getPassword().getBytes(StandardCharsets.UTF_8).length > 72) {
+            throw new RuntimeException("Mật khẩu tối đa 72 byte");
+        }
+
+        String normalizedEmail = validateAndNormalizeGmail(request.getEmail());
+        String normalizedPhone = validateAndNormalizeVietnamPhone(request.getPhone());
+
+        userRepository.findByEmailIgnoreCase(normalizedEmail).ifPresent(existing -> {
+            if (existing.isAccountVerified()) {
+                throw new RuntimeException("Email đã được sử dụng");
+            }
+            throw new UnverifiedAccountException(
+                    "Email này đã đăng ký nhưng chưa xác thực. Vui lòng nhập OTP hoặc gửi lại mã.",
+                    AuthVerificationToken.Channel.EMAIL,
+                    existing.getEmail()
+            );
+        });
+
+        userRepository.findFirstByPhoneIn(PhoneNumberUtils.lookupVariants(normalizedPhone)).ifPresent(existing -> {
+            if (existing.isAccountVerified()) {
+                throw new RuntimeException("Số điện thoại đã được sử dụng");
+            }
+            throw new UnverifiedAccountException(
+                    "Số điện thoại này đã đăng ký nhưng chưa xác thực. Vui lòng nhập OTP hoặc gửi lại mã.",
+                    AuthVerificationToken.Channel.PHONE,
+                    existing.getPhone()
+            );
+        });
+    }
+
+    @Transactional
+    public AuthResponse switchRegistrationChannel(
+            AuthVerificationToken.Channel currentChannel,
+            String currentTarget,
+            AuthVerificationToken.Channel newChannel,
+            String clientIp
+    ) {
+        String normalizedCurrent = normalizeContactForChannel(currentChannel, currentTarget);
+        User user = findUserByChannelTarget(currentChannel, normalizedCurrent)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ đăng ký đang chờ xác thực"));
+        if (user.isAccountVerified()) {
+            throw new RuntimeException("Tài khoản đã được xác thực trước đó. Vui lòng đăng nhập.");
+        }
+        if (!Boolean.TRUE.equals(user.getIsActive())) {
+            throw new RuntimeException("Tài khoản đã bị khóa");
+        }
+        String newTarget = newChannel == AuthVerificationToken.Channel.EMAIL ? user.getEmail() : user.getPhone();
+        if (newTarget == null || newTarget.isBlank()) {
+            throw new RuntimeException("Tài khoản chưa có thông tin liên hệ cho phương thức xác thực đã chọn");
+        }
+        String normalizedNewTarget = normalizeContactForChannel(newChannel, newTarget);
+        dispatchOtp(user, newChannel, AuthVerificationToken.Purpose.REGISTRATION, normalizedNewTarget, clientIp);
+        return AuthResponse.pendingVerification(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getRole().name(),
+                newChannel,
+                normalizedNewTarget,
+                otpVerificationService.getResendCooldownSeconds()
+        );
+    }
+
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         return register(request, null);
@@ -99,6 +177,9 @@ public class AuthService {
         user.setTokenVersion(0);
 
         String normalizedTarget;
+        String optionalSecondaryEmail = null;
+        String optionalSecondaryPhone = null;
+
         if (channel == AuthVerificationToken.Channel.EMAIL) {
             normalizedTarget = validateAndNormalizeGmail(request.getEmail());
             Optional<User> existingOpt = userRepository.findByEmailIgnoreCase(normalizedTarget);
@@ -113,8 +194,23 @@ public class AuthService {
                         existing.getEmail()
                 );
             }
+            if (request.getPhone() != null && !request.getPhone().isBlank()) {
+                optionalSecondaryPhone = validateAndNormalizeVietnamPhone(request.getPhone());
+                Optional<User> phoneOwner = userRepository.findFirstByPhoneIn(PhoneNumberUtils.lookupVariants(optionalSecondaryPhone));
+                if (phoneOwner.isPresent()) {
+                    User existingPhoneUser = phoneOwner.get();
+                    if (existingPhoneUser.isAccountVerified()) {
+                        throw new RuntimeException("Số điện thoại đã được sử dụng");
+                    }
+                    throw new UnverifiedAccountException(
+                            "Số điện thoại này đã đăng ký nhưng chưa xác thực OTP. Vui lòng nhập OTP hoặc gửi lại mã.",
+                            AuthVerificationToken.Channel.PHONE,
+                            existingPhoneUser.getPhone()
+                    );
+                }
+            }
             user.setEmail(normalizedTarget);
-            user.setPhone(null);
+            user.setPhone(optionalSecondaryPhone);
         } else {
             normalizedTarget = validateAndNormalizeVietnamPhone(request.getPhone());
             List<String> variants = PhoneNumberUtils.lookupVariants(normalizedTarget);
@@ -130,8 +226,23 @@ public class AuthService {
                         existing.getPhone()
                 );
             }
+            if (request.getEmail() != null && !request.getEmail().isBlank()) {
+                optionalSecondaryEmail = validateAndNormalizeGmail(request.getEmail());
+                Optional<User> emailOwner = userRepository.findByEmailIgnoreCase(optionalSecondaryEmail);
+                if (emailOwner.isPresent()) {
+                    User existingEmailUser = emailOwner.get();
+                    if (existingEmailUser.isAccountVerified()) {
+                        throw new RuntimeException("Email đã được sử dụng");
+                    }
+                    throw new UnverifiedAccountException(
+                            "Email này đã đăng ký nhưng chưa xác thực Gmail. Vui lòng nhập OTP hoặc gửi lại mã.",
+                            AuthVerificationToken.Channel.EMAIL,
+                            existingEmailUser.getEmail()
+                    );
+                }
+            }
             user.setPhone(normalizedTarget);
-            user.setEmail(null);
+            user.setEmail(optionalSecondaryEmail);
         }
 
         User savedUser = userRepository.save(user);
