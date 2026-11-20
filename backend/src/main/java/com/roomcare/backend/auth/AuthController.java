@@ -1,5 +1,6 @@
 package com.roomcare.backend.auth;
 
+import com.roomcare.backend.dto.ActivateAccountRequest;
 import com.roomcare.backend.dto.ApiResponse;
 import com.roomcare.backend.dto.AuthResponse;
 import com.roomcare.backend.dto.ForgotPasswordRequest;
@@ -11,9 +12,11 @@ import com.roomcare.backend.dto.VerifyOtpRequest;
 import com.roomcare.backend.dto.VerifyResetOtpRequest;
 import com.roomcare.backend.dto.VerifyResetOtpResponse;
 import com.roomcare.backend.entity.AuthVerificationToken;
+import com.roomcare.backend.service.TenantAccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +33,9 @@ import org.springframework.web.util.HtmlUtils;
 public class AuthController {
 
     private final AuthService authService;
+
+    @Autowired(required = false)
+    private TenantAccountService tenantAccountService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(
@@ -128,6 +134,19 @@ public class AuthController {
         authService.resetPassword(request);
         return ResponseEntity.ok(
                 ApiResponse.success("Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại với mật khẩu mới.")
+        );
+    }
+
+    @PostMapping("/activate-account")
+    public ResponseEntity<ApiResponse<Void>> activateAccount(
+            @Valid @RequestBody ActivateAccountRequest request
+    ) {
+        if (tenantAccountService == null) {
+            throw new IllegalStateException("Dịch vụ kích hoạt tài khoản chưa sẵn sàng");
+        }
+        tenantAccountService.activateAccount(request);
+        return ResponseEntity.ok(
+                ApiResponse.success("Kích hoạt tài khoản và thiết lập mật khẩu thành công. Vui lòng đăng nhập.")
         );
     }
 
