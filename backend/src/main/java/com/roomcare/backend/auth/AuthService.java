@@ -1,10 +1,14 @@
 package com.roomcare.backend.auth;
 
 import com.roomcare.backend.dto.AuthResponse;
+import com.roomcare.backend.dto.ForgotPasswordRequest;
 import com.roomcare.backend.dto.LoginRequest;
 import com.roomcare.backend.dto.RegisterRequest;
 import com.roomcare.backend.dto.ResendVerificationRequest;
+import com.roomcare.backend.dto.ResetPasswordRequest;
 import com.roomcare.backend.dto.VerifyEmailRequest;
+import com.roomcare.backend.dto.VerifyResetOtpRequest;
+import com.roomcare.backend.dto.VerifyResetOtpResponse;
 import com.roomcare.backend.entity.AuthVerificationToken;
 import com.roomcare.backend.entity.Property;
 import com.roomcare.backend.entity.Role;
@@ -21,6 +25,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -220,6 +225,75 @@ public class AuthService {
                 user.getEmail(),
                 user.getRole().name()
         );
+    }
+
+    /**
+     * Khởi tạo yêu cầu quên mật khẩu.
+     * Không tiết lộ email có tồn tại hay không nếu email không có trong hệ thống.
+     */
+    @Transactional
+    public void forgotPassword(ForgotPasswordRequest request) {
+        String normalizedEmail = normalizeEmail(request.email());
+        User user = userRepository.findByEmailIgnoreCase(normalizedEmail).orElse(null);
+        if (user == null || !Boolean.TRUE.equals(user.getIsActive())) {
+            return;
+        }
+
+        String otpCode = emailVerificationService.issueOtp(user, AuthVerificationToken.Purpose.PASSWORD_RESET);
+        emailService.sendPasswordResetEmail(
+                user.getEmail(),
+                user.getFullName(),
+                otpCode,
+                emailVerificationService.getOtpExpirationMinutes()
+        );
+    }
+
+    /**
+     * Xác minh mã OTP khôi phục mật khẩu và cấp resetToken dùng 1 lần.
+     */
+    @Transactional
+    public VerifyResetOtpResponse verifyResetOtp(VerifyResetOtpRequest request) {
+        String normalizedEmail = normalizeEmail(request.email());
+        String resetTicket = emailVerificationService.verifyResetOtpAndIssueTicket(normalizedEmail, request.otp());
+        return new VerifyResetOtpResponse(
+                normalizedEmail,
+                resetTicket,
+                emailVerificationService.getOtpExpirationMinutes()
+        );
+    }
+
+    /**
+     * Đặt lại mật khẩu mới, vô hiệu hóa mã đặt lại và nâng tokenVersion để thu hồi phiên đăng nhập cũ.
+     */
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        if (!Objects.equals(request.newPassword(), request.confirmPassword())) {
+            throw new RuntimeException("Xác nhận mật khẩu mới không khớp");
+        }
+        if (request.newPassword().getBytes(StandardCharsets.UTF_8).length > 72) {
+            throw new RuntimeException("Mật khẩu mới tối đa 72 byte");
+        }
+
+        String normalizedEmail = normalizeEmail(request.email());
+        AuthVerificationToken token = emailVerificationService.consumeResetTicket(normalizedEmail, request.resetToken());
+        User user = userRepository.findById(token.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản cần đặt lại mật khẩu"));
+
+        if (!normalizedEmail.equalsIgnoreCase(user.getEmail())) {
+            throw new RuntimeException("Thông tin đặt lại mật khẩu không thuộc tài khoản này");
+        }
+        if (!Boolean.TRUE.equals(user.getIsActive())) {
+            throw new RuntimeException("Tài khoản đã bị khóa");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        int nextVersion = (user.getTokenVersion() != null ? user.getTokenVersion() : 0) + 1;
+        user.setTokenVersion(nextVersion);
+        if (!Boolean.TRUE.equals(user.getEmailVerified())) {
+            user.setEmailVerified(true);
+            user.setEmailVerifiedAt(LocalDateTime.now());
+        }
+        userRepository.save(user);
     }
 
     private String normalizeEmail(String email) {

@@ -2,10 +2,14 @@ package com.roomcare.backend.auth;
 
 import com.roomcare.backend.dto.ApiResponse;
 import com.roomcare.backend.dto.AuthResponse;
+import com.roomcare.backend.dto.ForgotPasswordRequest;
 import com.roomcare.backend.dto.LoginRequest;
 import com.roomcare.backend.dto.RegisterRequest;
 import com.roomcare.backend.dto.ResendVerificationRequest;
+import com.roomcare.backend.dto.ResetPasswordRequest;
 import com.roomcare.backend.dto.VerifyEmailRequest;
+import com.roomcare.backend.dto.VerifyResetOtpRequest;
+import com.roomcare.backend.dto.VerifyResetOtpResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -108,14 +112,39 @@ public class AuthController {
     }
 
     /**
-     * POST /api/auth/forgot-password - Quên mật khẩu
+     * POST /api/auth/forgot-password - Gửi mã OTP khôi phục mật khẩu qua Gmail thật
      */
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<Void>> forgotPassword(
-            @RequestParam String email
+            @Valid @RequestBody ForgotPasswordRequest request
     ) {
+        authService.forgotPassword(request);
         return ResponseEntity.ok(
-                ApiResponse.success("Yêu cầu đặt lại mật khẩu đã được gửi đến email của bạn")
+                ApiResponse.success("Nếu địa chỉ email tồn tại trong hệ thống, RoomCare đã gửi mã OTP khôi phục mật khẩu đến hộp thư của bạn.")
+        );
+    }
+
+    /**
+     * POST /api/auth/forgot-password/verify-otp - Kiểm tra OTP khôi phục mật khẩu
+     */
+    @PostMapping("/forgot-password/verify-otp")
+    public ResponseEntity<ApiResponse<VerifyResetOtpResponse>> verifyResetOtp(
+            @Valid @RequestBody VerifyResetOtpRequest request
+    ) {
+        VerifyResetOtpResponse response = authService.verifyResetOtp(request);
+        return ResponseEntity.ok(ApiResponse.success("Xác minh mã OTP thành công", response));
+    }
+
+    /**
+     * POST /api/auth/reset-password - Đặt lại mật khẩu mới sau khi đã xác minh OTP
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request
+    ) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(
+                ApiResponse.success("Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại với mật khẩu mới.")
         );
     }
 
