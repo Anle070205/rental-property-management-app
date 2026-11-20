@@ -28,4 +28,15 @@ public interface EmailService {
             String otpCode,
             int expirationMinutes
     );
+
+    default void sendAccountActivationEmail(
+            String toEmail,
+            String fullName,
+            String landlordName,
+            String roomCode,
+            String otpCode,
+            int expirationMinutes
+    ) {
+        sendRegistrationVerificationEmail(toEmail, fullName, otpCode, expirationMinutes, null);
+    }
 }

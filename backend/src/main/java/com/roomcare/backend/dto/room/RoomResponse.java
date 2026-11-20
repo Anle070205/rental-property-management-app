@@ -33,7 +33,10 @@ public class RoomResponse {
     private String description;
     private String imageUrl;
     private RoomStatus status;
+    private Long currentContractId;
+    private String currentContractStatus;
     private String currentContract;
+    private Long currentTenantId;
     private String currentTenant;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

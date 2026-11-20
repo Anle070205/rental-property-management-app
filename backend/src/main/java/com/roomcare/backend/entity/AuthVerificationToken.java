@@ -38,7 +38,8 @@ public class AuthVerificationToken {
     public enum Purpose {
         REGISTRATION,
         PASSWORD_RESET,
-        CONTACT_LINK
+        CONTACT_LINK,
+        ACCOUNT_ACTIVATION
     }
 
     @Id

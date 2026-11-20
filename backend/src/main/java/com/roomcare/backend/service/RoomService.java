@@ -5,15 +5,20 @@ import com.roomcare.backend.dto.room.CreateRoomRequest;
 import com.roomcare.backend.dto.room.RoomResponse;
 import com.roomcare.backend.dto.room.UpdateRoomRequest;
 import com.roomcare.backend.entity.BookingRequest;
+import com.roomcare.backend.entity.Contract;
+import com.roomcare.backend.entity.ContractStatus;
 import com.roomcare.backend.entity.Invoice;
 import com.roomcare.backend.entity.Property;
 import com.roomcare.backend.entity.Room;
 import com.roomcare.backend.entity.RoomStatus;
+import com.roomcare.backend.entity.Tenant;
 import com.roomcare.backend.repository.BookingRequestRepository;
+import com.roomcare.backend.repository.ContractRepository;
 import com.roomcare.backend.repository.InvoiceRepository;
 import com.roomcare.backend.repository.PropertyRepository;
 import com.roomcare.backend.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +40,9 @@ public class RoomService {
     private final InvoiceRepository invoiceRepository;
     private final BookingRequestRepository bookingRequestRepository;
     private final HealthScoreService healthScoreService;
+
+    @Autowired(required = false)
+    private ContractRepository contractRepository;
 
     @Transactional
     public RoomResponse createRoom(Long landlordId, CreateRoomRequest request) {
@@ -276,7 +284,35 @@ public class RoomService {
         response.setStatus(room.getStatus());
 
         String tenantLabel = null;
-        if (bookingRequestRepository != null) {
+        Long currentContractId = null;
+        String currentContractStatus = null;
+        String currentContractLabel = null;
+        Long currentTenantId = null;
+
+        if (contractRepository != null) {
+            Optional<Contract> primaryContract = contractRepository
+                    .findFirstByRoomIdAndStatusInOrderByActivatedAtDescCreatedAtDesc(
+                            room.getId(), List.of(ContractStatus.ACTIVE, ContractStatus.SIGNED));
+            if (primaryContract.isEmpty()) {
+                primaryContract = contractRepository.findByRoomIdOrderByStartDateDescCreatedAtDesc(room.getId())
+                        .stream()
+                        .filter(c -> c.getStatus() == ContractStatus.DRAFT)
+                        .findFirst();
+            }
+            if (primaryContract.isPresent()) {
+                Contract c = primaryContract.get();
+                currentContractId = c.getId();
+                currentContractStatus = c.getStatus().name();
+                currentContractLabel = c.getContractCode() + " (" + c.getStatus().name() + ")";
+                Tenant t = c.getTenant();
+                currentTenantId = t.getId();
+                String contact = t.getPhone() != null && !t.getPhone().isBlank() ? t.getPhone() : t.getEmail();
+                tenantLabel = contact != null && !contact.isBlank()
+                        ? t.getFullName() + " (" + contact + ")"
+                        : t.getFullName();
+            }
+        }
+        if (tenantLabel == null && bookingRequestRepository != null) {
             Optional<BookingRequest> approvedBooking = bookingRequestRepository
                     .findFirstByRoomIdAndRequestTypeAndStatusOrderByUpdatedAtDesc(
                             room.getId(), BookingRequest.RequestType.BOOKING, BookingRequest.Status.APPROVED);
@@ -292,17 +328,23 @@ public class RoomService {
         }
         if (tenantLabel == null) {
             List<Invoice> roomInvoices = invoiceRepository.findByRoomIdOrderByBillingMonthDesc(room.getId());
-            tenantLabel = roomInvoices.stream()
+            Optional<Tenant> invTenant = roomInvoices.stream()
                     .map(Invoice::getTenant)
                     .filter(java.util.Objects::nonNull)
-                    .findFirst()
-                    .map(t -> {
-                        String contact = t.getPhone() != null && !t.getPhone().isBlank() ? t.getPhone() : t.getEmail();
-                        return contact != null && !contact.isBlank() ? t.getFullName() + " (" + contact + ")" : t.getFullName();
-                    })
-                    .orElse(null);
+                    .findFirst();
+            if (invTenant.isPresent()) {
+                Tenant t = invTenant.get();
+                currentTenantId = t.getId();
+                String contact = t.getPhone() != null && !t.getPhone().isBlank() ? t.getPhone() : t.getEmail();
+                tenantLabel = contact != null && !contact.isBlank() ? t.getFullName() + " (" + contact + ")" : t.getFullName();
+            }
         }
-        response.setCurrentContract(room.getStatus() == RoomStatus.VACANT ? null : "Đang hiệu lực");
+        response.setCurrentContractId(currentContractId);
+        response.setCurrentContractStatus(currentContractStatus);
+        response.setCurrentContract(currentContractLabel != null
+                ? currentContractLabel
+                : (room.getStatus() == RoomStatus.VACANT ? null : "Đang hiệu lực"));
+        response.setCurrentTenantId(currentTenantId);
         response.setCurrentTenant(tenantLabel);
         response.setCreatedAt(room.getCreatedAt());
         response.setUpdatedAt(room.getUpdatedAt());

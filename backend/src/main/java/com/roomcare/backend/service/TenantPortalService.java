@@ -11,6 +11,7 @@ import com.roomcare.backend.entity.Tenant;
 import com.roomcare.backend.entity.User;
 import com.roomcare.backend.repository.TenantRepository;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -136,13 +137,15 @@ public class TenantPortalService {
                                 com.roomcare.backend.util.PhoneNumberUtils.lookupVariants(user.getPhone())
                         );
                     }
-                    return byEmailOrPhone.map(found -> {
-                        if (found.getUser() == null) {
-                            found.setUser(user);
-                            return tenants.save(found);
-                        }
-                        return found;
-                    });
+                    return byEmailOrPhone
+                            .filter(found -> found.getUser() == null || Objects.equals(found.getUser().getId(), user.getId()))
+                            .map(found -> {
+                                if (found.getUser() == null) {
+                                    found.setUser(user);
+                                    return tenants.save(found);
+                                }
+                                return found;
+                            });
                 });
     }
 }

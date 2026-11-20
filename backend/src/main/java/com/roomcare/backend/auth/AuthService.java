@@ -428,10 +428,18 @@ public class AuthService {
                         otpCode,
                         expMinutes
                 );
+                case ACCOUNT_ACTIVATION -> emailService.sendAccountActivationEmail(
+                        normalizedTarget,
+                        user.getFullName(),
+                        "Chủ nhà RoomCare",
+                        "",
+                        otpCode,
+                        expMinutes
+                );
             }
         } else {
             String purposeLabel = switch (purpose) {
-                case REGISTRATION -> "dang ky tai khoan";
+                case REGISTRATION, ACCOUNT_ACTIVATION -> "kich hoat tai khoan khach thue";
                 case PASSWORD_RESET -> "dat lai mat khau";
                 case CONTACT_LINK -> "xac thuc so dien thoai";
             };

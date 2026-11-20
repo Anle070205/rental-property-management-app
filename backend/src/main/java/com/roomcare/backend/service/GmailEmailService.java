@@ -134,6 +134,37 @@ public class GmailEmailService implements EmailService {
         );
     }
 
+    @Override
+    public void sendAccountActivationEmail(
+            String toEmail,
+            String fullName,
+            String landlordName,
+            String roomCode,
+            String otpCode,
+            int expirationMinutes
+    ) {
+        String roomLabel = StringUtils.hasText(roomCode) ? " (Phòng " + HtmlUtils.htmlEscape(roomCode.trim()) + ")" : "";
+        String ownerLabel = StringUtils.hasText(landlordName) ? HtmlUtils.htmlEscape(landlordName.trim()) : "Chủ nhà";
+        String intro = "Chủ trọ <strong>" + ownerLabel + "</strong> đã khởi tạo/liên kết tài khoản Khách thuê RoomCare"
+                + roomLabel + " cho bạn. Hãy mở ứng dụng RoomCare → chọn <strong>Kích hoạt tài khoản khách thuê</strong>, "
+                + "nhập mã OTP 6 chữ số bên dưới và tự thiết lập mật khẩu đăng nhập riêng:";
+        sendOtpTemplate(
+                toEmail,
+                fullName,
+                otpCode,
+                expirationMinutes,
+                "[RoomCare] Kích hoạt tài khoản Khách thuê & thiết lập mật khẩu",
+                "#2563EB",
+                "#EFF6FF",
+                "#3B82F6",
+                "#1D4ED8",
+                "RoomCare - Kích hoạt tài khoản Khách thuê",
+                intro,
+                "<p style=\"font-size:13px;color:#475569;\">Vì bảo mật, hệ thống không gửi mật khẩu dạng văn bản thuần qua email. Bạn sẽ tự đặt mật khẩu riêng khi kích hoạt.</p>",
+                null
+        );
+    }
+
     private void sendOtpTemplate(
             String toEmail,
             String fullName,
