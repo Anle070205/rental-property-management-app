@@ -53,6 +53,51 @@ class AuthRepository {
         }
     }
 
+    suspend fun validateBeforeRegister(
+        fullName: String,
+        email: String,
+        phone: String,
+        password: String
+    ): Resource<String> = withContext(Dispatchers.IO) {
+        try {
+            val request = RegisterRequest(
+                fullName = fullName.trim(),
+                verificationMethod = "EMAIL",
+                email = email.trim(),
+                phone = phone.trim(),
+                password = password,
+                role = "LANDLORD"
+            )
+            handleUnitMessageResponse(apiService.validateBeforeRegister(request), "Thông tin hợp lệ")
+        } catch (_: IOException) {
+            Resource.Error("Không thể kết nối máy chủ RoomCare. Vui lòng kiểm tra mạng.")
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: Constants.ErrorMessages.NETWORK_ERROR)
+        }
+    }
+
+    suspend fun switchRegistrationChannel(
+        currentChannel: String,
+        currentTarget: String,
+        newChannel: String
+    ): AuthCallOutcome = withContext(Dispatchers.IO) {
+        try {
+            handleAuthOutcome(
+                apiService.switchRegistrationChannel(
+                    com.example.rental_property_management_app.models.SwitchRegistrationChannelRequest(
+                        currentChannel = currentChannel,
+                        currentTarget = currentTarget.trim(),
+                        newChannel = newChannel
+                    )
+                )
+            )
+        } catch (_: IOException) {
+            AuthCallOutcome(Resource.Error("Không thể kết nối máy chủ RoomCare. Vui lòng kiểm tra mạng."))
+        } catch (e: Exception) {
+            AuthCallOutcome(Resource.Error(e.message ?: Constants.ErrorMessages.NETWORK_ERROR))
+        }
+    }
+
     suspend fun register(
         fullName: String,
         verificationMethod: String,

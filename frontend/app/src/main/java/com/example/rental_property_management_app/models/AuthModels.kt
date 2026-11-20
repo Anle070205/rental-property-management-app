@@ -107,6 +107,17 @@ data class ResendOtpRequest(
     val target: String
 )
 
+data class SwitchRegistrationChannelRequest(
+    @SerializedName("currentChannel")
+    val currentChannel: String,
+
+    @SerializedName("currentTarget")
+    val currentTarget: String,
+
+    @SerializedName("newChannel")
+    val newChannel: String
+)
+
 data class ForgotPasswordRequest(
     @SerializedName("channel")
     val channel: String,

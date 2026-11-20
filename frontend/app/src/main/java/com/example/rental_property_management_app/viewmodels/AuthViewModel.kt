@@ -22,6 +22,12 @@ class AuthViewModel : ViewModel() {
     private val _registerState = MutableStateFlow<Resource<AuthResponse>?>(null)
     val registerState: StateFlow<Resource<AuthResponse>?> = _registerState
 
+    private val _validateRegisterState = MutableStateFlow<Resource<String>?>(null)
+    val validateRegisterState: StateFlow<Resource<String>?> = _validateRegisterState
+
+    private val _switchChannelState = MutableStateFlow<Resource<AuthResponse>?>(null)
+    val switchChannelState: StateFlow<Resource<AuthResponse>?> = _switchChannelState
+
     private val _loginState = MutableStateFlow<Resource<AuthResponse>?>(null)
     val loginState: StateFlow<Resource<AuthResponse>?> = _loginState
 
@@ -87,6 +93,35 @@ class AuthViewModel : ViewModel() {
         _forgotPasswordState.value = null
         _registerState.value = null
         _unverifiedChallenge.value = null
+    }
+
+    fun validateBeforeRegister(fullName: String, email: String, phone: String, password: String) {
+        if (_validateRegisterState.value is Resource.Loading) return
+        viewModelScope.launch {
+            _validateRegisterState.value = Resource.Loading()
+            _validateRegisterState.value = repository.validateBeforeRegister(fullName, email, phone, password)
+        }
+    }
+
+    fun resetValidateRegisterState() {
+        _validateRegisterState.value = null
+    }
+
+    fun switchRegistrationChannel(currentChannel: String, currentTarget: String, newChannel: String) {
+        if (_switchChannelState.value is Resource.Loading) return
+        viewModelScope.launch {
+            _switchChannelState.value = Resource.Loading()
+            val outcome = repository.switchRegistrationChannel(currentChannel, currentTarget, newChannel)
+            val res = outcome.resource
+            if (res is Resource.Success && res.data != null) {
+                markVerificationCooldown(res.data.resendCooldownSeconds ?: 60)
+            }
+            _switchChannelState.value = res
+        }
+    }
+
+    fun resetSwitchChannelState() {
+        _switchChannelState.value = null
     }
 
     fun register(

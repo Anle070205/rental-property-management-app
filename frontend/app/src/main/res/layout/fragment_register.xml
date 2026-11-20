@@ -84,55 +84,11 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:id="@+id/tv_method_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chọn 1 phương thức xác thực *"
-                android:textColor="@color/rc_ink"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/toggle_method"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:checkedButton="@id/btn_method_email"
-                app:selectionRequired="true"
-                app:singleSelection="true">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_method_email"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Gmail"
-                    android:textAllCaps="false"
-                    android:textSize="13sp"
-                    app:cornerRadius="10dp"
-                    app:icon="@drawable/ic_email" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_method_phone"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Số điện thoại"
-                    android:textAllCaps="false"
-                    android:textSize="13sp"
-                    app:cornerRadius="10dp"
-                    app:icon="@drawable/ic_phone" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_full_name"
                 style="@style/RoomCare.Input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:hint="Họ và tên *"
                 app:startIconDrawable="@drawable/ic_person"
                 app:startIconTint="@color/rc_muted">
@@ -169,8 +125,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Số điện thoại Việt Nam (09... hoặc +84...) *"
-                android:visibility="gone"
+                android:hint="Số điện thoại *"
                 app:startIconDrawable="@drawable/ic_phone"
                 app:startIconTint="@color/rc_muted">
 
@@ -270,7 +225,7 @@
                     style="@style/RoomCare.Button"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
-                    android:text="@string/rc_send_verify_code_email"
+                    android:text="Xác nhận đăng ký"
                     android:textSize="15sp" />
 
                 <ProgressBar

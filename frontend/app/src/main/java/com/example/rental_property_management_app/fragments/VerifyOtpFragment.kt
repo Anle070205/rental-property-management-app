@@ -42,6 +42,8 @@ class VerifyOtpFragment : Fragment() {
 
     private var channel: String = "EMAIL"
     private var target: String = ""
+    private var altChannel: String? = null
+    private var altTarget: String? = null
     private var resendTimer: CountDownTimer? = null
     private var timerRunning = false
 
@@ -58,6 +60,8 @@ class VerifyOtpFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         channel = arguments?.getString("channel")?.takeIf { it.isNotBlank() } ?: "EMAIL"
         target = arguments?.getString("target").orEmpty().trim()
+        altChannel = arguments?.getString("altChannel")?.takeIf { it.isNotBlank() }
+        altTarget = arguments?.getString("altTarget")?.takeIf { it.isNotBlank() }
         val initialCooldown = arguments?.getInt("cooldownSeconds", 60) ?: 60
 
         configureChannelCopy()
@@ -130,8 +134,15 @@ class VerifyOtpFragment : Fragment() {
         }
 
         binding.tvSwitchMethod.setOnClickListener {
-            viewModel.clearOtpAndResetProgress()
-            findNavController().popBackStack()
+            val nextCh = altChannel
+            val nextTarget = altTarget
+            if (!nextCh.isNullOrBlank() && !nextTarget.isNullOrBlank()) {
+                otpBoxGroup.clear()
+                viewModel.switchRegistrationChannel(channel, target, nextCh)
+            } else {
+                viewModel.clearOtpAndResetProgress()
+                findNavController().popBackStack()
+            }
         }
 
         binding.tvBackToLogin.setOnClickListener {
@@ -221,6 +232,36 @@ class VerifyOtpFragment : Fragment() {
                     is Resource.Error -> {
                         showResendLoading(false)
                         view?.showSnackbar(resource.message ?: Constants.ErrorMessages.UNKNOWN_ERROR)
+                    }
+                    null -> Unit
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.switchChannelState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> showResendLoading(true)
+                    is Resource.Success -> {
+                        showResendLoading(false)
+                        val data = resource.data
+                        if (data != null) {
+                            val oldCh = channel
+                            val oldTarget = target
+                            channel = data.verificationChannel ?: (altChannel ?: channel)
+                            target = data.verificationTarget ?: (altTarget ?: target)
+                            altChannel = oldCh
+                            altTarget = oldTarget
+                            configureChannelCopy()
+                            startCooldown(data.resendCooldownSeconds ?: 60)
+                            view?.showSnackbar("Đã chuyển phương thức xác thực sang $target")
+                        }
+                        viewModel.resetSwitchChannelState()
+                    }
+                    is Resource.Error -> {
+                        showResendLoading(false)
+                        view?.showSnackbar(resource.message ?: Constants.ErrorMessages.UNKNOWN_ERROR)
+                        viewModel.resetSwitchChannelState()
                     }
                     null -> Unit
                 }

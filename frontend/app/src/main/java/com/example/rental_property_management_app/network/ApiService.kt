@@ -143,6 +143,16 @@ interface ApiService {
     // ============================================
     // AUTHENTICATION APIs
     // ============================================
+    @POST("api/auth/register/validate")
+    suspend fun validateBeforeRegister(
+        @Body request: RegisterRequest
+    ): Response<ApiResponse<Unit>>
+
+    @POST("api/auth/register/switch-channel")
+    suspend fun switchRegistrationChannel(
+        @Body request: SwitchRegistrationChannelRequest
+    ): Response<ApiResponse<AuthResponse>>
+
     @POST("api/auth/register")
     suspend fun register(
         @Body request: RegisterRequest
