@@ -8,8 +8,11 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.core.os.bundleOf
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.databinding.FragmentRoomFormBinding
 import com.example.rental_property_management_app.models.CreateRoomRequest
@@ -242,13 +245,41 @@ class RoomFormFragment : Fragment() {
                     }
                     state.data != null -> {
                         hideLoading()
-                        Snackbar.make(
-                            binding.root,
-                            if (isEditMode) getString(R.string.room_updated) else getString(R.string.room_created),
-                            Snackbar.LENGTH_SHORT
-                        ).show()
+                        val savedRoom = state.data
                         viewModel.resetCreateUpdateState()
-                        findNavController().navigateUp()
+                        if (isEditMode) {
+                            Snackbar.make(
+                                binding.root,
+                                getString(R.string.room_updated),
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                            findNavController().navigateUp()
+                        } else {
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle("Tạo phòng thành công")
+                                .setMessage(
+                                    "Phòng ${savedRoom.roomCode} đã được lưu. Bạn muốn thêm người thuê vào phòng này ngay hay để sau?"
+                                )
+                                .setCancelable(false)
+                                .setPositiveButton("Thêm người thuê ngay") { _, _ ->
+                                    val navOptions = NavOptions.Builder()
+                                        .setPopUpTo(R.id.roomFormFragment, true)
+                                        .build()
+                                    findNavController().navigate(
+                                        R.id.tenantFormFragment,
+                                        bundleOf(
+                                            "propertyId" to savedRoom.propertyId,
+                                            "roomId" to savedRoom.id,
+                                            "roomCode" to savedRoom.roomCode
+                                        ),
+                                        navOptions
+                                    )
+                                }
+                                .setNegativeButton("Để sau") { _, _ ->
+                                    findNavController().navigateUp()
+                                }
+                                .show()
+                        }
                     }
                 }
             }

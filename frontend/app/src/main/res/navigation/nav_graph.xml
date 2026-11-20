@@ -219,6 +219,14 @@
         <argument
             android:name="tenantId"
             app:argType="long" />
+        <argument
+            android:name="openProvision"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
+            android:name="roomId"
+            android:defaultValue="0L"
+            app:argType="long" />
         <action
             android:id="@+id/action_tenantDetail_to_tenantForm"
             app:destination="@id/tenantFormFragment" />
@@ -236,6 +244,14 @@
             android:name="roomId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="propertyId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="roomCode"
+            android:defaultValue=""
+            app:argType="string" />
     </fragment>
 
     <!-- Tenant Dashboard -->

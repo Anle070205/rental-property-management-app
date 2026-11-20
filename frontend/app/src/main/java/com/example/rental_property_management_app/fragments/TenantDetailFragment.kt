@@ -34,6 +34,7 @@ class TenantDetailFragment : Fragment() {
     private val viewModel: TenantViewModel by viewModels()
     private val args: TenantDetailFragmentArgs by navArgs()
     private var currentTenant: TenantResponse? = null
+    private var autoOpenedProvision = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -91,7 +92,7 @@ class TenantDetailFragment : Fragment() {
             val tenant = currentTenant ?: return@setOnClickListener
             findNavController().navigate(
                 R.id.contractListFragment,
-                bundleOf("tenantId" to tenant.id)
+                bundleOf("tenantId" to tenant.id, "roomId" to args.roomId)
             )
         }
 
@@ -263,6 +264,10 @@ class TenantDetailFragment : Fragment() {
                 if (tenant.accountStatus == "ACTIVE") View.GONE else View.VISIBLE
             btnResendActivation.visibility =
                 if (tenant.accountStatus == "PENDING_ACTIVATION") View.VISIBLE else View.GONE
+        }
+        if (args.openProvision && !autoOpenedProvision && tenant.accountStatus != "ACTIVE") {
+            autoOpenedProvision = true
+            showProvisionDialog(tenant)
         }
     }
 

@@ -387,11 +387,20 @@
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRoomContracts"
+                android:id="@+id/btnAddTenant"
                 style="@style/RoomCare.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:text="Thêm người thuê vào phòng"
+                app:icon="@drawable/ic_person" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRoomContracts"
+                style="@style/RoomCare.Button.Tonal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="Hợp đồng &amp; Khách thuê phòng này"
                 app:icon="@drawable/ic_description" />
 

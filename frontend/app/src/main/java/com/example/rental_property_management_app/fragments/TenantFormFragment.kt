@@ -9,6 +9,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.core.os.bundleOf
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.rental_property_management_app.R
@@ -82,7 +84,14 @@ class TenantFormFragment : Fragment() {
                     getString(R.string.property_selected)
                 }
             }
-            // Không gán args.roomId vào selectedPropertyId để tránh lệch nhà trọ
+            if (args.propertyId > 0L) {
+                selectedPropertyId = args.propertyId
+                binding.selectProperty.text = if (args.roomCode.isNotBlank()) {
+                    "Nhà trọ đã chọn • Phòng ${args.roomCode}"
+                } else {
+                    getString(R.string.property_selected)
+                }
+            }
             propertyViewModel.loadProperties()
         }
     }
@@ -164,11 +173,18 @@ class TenantFormFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             propertyViewModel.propertiesState.collect { state ->
                 val list = state.data
-                if (!isEditMode && selectedPropertyId == null && !list.isNullOrEmpty()) {
-                    val first = list.first()
-                    selectedPropertyId = first.id
-                    selectedPropertyName = first.name
-                    binding.selectProperty.text = "Nhà trọ: ${first.name}"
+                if (!isEditMode && !list.isNullOrEmpty()) {
+                    val matched = selectedPropertyId?.let { id -> list.find { it.id == id } }
+                    val chosen = matched ?: if (selectedPropertyId == null) list.first() else null
+                    if (chosen != null) {
+                        selectedPropertyId = chosen.id
+                        selectedPropertyName = chosen.name
+                        binding.selectProperty.text = if (args.roomCode.isNotBlank()) {
+                            "Nhà trọ: ${chosen.name} • Phòng ${args.roomCode}"
+                        } else {
+                            "Nhà trọ: ${chosen.name}"
+                        }
+                    }
                 }
             }
         }
@@ -199,12 +215,50 @@ class TenantFormFragment : Fragment() {
                     }
                     state.data != null -> {
                         hideLoading()
-                        Snackbar.make(
-                            binding.root,
-                            if (isEditMode) getString(R.string.tenant_updated) else getString(R.string.tenant_created),
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                        findNavController().navigateUp()
+                        val created = state.data
+                        if (isEditMode) {
+                            Snackbar.make(
+                                binding.root,
+                                getString(R.string.tenant_updated),
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                            findNavController().navigateUp()
+                        } else {
+                            AlertDialog.Builder(requireContext())
+                                .setTitle("Đã thêm người thuê")
+                                .setMessage(
+                                    "Đã lưu hồ sơ ${created.fullName}. Tiếp tục cấp tài khoản đăng nhập RoomCare cho người thuê này?"
+                                )
+                                .setCancelable(false)
+                                .setPositiveButton("Cấp tài khoản ngay") { _, _ ->
+                                    val navOptions = NavOptions.Builder()
+                                        .setPopUpTo(R.id.tenantFormFragment, true)
+                                        .build()
+                                    findNavController().navigate(
+                                        R.id.tenantDetailFragment,
+                                        bundleOf(
+                                            "tenantId" to created.id,
+                                            "openProvision" to true,
+                                            "roomId" to args.roomId
+                                        ),
+                                        navOptions
+                                    )
+                                }
+                                .setNegativeButton("Xem chi tiết") { _, _ ->
+                                    val navOptions = NavOptions.Builder()
+                                        .setPopUpTo(R.id.tenantFormFragment, true)
+                                        .build()
+                                    findNavController().navigate(
+                                        R.id.tenantDetailFragment,
+                                        bundleOf(
+                                            "tenantId" to created.id,
+                                            "roomId" to args.roomId
+                                        ),
+                                        navOptions
+                                    )
+                                }
+                                .show()
+                        }
                     }
                 }
             }

@@ -26,6 +26,7 @@ class RoomDetailFragment : Fragment() {
     
     private val viewModel: RoomViewModel by viewModels()
     private val args: RoomDetailFragmentArgs by navArgs()
+    private var currentRoom: RoomResponse? = null
     
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,6 +60,17 @@ class RoomDetailFragment : Fragment() {
         binding.btnHealthScore.setOnClickListener {
             val bundle = Bundle().apply { putLong("roomId", args.roomId) }
             findNavController().navigate(R.id.healthScoreFragment, bundle)
+        }
+
+        binding.btnAddTenant.setOnClickListener {
+            findNavController().navigate(
+                R.id.tenantFormFragment,
+                bundleOf(
+                    "propertyId" to (currentRoom?.propertyId ?: 0L),
+                    "roomId" to args.roomId,
+                    "roomCode" to (currentRoom?.roomCode ?: "")
+                )
+            )
         }
 
         binding.btnRoomContracts.setOnClickListener {
@@ -97,6 +109,7 @@ class RoomDetailFragment : Fragment() {
     }
     
     private fun displayRoomDetail(room: RoomResponse) {
+        currentRoom = room
         binding.apply {
             tvRoomCode.text = room.roomCode
             tvFloor.text = "Tầng ${room.floor}"
