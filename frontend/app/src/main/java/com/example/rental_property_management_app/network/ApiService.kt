@@ -103,6 +103,19 @@ interface ApiService {
     suspend fun supplementIncident(@Path("id") id: Long, @Body request: UpdateIncidentRequest):
         Response<ApiResponse<Incident>>
 
+    @GET("api/landlord/incidents")
+    suspend fun landlordIncidents(@Query("status") status: IncidentStatus?, @Query("page") page: Int):
+        Response<ApiResponse<PageResponse<Incident>>>
+
+    @GET("api/landlord/incidents/{id}")
+    suspend fun landlordIncident(@Path("id") id: Long): Response<ApiResponse<Incident>>
+
+    @PATCH("api/landlord/incidents/{id}/status")
+    suspend fun updateLandlordIncidentStatus(
+        @Path("id") id: Long,
+        @Body request: UpdateIncidentStatusRequest
+    ): Response<ApiResponse<Incident>>
+
     @GET("api/notifications")
     suspend fun notifications(
         @Query("type") type: NotificationType?,

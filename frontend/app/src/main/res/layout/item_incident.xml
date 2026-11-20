@@ -13,11 +13,13 @@
     android:padding="14dp">
 
     <FrameLayout
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:id="@+id/iconBox"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:background="@drawable/rc_icon_box_warning">
 
         <ImageView
+            android:id="@+id/iconView"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
@@ -37,28 +39,71 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/rc_ink"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            tools:text="Ẩm tường phòng tắm" />
+            tools:text="Đèn hành lang chập chờn" />
 
         <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
+            android:id="@+id/meta"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/rc_badge_warning"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="3dp"
-            android:textColor="@color/warning"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            tools:text="Đang xử lý" />
+            android:layout_marginTop="3dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/rc_muted"
+            android:textSize="12sp"
+            tools:text="Phòng 201 · Điện · Trung bình" />
+
+        <TextView
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/rc_muted"
+            android:textSize="12sp"
+            tools:text="Tường phòng tắm bị ẩm và bong sơn..." />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rc_badge_warning"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:textColor="@color/warning"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="Đang xử lý" />
+
+            <TextView
+                android:id="@+id/createdAt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/rc_muted"
+                android:textSize="11sp"
+                tools:text="21/11/2026 02:30" />
+        </LinearLayout>
     </LinearLayout>
 
     <ImageView
         android:layout_width="18dp"
         android:layout_height="18dp"
+        android:layout_marginStart="8dp"
         android:importantForAccessibility="no"
         android:src="@drawable/ic_arrow_forward"
         app:tint="@color/text_hint" />

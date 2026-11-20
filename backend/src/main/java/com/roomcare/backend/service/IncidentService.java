@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,6 +108,73 @@ public class IncidentService {
             incident.setImageUrl(request.imageUrl());
         }
         incidents.flush();
+        return IncidentResponse.from(incident);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<IncidentResponse> listForLandlord(User user, Incident.Status status, int page, int size) {
+        if (page < 0 || size < 1 || size > 100) {
+            throw new RuntimeException("Trang phải từ 0 và kích thước từ 1 đến 100");
+        }
+        var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+        var result = status == null
+                ? incidents.findByTenantLandlordId(user.getId(), pageable)
+                : incidents.findByTenantLandlordIdAndStatus(user.getId(), status, pageable);
+        return PageResponse.of(
+                result.map(IncidentResponse::from).getContent(),
+                page,
+                size,
+                result.getTotalElements(),
+                result.getTotalPages()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public IncidentResponse getForLandlord(User user, Long id) {
+        return incidents.findByIdAndTenantLandlordId(id, user.getId())
+                .map(IncidentResponse::from)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sự cố"));
+    }
+
+    @Transactional
+    public IncidentResponse updateStatusForLandlord(User user, Long id, UpdateIncidentStatusRequest request) {
+        Incident incident = incidents.findByIdAndTenantLandlordId(id, user.getId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sự cố thuộc phạm vi quản lý của bạn"));
+
+        incident.setStatus(request.status());
+        if (request.landlordResponse() != null) {
+            String trimmed = request.landlordResponse().trim();
+            if (!trimmed.isEmpty()) {
+                incident.setLandlordResponse(trimmed);
+            }
+        }
+        if (request.status() == Incident.Status.DONE) {
+            incident.setResolvedById(user.getId());
+            incident.setResolvedByName(user.getFullName());
+            incident.setResolvedAt(LocalDateTime.now());
+        }
+        incidents.saveAndFlush(incident);
+
+        if (incident.getRoom() != null && healthScoreService != null) {
+            healthScoreService.syncRoomHealthScore(incident.getRoom());
+        }
+
+        User tenantUser = incident.getTenant() != null ? incident.getTenant().getUser() : null;
+        if (tenantUser != null) {
+            String statusVi = switch (incident.getStatus()) {
+                case RECEIVED -> "Đã tiếp nhận";
+                case IN_PROGRESS -> "Đang xử lý";
+                case DONE -> "Đã hoàn thành";
+            };
+            notifications.createNotification(
+                    tenantUser,
+                    NotificationType.INCIDENT,
+                    "Cập nhật xử lý sự cố",
+                    "Sự cố \"" + incident.getTitle() + "\" đã chuyển sang trạng thái: " + statusVi
+                            + (incident.getLandlordResponse() != null ? " • " + incident.getLandlordResponse() : ""),
+                    incident.getId()
+            );
+        }
         return IncidentResponse.from(incident);
     }
 

@@ -78,6 +78,16 @@
                     android:textAppearance="@style/RoomCare.Title"
                     android:textColor="@color/rc_ink" />
 
+                <TextView
+                    android:id="@+id/roomMeta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/rc_brand"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -127,7 +137,7 @@
                     android:textAppearance="@style/RoomCare.Caption" />
             </LinearLayout>
 
-            <!-- Tracking progress box -->
+            <!-- Tracking progress box (matching Figma 3-step tracker) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -135,6 +145,74 @@
                 android:background="@drawable/rc_panel"
                 android:orientation="vertical"
                 android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Theo dõi trạng thái"
+                    android:textAppearance="@style/RoomCare.Section" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/stepReceivedPill"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/rc_badge_success"
+                        android:gravity="center"
+                        android:paddingVertical="6dp"
+                        android:text="1. Đã tiếp nhận"
+                        android:textColor="@color/success"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="4dp"
+                        android:text="→"
+                        android:textColor="@color/rc_muted" />
+
+                    <TextView
+                        android:id="@+id/stepInProgressPill"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/rc_badge"
+                        android:gravity="center"
+                        android:paddingVertical="6dp"
+                        android:text="2. Đang xử lý"
+                        android:textColor="@color/rc_muted"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="4dp"
+                        android:text="→"
+                        android:textColor="@color/rc_muted" />
+
+                    <TextView
+                        android:id="@+id/stepDonePill"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/rc_badge"
+                        android:gravity="center"
+                        android:paddingVertical="6dp"
+                        android:text="3. Hoàn thành"
+                        android:textColor="@color/rc_muted"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/steps"
@@ -203,6 +281,64 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/rc_supplement_incident" />
+
+            <!-- Landlord incident resolution panel -->
+            <LinearLayout
+                android:id="@+id/layoutLandlordControls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/rc_panel"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cập nhật xử lý sự cố (Chủ nhà trọ)"
+                    android:textAppearance="@style/RoomCare.Section" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:hint="Phản hồi / lịch xử lý cho người thuê">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etLandlordResponse"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:minLines="2" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnMarkInProgress"
+                        style="@style/RoomCare.Button.Tonal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:text="Đang xử lý" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnMarkDone"
+                        style="@style/RoomCare.Button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:text="Hoàn thành" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rental_property_management_app.R
+import com.example.rental_property_management_app.RoomCareApplication
 import com.example.rental_property_management_app.adapters.IncidentAdapter
 import com.example.rental_property_management_app.databinding.FragmentIncidentListBinding
 import com.example.rental_property_management_app.models.IncidentStatus
@@ -22,11 +23,19 @@ class IncidentListFragment : Fragment(R.layout.fragment_incident_list) {
     private var _binding: FragmentIncidentListBinding? = null
     private val binding get() = requireNotNull(_binding)
     private val viewModel: IncidentViewModel by viewModels()
+    private var isLandlord: Boolean = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentIncidentListBinding.bind(view)
+        isLandlord = RoomCareApplication.prefsManager.getUserRole().equals("LANDLORD", ignoreCase = true)
+
+        binding.toolbar.title = if (isLandlord) "Tiếp nhận sự cố" else getString(R.string.rc_incidents)
+        binding.create.isVisible = !isLandlord
+
         val nav = findNavController()
-        val adapter = IncidentAdapter { nav.navigate(R.id.incidentDetailFragment, bundleOf("incidentId" to it)) }
+        val adapter = IncidentAdapter {
+            nav.navigate(R.id.incidentDetailFragment, bundleOf("incidentId" to it))
+        }
         binding.items.layoutManager = LinearLayoutManager(requireContext())
         binding.items.adapter = adapter
         binding.toolbar.setNavigationOnClickListener { nav.navigateUp() }
@@ -54,7 +63,13 @@ class IncidentListFragment : Fragment(R.layout.fragment_incident_list) {
         }
     }
 
-    private fun refresh() = viewModel.loadList(IncidentStatus.entries.getOrNull(binding.filter.selectedItemPosition - 1))
+    override fun onResume() {
+        super.onResume()
+        refresh()
+    }
+
+    private fun refresh() =
+        viewModel.loadList(IncidentStatus.entries.getOrNull(binding.filter.selectedItemPosition - 1), isLandlord)
 
     override fun onDestroyView() {
         binding.items.adapter = null
