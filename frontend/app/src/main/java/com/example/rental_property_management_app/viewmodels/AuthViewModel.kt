@@ -34,19 +34,24 @@ class AuthViewModel : ViewModel() {
     val forgotPasswordState: StateFlow<Resource<String>?> = _forgotPasswordState
     
     /**
-     * Register new user (LANDLORD only)
+     * Register new user (LANDLORD or TENANT)
      */
-    fun register(fullName: String, email: String, phone: String, password: String) {
+    fun register(
+        fullName: String,
+        email: String,
+        phone: String,
+        password: String,
+        role: String = "LANDLORD"
+    ) {
         viewModelScope.launch {
             _registerState.value = Resource.Loading()
             
-            val result = repository.register(fullName, email, phone, password)
-            _registerState.value = result
-            
-            // Save user data if success
+            val result = repository.register(fullName, email, phone, password, role)
+            // Save user data before notifying observers so role-based navigation sees persisted prefs
             if (result is Resource.Success && result.data != null) {
                 saveUserData(result.data)
             }
+            _registerState.value = result
         }
     }
     
@@ -58,12 +63,11 @@ class AuthViewModel : ViewModel() {
             _loginState.value = Resource.Loading()
             
             val result = repository.login(emailOrPhone, password)
-            _loginState.value = result
-            
-            // Save user data if success
+            // Save user data before notifying observers so role-based navigation sees persisted prefs
             if (result is Resource.Success && result.data != null) {
                 saveUserData(result.data)
             }
+            _loginState.value = result
         }
     }
     
@@ -71,14 +75,11 @@ class AuthViewModel : ViewModel() {
      * Logout user
      */
     fun logout() {
+        RoomCareApplication.prefsManager.clearAllData()
         viewModelScope.launch {
             _logoutState.value = Resource.Loading()
-            
             val result = repository.logout()
             _logoutState.value = result
-            
-            // Clear user data
-            RoomCareApplication.prefsManager.clearAllData()
         }
     }
     

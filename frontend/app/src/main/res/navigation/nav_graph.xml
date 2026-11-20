@@ -58,6 +58,16 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_registerFragment_to_landlordDashboardFragment"
+            app:destination="@id/landlordDashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_registerFragment_to_tenantDashboardFragment"
+            app:destination="@id/tenantDashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -65,11 +75,11 @@
         android:name="com.example.rental_property_management_app.fragments.ForgotPasswordFragment"
         android:label="Quên mật khẩu" />
 
-    <!-- Landlord Dashboard -->
+    <!-- Landlord Dashboard (GĐ4.6 Unified Landlord Home) -->
     <fragment
         android:id="@+id/landlordDashboardFragment"
-        android:name="com.example.rental_property_management_app.fragments.LandlordDashboardFragment"
-        android:label="Dashboard - Chủ nhà">
+        android:name="com.example.rental_property_management_app.fragments.LandlordHomeFragment"
+        android:label="@string/dashboard_home_title">
         <action
             android:id="@+id/action_landlordDashboard_to_roomList"
             app:destination="@id/roomListFragment" />
@@ -89,11 +99,6 @@
             android:id="@+id/action_landlordDashboard_to_healthScoreFragment"
             app:destination="@id/healthScoreFragment" />
     </fragment>
-
-    <fragment
-        android:id="@+id/landlordHomeFragment"
-        android:name="com.example.rental_property_management_app.fragments.LandlordHomeFragment"
-        android:label="@string/dashboard_home_title" />
 
     <!-- Phase 2: Room Management -->
     <fragment
@@ -140,7 +145,12 @@
     <fragment
         android:id="@+id/propertySelectionFragment"
         android:name="com.example.rental_property_management_app.fragments.PropertySelectionFragment"
-        android:label="@string/select_property" />
+        android:label="@string/select_property">
+        <argument
+            android:name="selectMode"
+            android:defaultValue="true"
+            app:argType="boolean" />
+    </fragment>
 
     <!-- Phase 2: Tenant Management -->
     <fragment
@@ -281,6 +291,44 @@
             android:defaultValue="0L"
             app:argType="long" />
     </fragment>
+
+    <!-- Marketplace, Booking & Contact -->
+    <fragment
+        android:id="@+id/tenantPropertyListFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantPropertyListFragment"
+        android:label="@string/rc_browse_properties" />
+
+    <fragment
+        android:id="@+id/tenantPropertyRoomsFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantPropertyRoomsFragment"
+        android:label="@string/room_list">
+        <argument
+            android:name="propertyId"
+            app:argType="long" />
+        <argument
+            android:name="propertyName"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/tenantMarketplaceRoomDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantMarketplaceRoomDetailFragment"
+        android:label="@string/room_detail">
+        <argument
+            android:name="roomId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/tenantBookingListFragment"
+        android:name="com.example.rental_property_management_app.fragments.TenantBookingListFragment"
+        android:label="@string/rc_my_bookings" />
+
+    <fragment
+        android:id="@+id/landlordBookingListFragment"
+        android:name="com.example.rental_property_management_app.fragments.LandlordBookingListFragment"
+        android:label="@string/rc_booking_requests" />
 
 
 </navigation>

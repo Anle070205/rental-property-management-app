@@ -15,18 +15,26 @@ public class RoomResponse {
     private Long id;
     private Long propertyId;
     private String propertyName;
+    private String propertyAddress;
+    private String landlordName;
+    private String landlordPhone;
     private String roomCode;
     private Integer floor;
     private BigDecimal area;
     private BigDecimal rentPrice;
     private BigDecimal deposit;
     private Integer capacity;
+    private BigDecimal electricityPrice;
+    private BigDecimal waterPrice;
+    private BigDecimal internetFee;
+    private BigDecimal serviceFee;
+    private Integer healthScore;
     private String amenities;
     private String description;
     private String imageUrl;
     private RoomStatus status;
-    private String currentContract; // TODO: Phase 3 - thông tin hợp đồng hiện tại
-    private String currentTenant; // TODO: Phase 3 - tên khách thuê hiện tại
+    private String currentContract;
+    private String currentTenant;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

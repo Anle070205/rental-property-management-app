@@ -13,6 +13,8 @@ import com.roomcare.backend.repository.*;
 import com.roomcare.backend.service.DebtService;
 import com.roomcare.backend.service.HealthScoreService;
 import com.roomcare.backend.service.InvoiceService;
+import com.roomcare.backend.service.NotificationService;
+import com.roomcare.backend.service.TenantPortalProviderImpl;
 import com.roomcare.backend.service.UtilityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,11 +43,15 @@ class FinanceAndHealthScoreTest {
     @Mock private TenantRepository tenantRepository;
     @Mock private UserRepository userRepository;
     @Mock private UtilityRecordRepository utilityRecordRepository;
+    @Mock private IncidentRepository incidentRepository;
+    @Mock private BookingRequestRepository bookingRequestRepository;
+    @Mock private NotificationService notificationService;
 
     @InjectMocks private InvoiceService invoiceService;
     @InjectMocks private UtilityService utilityService;
     @InjectMocks private DebtService debtService;
     @InjectMocks private HealthScoreService healthScoreService;
+    @InjectMocks private TenantPortalProviderImpl tenantPortalProvider;
 
     private User landlord;
     private Property property;
@@ -307,27 +313,34 @@ class FinanceAndHealthScoreTest {
 
         when(invoiceRepository.findByRoomIdOrderByBillingMonthDesc(100L)).thenReturn(List.of(paidInv));
         when(utilityRecordRepository.findByRoomIdOrderByBillingMonthDesc(100L)).thenReturn(List.of(utilGood));
+        when(incidentRepository.findByRoomIdOrderByCreatedAtDesc(100L)).thenReturn(List.of());
 
         RoomHealthScoreResponse goodScore = healthScoreService.calculateRoomHealthScore(roomOccupied);
         assertEquals(100, goodScore.getTotalScore());
         assertEquals("GOOD", goodScore.getRatingLevel());
 
-        // WARNING scenario (Expiring soon + 1 overdue invoice 5 days + missing utility 16/20 -> 28+15+16+15 = 74)
+        // WARNING scenario (Expiring soon 10 + 1 overdue invoice >15d 14 + open MEDIUM incident 34 + missing utility 15 -> 73)
         Invoice overdueCurr = new Invoice();
         overdueCurr.setStatus(InvoiceStatus.OVERDUE);
         overdueCurr.setRemainingAmount(new BigDecimal("3000000"));
         overdueCurr.setPaidAmount(BigDecimal.ZERO);
         overdueCurr.setTotalAmount(new BigDecimal("3000000"));
-        overdueCurr.setDueDate(LocalDate.now().minusDays(5));
+        overdueCurr.setDueDate(LocalDate.now().minusDays(20));
+
+        Incident mediumDamage = new Incident();
+        mediumDamage.setTitle("Hỏng khóa cửa");
+        mediumDamage.setPriority(Incident.Priority.MEDIUM);
+        mediumDamage.setStatus(Incident.Status.RECEIVED);
 
         when(invoiceRepository.findByRoomIdOrderByBillingMonthDesc(101L)).thenReturn(List.of(overdueCurr));
         when(utilityRecordRepository.findByRoomIdOrderByBillingMonthDesc(101L)).thenReturn(List.of());
+        when(incidentRepository.findByRoomIdOrderByCreatedAtDesc(101L)).thenReturn(List.of(mediumDamage));
 
         RoomHealthScoreResponse warningScore = healthScoreService.calculateRoomHealthScore(roomExpiring);
-        assertEquals(74, warningScore.getTotalScore());
+        assertEquals(73, warningScore.getTotalScore());
         assertEquals("WARNING", warningScore.getRatingLevel());
 
-        // Missing-data fallback scenario (VACANT room with no invoices & no utilities -> 35+12+16+15 = 78)
+        // Brand-new VACANT room defaults strictly to 100/100 (GOOD)
         Room roomVacant = new Room();
         roomVacant.setId(103L);
         roomVacant.setProperty(property);
@@ -335,11 +348,22 @@ class FinanceAndHealthScoreTest {
         roomVacant.setStatus(RoomStatus.VACANT);
         when(invoiceRepository.findByRoomIdOrderByBillingMonthDesc(103L)).thenReturn(List.of());
         when(utilityRecordRepository.findByRoomIdOrderByBillingMonthDesc(103L)).thenReturn(List.of());
-        RoomHealthScoreResponse missingDataScore = healthScoreService.calculateRoomHealthScore(roomVacant);
-        assertEquals(78, missingDataScore.getTotalScore());
-        assertTrue(missingDataScore.getFactors().get(0).getDetail().contains("điểm cơ sở"));
+        when(incidentRepository.findByRoomIdOrderByCreatedAtDesc(103L)).thenReturn(List.of());
+        RoomHealthScoreResponse brandNewScore = healthScoreService.calculateRoomHealthScore(roomVacant);
+        assertEquals(100, brandNewScore.getTotalScore());
+        assertEquals("GOOD", brandNewScore.getRatingLevel());
 
-        // RISK scenario (NEEDS_ATTENTION + 2 overdue > 15 days + spike > 50%)
+        // Damage deduction check from 100 baseline: open HIGH incident drops score by 10 -> 90
+        Incident highDamage = new Incident();
+        highDamage.setTitle("Vỡ ống nước nhà vệ sinh");
+        highDamage.setPriority(Incident.Priority.HIGH);
+        highDamage.setStatus(Incident.Status.RECEIVED);
+        when(incidentRepository.findByRoomIdOrderByCreatedAtDesc(103L)).thenReturn(List.of(highDamage));
+        RoomHealthScoreResponse afterDamage = healthScoreService.calculateRoomHealthScore(roomVacant);
+        assertEquals(90, afterDamage.getTotalScore());
+        assertTrue(afterDamage.getReasonsForDeduction().stream().anyMatch(r -> r.contains("Vỡ ống nước")));
+
+        // RISK scenario (NEEDS_ATTENTION + 2 overdue > 15 days + spike > 50% + open URGENT incident)
         Invoice od1 = new Invoice();
         od1.setStatus(InvoiceStatus.OVERDUE);
         od1.setRemainingAmount(new BigDecimal("2500000"));
@@ -364,13 +388,65 @@ class FinanceAndHealthScoreTest {
         uOld.setWaterUsage(new BigDecimal("6"));
         uOld.setIsAdjustment(false);
 
+        Incident urgentDamage = new Incident();
+        urgentDamage.setTitle("Chập điện cháy ổ cắm");
+        urgentDamage.setPriority(Incident.Priority.URGENT);
+        urgentDamage.setStatus(Incident.Status.IN_PROGRESS);
+
         when(invoiceRepository.findByRoomIdOrderByBillingMonthDesc(102L)).thenReturn(List.of(od2, od1));
         when(utilityRecordRepository.findByRoomIdOrderByBillingMonthDesc(102L)).thenReturn(List.of(uNew, uOld));
+        when(incidentRepository.findByRoomIdOrderByCreatedAtDesc(102L)).thenReturn(List.of(urgentDamage));
 
         RoomHealthScoreResponse riskScore = healthScoreService.calculateRoomHealthScore(roomAttention);
         assertTrue(riskScore.getTotalScore() < 50);
         assertEquals("RISK", riskScore.getRatingLevel());
         assertFalse(riskScore.getReasonsForDeduction().isEmpty());
         assertFalse(riskScore.getRecommendations().isEmpty());
+    }
+
+    @Test
+    void tenantPortalProvider_scopesDataAndNeverMarksPaidOnQrView() {
+        Invoice inv = new Invoice();
+        inv.setId(501L);
+        inv.setInvoiceCode("INV-202611-102-R100");
+        inv.setLandlord(landlord);
+        inv.setProperty(property);
+        inv.setRoom(roomOccupied);
+        inv.setTenant(tenant);
+        inv.setBillingMonth(YearMonth.now().toString());
+        inv.setRoomRent(new BigDecimal("3000000"));
+        inv.setElectricityAmount(new BigDecimal("350000"));
+        inv.setWaterAmount(new BigDecimal("90000"));
+        inv.setInternetAmount(new BigDecimal("100000"));
+        inv.setServiceAmount(new BigDecimal("50000"));
+        inv.setOtherFees(BigDecimal.ZERO);
+        inv.setPreviousDebt(BigDecimal.ZERO);
+        inv.setDiscountAmount(BigDecimal.ZERO);
+        inv.setTotalAmount(new BigDecimal("3590000"));
+        inv.setPaidAmount(BigDecimal.ZERO);
+        inv.setRemainingAmount(new BigDecimal("3590000"));
+        inv.setStatus(InvoiceStatus.UNPAID);
+        inv.setDueDate(LocalDate.now().plusDays(5));
+
+        when(invoiceRepository.findById(501L)).thenReturn(Optional.of(inv));
+        when(invoiceRepository.findByTenantIdOrderByBillingMonthDescCreatedAtDesc(50L)).thenReturn(List.of(inv));
+
+        // 1. Opening QR payment info returns exact transfer amount/content and keeps status UNPAID
+        var qrInfo = tenantPortalProvider.paymentInfo(tenant, 501L).orElseThrow();
+        assertEquals(new BigDecimal("3590000"), qrInfo.amount());
+        assertTrue(qrInfo.transferContent().contains("INV-202611-102-R100"));
+        assertEquals(InvoiceStatus.UNPAID, inv.getStatus());
+        verify(invoiceRepository, never()).save(any());
+
+        // 2. Cross-tenant isolation: another tenant cannot read tenant 50's invoice or QR
+        Tenant otherTenant = new Tenant();
+        otherTenant.setId(99L);
+        assertTrue(tenantPortalProvider.invoice(otherTenant, 501L).isEmpty());
+        assertTrue(tenantPortalProvider.paymentInfo(otherTenant, 501L).isEmpty());
+
+        // 3. Contract renewal sends notification to landlord
+        boolean sent = tenantPortalProvider.requestRenewal(tenant, roomOccupied.getId());
+        assertTrue(sent);
+        verify(notificationService).createNotification(eq(landlord), eq(NotificationType.CONTRACT), anyString(), anyString(), eq(roomOccupied.getId()));
     }
 }

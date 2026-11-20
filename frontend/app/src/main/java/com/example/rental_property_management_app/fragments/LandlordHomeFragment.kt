@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,6 +22,7 @@ import com.example.rental_property_management_app.utils.CurrencyUtils
 import com.example.rental_property_management_app.utils.Resource
 import com.example.rental_property_management_app.viewmodels.AuthViewModel
 import com.example.rental_property_management_app.viewmodels.DashboardViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -46,12 +48,23 @@ class LandlordHomeFragment : Fragment() {
 
         val userName = RoomCareApplication.prefsManager.getUserName()
         if (!userName.isNullOrBlank()) {
-            binding.tvWelcome.text = "Xin chào, $userName"
+            binding.tvWelcome.text = userName
+            binding.tvAvatar.text = profileInitials(userName)
+        } else {
+            binding.tvAvatar.text = "CN"
         }
 
         setupNavigationListeners()
         observeStates()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        val userName = RoomCareApplication.prefsManager.getUserName()
+        if (!userName.isNullOrBlank()) {
+            binding.tvWelcome.text = userName
+            binding.tvAvatar.text = profileInitials(userName)
+        }
         dashboardViewModel.loadDashboard()
     }
 
@@ -64,12 +77,26 @@ class LandlordHomeFragment : Fragment() {
             dashboardViewModel.loadDashboard()
         }
 
+        binding.btnNotifications.setOnClickListener {
+            findNavController().navigate(R.id.notificationFragment)
+        }
+        binding.btnProfile.setOnClickListener {
+            findNavController().navigate(R.id.profileFragment)
+        }
+
         binding.btnLogout.setOnClickListener {
-            authViewModel.logout()
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.nav_graph, true)
-                .build()
-            findNavController().navigate(R.id.loginFragment, null, navOptions)
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.rc_logout)
+                .setMessage(R.string.rc_logout_confirm)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.rc_logout) { _, _ ->
+                    authViewModel.logout()
+                    val navOptions = NavOptions.Builder()
+                        .setPopUpTo(R.id.nav_graph, true)
+                        .build()
+                    findNavController().navigate(R.id.loginFragment, null, navOptions)
+                }
+                .show()
         }
 
         binding.cardInvoices.setOnClickListener {
@@ -89,6 +116,15 @@ class LandlordHomeFragment : Fragment() {
         }
         binding.cardTenantManagement.setOnClickListener {
             findNavController().navigate(R.id.tenantListFragment)
+        }
+        binding.cardPropertyManagement.setOnClickListener {
+            findNavController().navigate(
+                R.id.propertySelectionFragment,
+                bundleOf("selectMode" to false)
+            )
+        }
+        binding.cardBookingRequests.setOnClickListener {
+            findNavController().navigate(R.id.landlordBookingListFragment)
         }
     }
 
@@ -128,6 +164,7 @@ class LandlordHomeFragment : Fragment() {
             tvExpiringRooms.text = "Sắp hết hạn: ${data.expiringSoonRooms}"
             tvIssueRooms.text = "Cần chú ý: ${data.issueRooms}"
             tvAvgHealthScore.text = "Health: ${data.averageHealthScore}/100"
+            tvBookingRequestsSubtitle.text = "${data.pendingBookingCount} yêu cầu chờ duyệt"
 
             tvTotalRevenue.text = CurrencyUtils.formatVND(data.totalRevenue)
             tvCollectedAmount.text = CurrencyUtils.formatVND(data.collectedAmount)

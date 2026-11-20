@@ -15,6 +15,7 @@ import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.adapters.RoomAdapter
 import com.example.rental_property_management_app.databinding.FragmentRoomListBinding
 import com.example.rental_property_management_app.models.RoomResponse
+import com.example.rental_property_management_app.models.RoomStatus
 import com.example.rental_property_management_app.utils.Resource
 import com.example.rental_property_management_app.viewmodels.RoomViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -32,6 +33,9 @@ class RoomListFragment : Fragment() {
     private val viewModel: RoomViewModel by viewModels()
     
     private lateinit var adapter: RoomAdapter
+    private var allRooms: List<RoomResponse> = emptyList()
+    private var selectedStatusFilter: RoomStatus? = null
+    private var searchKeyword: String = ""
     
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,6 +49,7 @@ class RoomListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
+        setupToolbar()
         setupRecyclerView()
         setupClickListeners()
         setupSearchView()
@@ -52,7 +57,26 @@ class RoomListFragment : Fragment() {
         observeDeleteState()
         
         // Load initial data
-        viewModel.loadAllRooms()
+        viewModel.loadAllRooms(size = 100)
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+        binding.toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_refresh -> {
+                    viewModel.loadAllRooms(size = 100)
+                    true
+                }
+                R.id.action_filter -> {
+                    binding.etSearch.requestFocus()
+                    true
+                }
+                else -> false
+            }
+        }
     }
     
     private fun setupRecyclerView() {
@@ -84,19 +108,50 @@ class RoomListFragment : Fragment() {
         
         // Swipe refresh
         binding.swipeRefresh.setOnRefreshListener {
-            viewModel.loadAllRooms()
+            viewModel.loadAllRooms(size = 100)
         }
         
         // Retry button
         binding.btnRetry.setOnClickListener {
-            viewModel.loadAllRooms()
+            viewModel.loadAllRooms(size = 100)
+        }
+
+        binding.chipGroupStatus.setOnCheckedStateChangeListener { _, checkedIds ->
+            selectedStatusFilter = when (checkedIds.firstOrNull()) {
+                R.id.chipVacant -> RoomStatus.VACANT
+                R.id.chipOccupied -> RoomStatus.OCCUPIED
+                R.id.chipExpiring -> RoomStatus.EXPIRING_SOON
+                R.id.chipAttention -> RoomStatus.NEEDS_ATTENTION
+                else -> null
+            }
+            applyFilters()
         }
     }
     
     private fun setupSearchView() {
         binding.etSearch.addTextChangedListener { text ->
-            // TODO: Implement search/filter
-            // For now, just reload
+            searchKeyword = text?.toString()?.trim().orEmpty()
+            applyFilters()
+        }
+    }
+
+    private fun applyFilters() {
+        val kw = searchKeyword.lowercase()
+        val filtered = allRooms.filter { room ->
+            val matchStatus = selectedStatusFilter == null || room.status == selectedStatusFilter
+            val matchKeyword = kw.isEmpty() ||
+                room.roomCode.lowercase().contains(kw) ||
+                room.propertyName.lowercase().contains(kw) ||
+                (room.currentTenant?.lowercase()?.contains(kw) == true)
+            matchStatus && matchKeyword
+        }
+        if (filtered.isEmpty()) {
+            adapter.submitList(emptyList())
+            showEmptyState()
+        } else {
+            hideAllStates()
+            adapter.submitList(filtered)
+            binding.rvRooms.visibility = View.VISIBLE
         }
     }
     
@@ -110,16 +165,8 @@ class RoomListFragment : Fragment() {
                     is Resource.Success -> {
                         binding.swipeRefresh.isRefreshing = false
                         hideAllStates()
-                        
-
-                        val rooms = resource.data?.content ?: emptyList()
-
-                        if (rooms.isEmpty()) {
-                            showEmptyState()
-                        } else {
-                            adapter.submitList(rooms)
-                            binding.rvRooms.visibility = View.VISIBLE
-                        }
+                        allRooms = resource.data?.content ?: emptyList()
+                        applyFilters()
                     }
                     is Resource.Error -> {
                         binding.swipeRefresh.isRefreshing = false

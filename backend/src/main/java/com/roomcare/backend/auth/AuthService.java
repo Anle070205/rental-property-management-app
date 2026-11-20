@@ -3,8 +3,11 @@ package com.roomcare.backend.auth;
 import com.roomcare.backend.dto.AuthResponse;
 import com.roomcare.backend.dto.LoginRequest;
 import com.roomcare.backend.dto.RegisterRequest;
+import com.roomcare.backend.entity.Property;
 import com.roomcare.backend.entity.Role;
 import com.roomcare.backend.entity.User;
+import com.roomcare.backend.repository.PropertyRepository;
+import com.roomcare.backend.repository.TenantRepository;
 import com.roomcare.backend.repository.UserRepository;
 import com.roomcare.backend.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,20 +23,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PropertyRepository propertyRepository;
+    private final TenantRepository tenantRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     /**
-     * Đăng ký user mới
-     * CHỈ CHO PHÉP ĐĂNG KÝ LANDLORD
-     * TENANT được tạo bởi Landlord khi tạo hợp đồng
+     * Đăng ký user mới (hỗ trợ LANDLORD và TENANT)
      */
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        // Chỉ cho phép đăng ký LANDLORD
-        if (!"LANDLORD".equals(request.getRole())) {
-            throw new RuntimeException("Chỉ Chủ nhà mới có thể đăng ký tài khoản. Tài khoản Người thuê sẽ được tạo bởi Chủ nhà.");
+        String requestedRole = request.getRole() != null && !request.getRole().isBlank()
+                ? request.getRole().trim().toUpperCase()
+                : "LANDLORD";
+        if (!"LANDLORD".equals(requestedRole) && !"TENANT".equals(requestedRole)) {
+            throw new RuntimeException("Vai trò không hợp lệ. Chỉ hỗ trợ Chủ nhà hoặc Người thuê.");
         }
+        Role role = Role.valueOf(requestedRole);
 
         // Kiểm tra email đã tồn tại
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -45,17 +51,32 @@ public class AuthService {
             throw new RuntimeException("Số điện thoại đã được sử dụng");
         }
 
-        // Tạo user mới (LANDLORD only)
         User user = new User();
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
+        user.setFullName(request.getFullName().trim());
+        user.setEmail(request.getEmail().trim());
+        user.setPhone(request.getPhone().trim());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(Role.LANDLORD);
+        user.setRole(role);
         user.setIsActive(true);
 
-        // Lưu vào database
         User savedUser = userRepository.save(user);
+
+        if (role == Role.LANDLORD) {
+            Property defaultProperty = new Property();
+            defaultProperty.setLandlord(savedUser);
+            defaultProperty.setName("Nhà trọ " + savedUser.getFullName());
+            defaultProperty.setAddress("Chưa cập nhật địa chỉ");
+            defaultProperty.setDescription("Nhà trọ mặc định");
+            propertyRepository.save(defaultProperty);
+        } else {
+            tenantRepository.findFirstByEmailIgnoreCaseOrPhone(savedUser.getEmail(), savedUser.getPhone())
+                    .ifPresent(tenant -> {
+                        if (tenant.getUser() == null) {
+                            tenant.setUser(savedUser);
+                            tenantRepository.save(tenant);
+                        }
+                    });
+        }
 
         // Generate JWT token
         String token = jwtUtil.generateToken(

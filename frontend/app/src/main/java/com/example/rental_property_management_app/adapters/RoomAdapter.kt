@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.databinding.ItemRoomBinding
 import com.example.rental_property_management_app.models.RoomResponse
 import com.example.rental_property_management_app.utils.CurrencyUtils
@@ -65,6 +66,16 @@ class RoomAdapter(
                 } else {
                     tvTenantInfo.text = "Chưa có khách"
                 }
+
+                // Health Score badge
+                tvHealthScore.text = "Health Score: ${room.healthScore}/100"
+                val (hsFg, hsBg) = when {
+                    room.healthScore >= 80 -> R.color.health_good to R.drawable.rc_badge_success
+                    room.healthScore >= 50 -> R.color.health_warning to R.drawable.rc_badge_warning
+                    else -> R.color.health_risk to R.drawable.rc_icon_box_danger
+                }
+                tvHealthScore.setTextColor(ContextCompat.getColor(root.context, hsFg))
+                tvHealthScore.setBackgroundResource(hsBg)
                 
                 // Click listeners
                 root.setOnClickListener { onItemClick(room) }

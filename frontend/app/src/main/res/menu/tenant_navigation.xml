@@ -1,7 +1,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@id/tenantDashboardFragment" android:title="@string/rc_tenant_tab_home" android:icon="@drawable/ic_home" />
-    <item android:id="@id/myRoomFragment" android:title="@string/rc_tenant_tab_room" android:icon="@drawable/ic_room" />
-    <item android:id="@id/tenantInvoiceFragment" android:title="@string/rc_tenant_invoices" android:icon="@drawable/ic_description" />
-    <item android:id="@id/notificationFragment" android:title="@string/rc_notifications" android:icon="@drawable/rc_bell" />
-    <item android:id="@id/profileFragment" android:title="@string/rc_tenant_tab_profile" android:icon="@drawable/ic_person" />
+    <item
+        android:id="@id/tenantDashboardFragment"
+        android:icon="@drawable/ic_home"
+        android:title="@string/rc_tenant_tab_home" />
+    <item
+        android:id="@id/myRoomFragment"
+        android:icon="@drawable/ic_room"
+        android:title="@string/rc_tenant_tab_my_room" />
+    <item
+        android:id="@id/tenantInvoiceFragment"
+        android:icon="@drawable/ic_receipt"
+        android:title="@string/rc_tenant_invoices" />
+    <item
+        android:id="@id/notificationFragment"
+        android:icon="@drawable/rc_bell"
+        android:title="@string/rc_notifications" />
+    <item
+        android:id="@id/profileFragment"
+        android:icon="@drawable/ic_person"
+        android:title="@string/rc_tenant_tab_profile" />
 </menu>

@@ -56,6 +56,21 @@ public class Room {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private RoomStatus status;
+
+    @Column(name = "health_score", nullable = false, columnDefinition = "INT NOT NULL DEFAULT 100")
+    private Integer healthScore = 100;
+
+    @Column(name = "electricity_price", precision = 15, scale = 2)
+    private BigDecimal electricityPrice;
+
+    @Column(name = "water_price", precision = 15, scale = 2)
+    private BigDecimal waterPrice;
+
+    @Column(name = "internet_fee", precision = 15, scale = 2)
+    private BigDecimal internetFee;
+
+    @Column(name = "service_fee", precision = 15, scale = 2)
+    private BigDecimal serviceFee;
     
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -64,4 +79,14 @@ public class Room {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onPrePersist() {
+        if (this.healthScore == null) {
+            this.healthScore = 100;
+        }
+        if (this.status == null) {
+            this.status = RoomStatus.VACANT;
+        }
+    }
 }

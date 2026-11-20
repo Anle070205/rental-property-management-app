@@ -82,10 +82,10 @@ public class RoomController {
     }
     
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteRoom(
+    public ApiResponse<Void> deleteRoom(
             @AuthenticationPrincipal User landlord,
             @PathVariable Long id) {
         roomService.deleteRoom(landlord.getId(), id);
+        return ApiResponse.success("Đã xóa phòng thành công");
     }
 }

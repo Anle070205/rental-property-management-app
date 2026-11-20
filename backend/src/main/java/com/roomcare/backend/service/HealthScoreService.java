@@ -4,6 +4,8 @@ import com.roomcare.backend.dto.health.HealthFactorResponse;
 import com.roomcare.backend.dto.health.HealthScoreOverviewResponse;
 import com.roomcare.backend.dto.health.RoomHealthScoreResponse;
 import com.roomcare.backend.entity.*;
+import com.roomcare.backend.repository.BookingRequestRepository;
+import com.roomcare.backend.repository.IncidentRepository;
 import com.roomcare.backend.repository.InvoiceRepository;
 import com.roomcare.backend.repository.RoomRepository;
 import com.roomcare.backend.repository.UtilityRecordRepository;
@@ -26,11 +28,13 @@ import java.util.stream.Collectors;
 public class HealthScoreService {
 
     public static final String FORMULA_SUMMARY =
-            "Công thức đề xuất (chờ nhóm thống nhất): Thanh toán đúng hạn (40đ) + Hợp đồng & Lấp đầy (25đ) + Điện nước ổn định (20đ) + Sự cố & Vận hành (15đ). Thiếu dữ liệu áp dụng điểm cơ sở trung lập.";
+            "Mặc định 100đ cho phòng mới. Gồm: Tình trạng & Sự cố/Hư hỏng (40đ) + Thanh toán đúng hạn (30đ) + Điện nước ổn định (15đ) + Hợp đồng & Vận hành (15đ). Trừ điểm khi phát sinh hư hỏng/sự cố, nợ quá hạn hoặc bất thường.";
 
     private final RoomRepository roomRepository;
     private final InvoiceRepository invoiceRepository;
     private final UtilityRecordRepository utilityRecordRepository;
+    private final IncidentRepository incidentRepository;
+    private final BookingRequestRepository bookingRequestRepository;
 
     @Transactional(readOnly = true)
     public HealthScoreOverviewResponse getAllRoomHealthScores(
@@ -88,9 +92,40 @@ public class HealthScoreService {
         return calculateRoomHealthScore(room);
     }
 
+    @Transactional
+    public int syncRoomHealthScore(Room room) {
+        if (room == null) {
+            return 100;
+        }
+        Room managed = room.getId() != null
+                ? roomRepository.findById(room.getId()).orElse(room)
+                : room;
+        int score = calculateRoomHealthScore(managed).getTotalScore();
+        managed.setHealthScore(score);
+        roomRepository.save(managed);
+        room.setHealthScore(score);
+        return score;
+    }
+
     public RoomHealthScoreResponse calculateRoomHealthScore(Room room) {
-        List<Invoice> invoices = invoiceRepository.findByRoomIdOrderByBillingMonthDesc(room.getId());
-        List<UtilityRecord> utilities = utilityRecordRepository.findByRoomIdOrderByBillingMonthDesc(room.getId());
+        List<Invoice> invoices = invoiceRepository != null
+                ? invoiceRepository.findByRoomIdOrderByBillingMonthDesc(room.getId())
+                : List.of();
+        if (invoices == null) {
+            invoices = List.of();
+        }
+        List<UtilityRecord> utilities = utilityRecordRepository != null
+                ? utilityRecordRepository.findByRoomIdOrderByBillingMonthDesc(room.getId())
+                : List.of();
+        if (utilities == null) {
+            utilities = List.of();
+        }
+        List<Incident> incidents = incidentRepository != null
+                ? incidentRepository.findByRoomIdOrderByCreatedAtDesc(room.getId())
+                : List.of();
+        if (incidents == null) {
+            incidents = List.of();
+        }
 
         List<String> deductions = new ArrayList<>();
         List<String> recommendations = new ArrayList<>();
@@ -101,17 +136,58 @@ public class HealthScoreService {
                 .map(i -> i.getTenant().getFullName())
                 .findFirst()
                 .orElse(null);
+        if (tenantName == null && bookingRequestRepository != null) {
+            tenantName = bookingRequestRepository
+                    .findFirstByRoomIdAndRequestTypeAndStatusOrderByUpdatedAtDesc(
+                            room.getId(),
+                            BookingRequest.RequestType.BOOKING,
+                            BookingRequest.Status.APPROVED
+                    )
+                    .map(BookingRequest::getTenantName)
+                    .orElse(null);
+        }
 
-        // 1. Lịch sử thanh toán đúng hạn (40đ)
+        // 1. Tình trạng phòng & Sự cố/Hư hỏng (40đ) - làm cơ sở đối chiếu với người thuê
+        int incidentScore = 40;
+        int openIncidentCount = 0;
+        for (Incident inc : incidents) {
+            if (inc.getStatus() != Incident.Status.DONE) {
+                openIncidentCount++;
+                int penalty = switch (inc.getPriority()) {
+                    case URGENT -> 15;
+                    case HIGH -> 10;
+                    case MEDIUM -> 6;
+                    case LOW -> 3;
+                };
+                incidentScore -= penalty;
+                deductions.add("Hư hỏng/Sự cố (" + inc.getPriority().name() + ", -" + penalty + "đ): " + inc.getTitle());
+                recommendations.add("Kiểm tra thực tế và xử lý sự cố \"" + inc.getTitle() + "\" cho phòng " + room.getRoomCode());
+            }
+        }
+        if (openIncidentCount == 0 && room.getStatus() == RoomStatus.NEEDS_ATTENTION) {
+            incidentScore -= 15;
+            deductions.add("Phòng đang được đánh dấu Cần chú ý / có vấn đề cần kiểm tra (-15đ)");
+            recommendations.add("Kiểm tra thực tế phòng " + room.getRoomCode() + " và khắc phục sự cố trước kỳ thu mới");
+        }
+        incidentScore = Math.max(0, Math.min(40, incidentScore));
+        String incidentDetail;
+        if (openIncidentCount > 0) {
+            incidentDetail = "Có " + openIncidentCount + " sự cố/hư hỏng chưa hoàn tất";
+        } else if (room.getStatus() == RoomStatus.NEEDS_ATTENTION) {
+            incidentDetail = "Phòng ở trạng thái Cần chú ý";
+        } else {
+            incidentDetail = "Phòng nguyên trạng, không có báo cáo hư hỏng/sự cố";
+        }
+
+        // 2. Thanh toán đúng hạn (30đ)
         int paymentScore;
         String paymentDetail;
         int overdueCount = 0;
         if (invoices.isEmpty()) {
-            paymentScore = 35;
-            paymentDetail = "Chưa có hóa đơn phát sinh (áp dụng điểm cơ sở 35/40)";
-            recommendations.add("Lập hóa đơn định kỳ để theo dõi chính xác lịch sử thanh toán");
+            paymentScore = 30;
+            paymentDetail = "Chưa phát sinh công nợ quá hạn (mặc định 30/30)";
         } else {
-            paymentScore = 40;
+            paymentScore = 30;
             int partialCount = 0;
             int unpaidNotDueCount = 0;
             long maxOverdueDays = 0;
@@ -121,14 +197,14 @@ public class HealthScoreService {
                 boolean isOverdue = hasRemaining && (inv.getDueDate().isBefore(today) || inv.getStatus() == InvoiceStatus.OVERDUE);
                 if (isOverdue) {
                     overdueCount++;
-                    paymentScore -= 12;
+                    paymentScore -= 10;
                     long days = Math.max(1, ChronoUnit.DAYS.between(inv.getDueDate(), today));
                     if (days > maxOverdueDays) {
                         maxOverdueDays = days;
                     }
                 } else if (hasRemaining && inv.getPaidAmount().compareTo(BigDecimal.ZERO) > 0) {
                     partialCount++;
-                    paymentScore -= 5;
+                    paymentScore -= 4;
                 } else if (hasRemaining) {
                     unpaidNotDueCount++;
                     paymentScore -= 2;
@@ -136,9 +212,9 @@ public class HealthScoreService {
             }
 
             if (maxOverdueDays > 15) {
-                paymentScore -= 8;
+                paymentScore -= 6;
             }
-            paymentScore = Math.max(0, Math.min(40, paymentScore));
+            paymentScore = Math.max(0, Math.min(30, paymentScore));
 
             if (overdueCount > 0) {
                 deductions.add("Có " + overdueCount + " hóa đơn quá hạn (trễ tối đa " + maxOverdueDays + " ngày)");
@@ -155,54 +231,19 @@ public class HealthScoreService {
             }
         }
 
-        // 2. Tình trạng hợp đồng & khai thác phòng (25đ)
-        int contractScore;
-        String contractDetail;
-        switch (room.getStatus()) {
-            case OCCUPIED -> {
-                contractScore = 25;
-                contractDetail = "Phòng đang thuê ổn định";
-            }
-            case EXPIRING_SOON -> {
-                contractScore = 15;
-                contractDetail = "Hợp đồng sắp hết hạn (cần gia hạn)";
-                deductions.add("Hợp đồng phòng " + room.getRoomCode() + " sắp hết hạn");
-                recommendations.add("Trao đổi với người thuê để ký gia hạn hợp đồng kịp thời");
-            }
-            case VACANT -> {
-                contractScore = 12;
-                contractDetail = "Phòng đang trống";
-                deductions.add("Phòng đang trống, chưa tạo dòng tiền thuê");
-                recommendations.add("Cập nhật thông tin cho thuê để nhanh chóng lấp đầy phòng");
-            }
-            case NEEDS_ATTENTION -> {
-                contractScore = 8;
-                contractDetail = "Phòng ở trạng thái Cần chú ý";
-                deductions.add("Trạng thái phòng đang đánh dấu Cần chú ý");
-            }
-            default -> {
-                contractScore = 15;
-                contractDetail = "Không xác định";
-            }
-        }
-
-        // 3. Ổn định điện nước & ghi nhận định kỳ (20đ)
+        // 3. Ổn định điện nước & ghi nhận định kỳ (15đ)
         int utilityScore;
         String utilityDetail;
         if (room.getStatus() == RoomStatus.VACANT || utilities.isEmpty()) {
-            utilityScore = 16;
-            utilityDetail = "Chưa có đủ dữ liệu chỉ số điện nước (áp dụng điểm cơ sở 16/20)";
-            if (room.getStatus() != RoomStatus.VACANT) {
-                deductions.add("Chưa ghi chỉ số điện nước cho phòng đang thuê");
-                recommendations.add("Ghi nhận chỉ số điện nước kỳ hiện tại trong mục Điện, nước & dịch vụ");
-            }
+            utilityScore = 15;
+            utilityDetail = "Chưa ghi nhận bất thường điện nước (mặc định 15/15)";
         } else {
-            utilityScore = 20;
+            utilityScore = 15;
             UtilityRecord latest = utilities.get(0);
             String currentMonth = YearMonth.now().toString();
             if ((room.getStatus() == RoomStatus.OCCUPIED || room.getStatus() == RoomStatus.EXPIRING_SOON)
                     && latest.getBillingMonth().compareTo(currentMonth) < 0) {
-                utilityScore -= 8;
+                utilityScore -= 5;
                 deductions.add("Chưa ghi chỉ số điện nước kỳ " + currentMonth + " (mới nhất: " + latest.getBillingMonth() + ")");
                 recommendations.add("Chốt chỉ số điện nước kỳ " + currentMonth + " trước khi lập hóa đơn");
             }
@@ -223,31 +264,48 @@ public class HealthScoreService {
                 deductions.add("Có điều chỉnh chỉ số đồng hồ cần theo dõi");
             }
 
-            utilityScore = Math.max(0, Math.min(20, utilityScore));
+            utilityScore = Math.max(0, Math.min(15, utilityScore));
             utilityDetail = "Kỳ gần nhất " + latest.getBillingMonth()
                     + ": " + latest.getElectricUsage().stripTrailingZeros().toPlainString() + " kWh, "
                     + latest.getWaterUsage().stripTrailingZeros().toPlainString() + " m³";
         }
 
-        // 4. Sự cố & vận hành (15đ)
-        int incidentScore = 15;
-        String incidentDetail = "Vận hành bình thường, không ghi nhận sự cố";
-        if (room.getStatus() == RoomStatus.NEEDS_ATTENTION) {
-            incidentScore -= 10;
-            deductions.add("Phòng đang có cảnh báo sự cố / cần bảo trì");
-            recommendations.add("Kiểm tra thực tế phòng và khắc phục sự cố trước kỳ thu mới");
+        // 4. Hợp đồng & vận hành (15đ)
+        int contractScore;
+        String contractDetail;
+        switch (room.getStatus()) {
+            case VACANT -> {
+                contractScore = 15;
+                contractDetail = "Phòng trống sẵn sàng bàn giao (15/15)";
+            }
+            case OCCUPIED -> {
+                contractScore = 15;
+                contractDetail = "Phòng đang thuê ổn định";
+            }
+            case EXPIRING_SOON -> {
+                contractScore = 10;
+                contractDetail = "Hợp đồng sắp hết hạn (cần gia hạn)";
+                deductions.add("Hợp đồng phòng " + room.getRoomCode() + " sắp hết hạn");
+                recommendations.add("Trao đổi với người thuê để ký gia hạn hợp đồng kịp thời");
+            }
+            case NEEDS_ATTENTION -> {
+                contractScore = 5;
+                contractDetail = "Phòng ở trạng thái Cần chú ý";
+                deductions.add("Trạng thái phòng đang đánh dấu Cần chú ý");
+            }
+            default -> {
+                contractScore = 15;
+                contractDetail = "Ổn định";
+            }
         }
         if (overdueCount >= 2) {
-            incidentScore -= 5;
+            contractScore -= 5;
             deductions.add("Rủi ro công nợ kéo dài từ " + overdueCount + " kỳ hóa đơn");
             recommendations.add("Lập kế hoạch thu hồi công nợ hoặc làm việc trực tiếp với người thuê");
         }
-        incidentScore = Math.max(0, Math.min(15, incidentScore));
-        if (incidentScore < 15) {
-            incidentDetail = "Cần xử lý cảnh báo vận hành / công nợ";
-        }
+        contractScore = Math.max(0, Math.min(15, contractScore));
 
-        int totalScore = Math.max(0, Math.min(100, paymentScore + contractScore + utilityScore + incidentScore));
+        int totalScore = Math.max(0, Math.min(100, incidentScore + paymentScore + utilityScore + contractScore));
         String ratingLevel;
         String ratingLabel;
         if (totalScore >= 80) {
@@ -261,53 +319,55 @@ public class HealthScoreService {
             ratingLabel = "Rủi ro";
         }
 
-        // Xu hướng (Trend) dựa trên trạng thái kỳ mới nhất so với tổng thể
+        // Xu hướng (Trend)
         String trend = "STABLE";
         int scoreDelta = 0;
-        if (overdueCount > 0 || room.getStatus() == RoomStatus.NEEDS_ATTENTION) {
+        if (openIncidentCount > 0 || overdueCount > 0 || room.getStatus() == RoomStatus.NEEDS_ATTENTION) {
             trend = "DOWN";
-            scoreDelta = -Math.max(4, overdueCount * 5);
+            scoreDelta = -(100 - totalScore == 0 ? 5 : Math.min(35, 100 - totalScore));
         } else if (!invoices.isEmpty() && invoices.get(0).getStatus() == InvoiceStatus.PAID) {
             trend = "UP";
             scoreDelta = 4;
         }
 
         if (recommendations.isEmpty()) {
-            recommendations.add("Duy trì lịch ghi chỉ số điện nước và thu tiền đúng hạn như hiện tại");
+            recommendations.add(totalScore == 100
+                    ? "Phòng đạt điểm chuẩn 100/100; đối chiếu tình trạng phòng nếu phát sinh hư hỏng từ người thuê."
+                    : "Duy trì lịch ghi chỉ số điện nước và thu tiền đúng hạn như hiện tại");
         }
 
         List<HealthFactorResponse> factors = List.of(
                 new HealthFactorResponse(
-                        "Thanh toán đúng hạn",
-                        paymentScore,
+                        "Tình trạng & Sự cố",
+                        incidentScore,
                         40,
                         40,
-                        factorStatus(paymentScore, 40),
-                        paymentDetail
+                        factorStatus(incidentScore, 40),
+                        incidentDetail
                 ),
                 new HealthFactorResponse(
-                        "Hợp đồng & Lấp đầy",
-                        contractScore,
-                        25,
-                        25,
-                        factorStatus(contractScore, 25),
-                        contractDetail
+                        "Thanh toán đúng hạn",
+                        paymentScore,
+                        30,
+                        30,
+                        factorStatus(paymentScore, 30),
+                        paymentDetail
                 ),
                 new HealthFactorResponse(
                         "Ổn định điện nước",
                         utilityScore,
-                        20,
-                        20,
-                        factorStatus(utilityScore, 20),
+                        15,
+                        15,
+                        factorStatus(utilityScore, 15),
                         utilityDetail
                 ),
                 new HealthFactorResponse(
-                        "Sự cố & Vận hành",
-                        incidentScore,
+                        "Hợp đồng & Vận hành",
+                        contractScore,
                         15,
                         15,
-                        factorStatus(incidentScore, 15),
-                        incidentDetail
+                        factorStatus(contractScore, 15),
+                        contractDetail
                 )
         );
 

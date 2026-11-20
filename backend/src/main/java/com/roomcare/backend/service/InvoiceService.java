@@ -8,6 +8,7 @@ import com.roomcare.backend.dto.invoice.InvoiceResponse;
 import com.roomcare.backend.dto.invoice.PaymentResponse;
 import com.roomcare.backend.entity.Invoice;
 import com.roomcare.backend.entity.InvoiceStatus;
+import com.roomcare.backend.entity.NotificationType;
 import com.roomcare.backend.entity.Payment;
 import com.roomcare.backend.entity.Room;
 import com.roomcare.backend.entity.RoomStatus;
@@ -45,6 +46,7 @@ public class InvoiceService {
     private final TenantRepository tenantRepository;
     private final UserRepository userRepository;
     private final UtilityRecordRepository utilityRecordRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public List<InvoiceResponse> getInvoices(
@@ -167,6 +169,19 @@ public class InvoiceService {
         invoice.setStatus(resolveStatus(invoice.getTotalAmount(), newPaidAmount, invoice.getDueDate()));
         Invoice savedInvoice = invoiceRepository.save(invoice);
 
+        if (notificationService != null
+                && savedInvoice.getTenant() != null
+                && savedInvoice.getTenant().getUser() != null) {
+            notificationService.createNotification(
+                    savedInvoice.getTenant().getUser(),
+                    NotificationType.PAYMENT,
+                    "Xác nhận thanh toán hóa đơn",
+                    "Chủ nhà đã xác nhận thanh toán " + amount.toPlainString() + " đ cho hóa đơn "
+                            + savedInvoice.getInvoiceCode() + ".",
+                    savedInvoice.getId()
+            );
+        }
+
         return mapToResponse(savedInvoice, true);
     }
 
@@ -223,7 +238,23 @@ public class InvoiceService {
         );
 
         Invoice saved = invoiceRepository.save(invoice);
+        notifyTenantInvoiceCreated(saved);
         return mapToResponse(saved);
+    }
+
+    private void notifyTenantInvoiceCreated(Invoice saved) {
+        if (notificationService != null
+                && saved.getTenant() != null
+                && saved.getTenant().getUser() != null) {
+            notificationService.createNotification(
+                    saved.getTenant().getUser(),
+                    NotificationType.INVOICE,
+                    "Hóa đơn mới kỳ " + saved.getBillingMonth(),
+                    "Phòng " + saved.getRoom().getRoomCode() + " có hóa đơn " + saved.getInvoiceCode()
+                            + " tổng tiền " + saved.getTotalAmount().toPlainString() + " đ.",
+                    saved.getId()
+            );
+        }
     }
 
     @Transactional
@@ -268,6 +299,7 @@ public class InvoiceService {
             );
 
             Invoice saved = invoiceRepository.save(invoice);
+            notifyTenantInvoiceCreated(saved);
             created.add(mapToResponse(saved));
         }
 

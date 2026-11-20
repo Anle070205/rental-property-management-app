@@ -80,13 +80,13 @@ class TenantRepository {
             val response = apiService.deleteTenant(id)
             if (response.isSuccessful) {
                 val apiResponse = response.body()
-                if (apiResponse?.success == true) {
+                if (response.code() == 204 || apiResponse == null || apiResponse.success) {
                     Resource.Success(Unit)
                 } else {
-                    Resource.Error(apiResponse?.message ?: "Xóa khách thuê thất bại")
+                    Resource.Error(apiResponse.message)
                 }
             } else {
-                Resource.Error("HTTP ${response.code()}: ${response.message()}")
+                Resource.Error(ApiResultHandler.extractErrorMessage(response))
             }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Lỗi kết nối")
@@ -105,7 +105,7 @@ class TenantRepository {
                 Resource.Error(apiResponse?.message ?: "Lỗi không xác định")
             }
         } else {
-            Resource.Error("HTTP ${response.code()}: ${response.message()}")
+            Resource.Error(ApiResultHandler.extractErrorMessage(response))
         }
     }
 }

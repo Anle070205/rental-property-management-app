@@ -1,29 +1,166 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/rc_canvas">
-    <com.google.android.material.appbar.MaterialToolbar style="@style/RoomCare.Toolbar" android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="wrap_content" app:title="@string/rc_report_incident" app:navigationIcon="@drawable/ic_arrow_back" />
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:id="@+id/initialFields" android:background="@drawable/rc_panel" android:padding="12dp" android:layout_marginBottom="12dp">
-    <com.google.android.material.textfield.TextInputLayout style="@style/RoomCare.Input" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/rc_incident_title">
-        <com.google.android.material.textfield.TextInputEditText android:id="@+id/title" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textCapSentences" android:maxLength="150" />
-    </com.google.android.material.textfield.TextInputLayout>
-    <TextView android:id="@+id/typeLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_incident_type" />
-    <com.google.android.material.chip.ChipGroup android:id="@+id/type"
-        android:layout_width="match_parent" android:layout_height="wrap_content" android:contentDescription="@string/rc_incident_type"
-        app:singleSelection="true" app:selectionRequired="true" />
-    <TextView android:id="@+id/priorityLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_incident_priority" />
-    <com.google.android.material.chip.ChipGroup android:id="@+id/priority"
-        android:layout_width="match_parent" android:layout_height="wrap_content" android:contentDescription="@string/rc_incident_priority"
-        app:singleSelection="true" app:selectionRequired="true" />
-</LinearLayout>
-    <com.google.android.material.textfield.TextInputLayout style="@style/RoomCare.Input" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/rc_incident_description">
-        <com.google.android.material.textfield.TextInputEditText android:minLines="4" android:gravity="top|start" android:id="@+id/description" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textMultiLine|textCapSentences" android:maxLength="4000" />
-    </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout style="@style/RoomCare.Input" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/rc_incident_image">
-        <com.google.android.material.textfield.TextInputEditText android:id="@+id/image" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textUri" android:maxLength="1024" />
-    </com.google.android.material.textfield.TextInputLayout>
-    <TextView android:id="@+id/error" android:layout_width="match_parent" android:layout_height="wrap_content"  />
-    <ProgressBar android:indeterminateTint="@color/rc_brand" android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone" />
-    <com.google.android.material.button.MaterialButton style="@style/RoomCare.Button" android:id="@+id/submit" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rc_save" />
-</LinearLayout>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/rc_canvas"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/RoomCare.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/rc_report_incident"
+        app:titleTextAppearance="@style/RoomCare.Title" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/rc_line" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Category & Priority Card (Figma 34:24266) -->
+            <LinearLayout
+                android:id="@+id/initialFields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/rc_panel"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/RoomCare.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rc_incident_title">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences"
+                        android:maxLength="150" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/typeLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/rc_incident_type"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:contentDescription="@string/rc_incident_type"
+                    app:selectionRequired="true"
+                    app:singleSelection="true" />
+
+                <TextView
+                    android:id="@+id/priorityLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/rc_incident_priority"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/priority"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:contentDescription="@string/rc_incident_priority"
+                    app:selectionRequired="true"
+                    app:singleSelection="true" />
+            </LinearLayout>
+
+            <!-- Description & Attachment Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rc_panel"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/RoomCare.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rc_incident_description">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxLength="4000"
+                        android:minLines="4" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/RoomCare.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="@string/rc_incident_image">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textUri"
+                        android:maxLength="1024" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/rc_danger"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:indeterminateTint="@color/rc_brand"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/submit"
+                style="@style/RoomCare.Button"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/rc_save"
+                app:icon="@drawable/ic_check" />
+        </LinearLayout>
     </ScrollView>
+
 </LinearLayout>

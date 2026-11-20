@@ -2,21 +2,82 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/RoomCare.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/spacing_normal"
-    android:layout_marginVertical="6dp"
-    app:cardBackgroundColor="@color/card_background"
-    app:cardCornerRadius="@dimen/card_corner_radius"
-    app:cardElevation="2dp"
-    app:strokeColor="@color/divider"
-    app:strokeWidth="1dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/spacing_normal">
+        android:padding="14dp">
+
+        <!-- Figma 6:22969 Debt Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/rc_icon_box_danger">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_person"
+                    app:tint="@color/rc_danger" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvRoomAndTenant"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="Phòng 305 • Phạm Gia Bảo" />
+
+                <TextView
+                    android:id="@+id/tvPropertyAndPhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="12sp"
+                    tools:text="Nhà trọ An Phúc • 0938 456 210" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvOverdueBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_badge_rounded"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="Trễ 12 ngày" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="10dp"
+            android:background="@color/rc_line" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,66 +92,21 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvRoomAndTenant"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/text_size_medium"
-                    android:textStyle="bold"
-                    tools:text="Phòng 2B • Phạm Thị D" />
-
-                <TextView
-                    android:id="@+id/tvPropertyAndPhone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    tools:text="Nhà trọ Minh Khang • 0934567890" />
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvOverdueBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_badge_rounded"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                tools:text="Trễ 18 ngày" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tổng công nợ"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
+                    android:text="Số tiền cần thu"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="11sp" />
 
                 <TextView
                     android:id="@+id/tvTotalDebt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/error"
-                    android:textSize="@dimen/text_size_large"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/rc_danger"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    tools:text="4.150.000 ₫" />
-
+                    tools:text="5.300.000 ₫" />
             </LinearLayout>
 
             <LinearLayout
@@ -104,7 +120,7 @@
                     android:id="@+id/tvInvoiceCounts"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/rc_ink"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     tools:text="2 hóa đơn nợ (2 quá hạn)" />
@@ -114,19 +130,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/rc_muted"
                     android:textSize="11sp"
-                    tools:text="Đã thu: 1.000.000 ₫ / 5.150.000 ₫" />
-
+                    tools:text="Đã thu: 1.000.000 ₫" />
             </LinearLayout>
-
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="@dimen/divider_height"
-            android:layout_marginVertical="10dp"
-            android:background="@color/divider" />
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="4dp"
+            android:background="@color/rc_line" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -140,6 +155,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Hóa đơn"
+                android:textColor="@color/rc_brand"
                 android:textSize="12sp" />
 
             <com.google.android.material.button.MaterialButton
@@ -149,6 +165,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Biến động"
+                android:textColor="@color/rc_muted"
                 android:textSize="12sp" />
 
             <com.google.android.material.button.MaterialButton
@@ -158,10 +175,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Liên hệ"
+                android:textColor="@color/rc_brand"
                 android:textSize="12sp" />
-
         </LinearLayout>
 
     </LinearLayout>
-
 </com.google.android.material.card.MaterialCardView>

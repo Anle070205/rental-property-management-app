@@ -1,59 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Material Design Colors -->
+    <!-- Base Palette -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+    <color name="black">#FF17201E</color>
     <color name="white">#FFFFFFFF</color>
-    
-    <!-- Phase 2: Room Status Colors -->
-    <color name="status_vacant">#4CAF50</color>        <!-- Green -->
-    <color name="status_vacant_bg">#E8F5E9</color>
-    <color name="status_occupied">#2196F3</color>      <!-- Blue -->
-    <color name="status_occupied_bg">#E3F2FD</color>
-    <color name="status_expiring_soon">#FF9800</color> <!-- Orange -->
-    <color name="status_expiring_soon_bg">#FFF3E0</color>
-    <color name="status_needs_attention">#F44336</color> <!-- Red -->
-    <color name="status_needs_attention_bg">#FFEBEE</color>
-    
-    <!-- Phase 2: UI Colors -->
+
+    <!-- Figma RoomCare Semantic Surface & Brand Colors -->
+    <color name="rc_primary">#0F766E</color>
+    <color name="rc_brand">#0F766E</color>
+    <color name="rc_brand_dark">#0B5751</color>
+    <color name="rc_brand_light">#14B8A6</color>
+    <color name="rc_tint">#DDF1EE</color>
+    <color name="rc_tint_soft">#E7F3F0</color>
+    <color name="rc_canvas">#F6F8F7</color>
+    <color name="rc_line">#DDE5E2</color>
+    <color name="rc_ink">#17201E</color>
+    <color name="rc_muted">#66736F</color>
+    <color name="rc_danger">#C44747</color>
+
+    <!-- Figma Semantic Accent Containers -->
+    <color name="rc_icon_blue_bg">#E5EDF9</color>
+    <color name="rc_icon_blue">#3E6091</color>
+    <color name="rc_icon_yellow_bg">#FFF0D8</color>
+    <color name="rc_icon_yellow">#B76B16</color>
+    <color name="rc_icon_red_bg">#FBE8E7</color>
+    <color name="rc_icon_green_bg">#E1F3E8</color>
+    <color name="rc_icon_green">#218A58</color>
+    <color name="rc_purple_bg">#EEE9F8</color>
+    <color name="rc_purple">#7056A8</color>
+
+    <!-- UI Neutrals -->
     <color name="card_background">#FFFFFF</color>
-    <color name="divider">#E0E0E0</color>
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
-    <color name="text_hint">#9E9E9E</color>
-    <color name="error">#F44336</color>
-    <color name="success">#4CAF50</color>
-    <color name="warning">#FF9800</color>
-    <color name="info">#2196F3</color>
-    
-    <!-- Phase 2: Background Colors -->
-    <color name="background_light">#FAFAFA</color>
+    <color name="divider">#DDE5E2</color>
+    <color name="text_primary">#17201E</color>
+    <color name="text_secondary">#66736F</color>
+    <color name="text_hint">#98A39F</color>
+    <color name="background_light">#F6F8F7</color>
     <color name="surface">#FFFFFF</color>
-    <color name="surface_variant">#F5F5F5</color>
+    <color name="surface_variant">#EEF3F1</color>
 
-    <color name="rc_primary">#00796B</color>
+    <!-- Semantic Status Colors (Aligned with Figma Design System) -->
+    <color name="error">#C44747</color>
+    <color name="success">#218A58</color>
+    <color name="warning">#B76B16</color>
+    <color name="info">#0F766E</color>
 
+    <!-- Room Status Colors -->
+    <color name="status_vacant">#218A58</color>
+    <color name="status_vacant_bg">#E1F3E8</color>
+    <color name="status_occupied">#0F766E</color>
+    <color name="status_occupied_bg">#DDF1EE</color>
+    <color name="status_expiring_soon">#B76B16</color>
+    <color name="status_expiring_soon_bg">#FFF0D8</color>
+    <color name="status_needs_attention">#C44747</color>
+    <color name="status_needs_attention_bg">#FBE8E7</color>
 
-    <!-- Phase 4: Finance, Invoice & Health Score Colors -->
-    <color name="invoice_unpaid">#FF9800</color>
-    <color name="invoice_unpaid_bg">#FFF3E0</color>
-    <color name="invoice_partial">#2196F3</color>
-    <color name="invoice_partial_bg">#E3F2FD</color>
-    <color name="invoice_paid">#4CAF50</color>
-    <color name="invoice_paid_bg">#E8F5E9</color>
-    <color name="invoice_overdue">#F44336</color>
-    <color name="invoice_overdue_bg">#FFEBEE</color>
-    <color name="health_good">#2E7D32</color>
-    <color name="health_good_bg">#E8F5E9</color>
-    <color name="health_warning">#EF6C00</color>
-    <color name="health_warning_bg">#FFF3E0</color>
-    <color name="health_risk">#C62828</color>
-    <color name="health_risk_bg">#FFEBEE</color>
-    <color name="chart_billed">#B39DDB</color>
-    <color name="chart_collected">#6200EE</color>
+    <!-- Finance, Invoice & Health Score Colors -->
+    <color name="invoice_unpaid">#B76B16</color>
+    <color name="invoice_unpaid_bg">#FFF0D8</color>
+    <color name="invoice_partial">#3E6091</color>
+    <color name="invoice_partial_bg">#E5EDF9</color>
+    <color name="invoice_paid">#218A58</color>
+    <color name="invoice_paid_bg">#E1F3E8</color>
+    <color name="invoice_overdue">#C44747</color>
+    <color name="invoice_overdue_bg">#FBE8E7</color>
 
+    <color name="health_good">#218A58</color>
+    <color name="health_good_bg">#E1F3E8</color>
+    <color name="health_warning">#B76B16</color>
+    <color name="health_warning_bg">#FFF0D8</color>
+    <color name="health_risk">#C44747</color>
+    <color name="health_risk_bg">#FBE8E7</color>
+
+    <color name="chart_billed">#DDF1EE</color>
+    <color name="chart_collected">#0F766E</color>
 </resources>

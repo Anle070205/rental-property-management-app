@@ -80,6 +80,9 @@ data class LandlordDashboardResponse(
     @SerializedName("averageHealthScore")
     val averageHealthScore: Int,
 
+    @SerializedName("pendingBookingCount")
+    val pendingBookingCount: Int = 0,
+
     @SerializedName("monthlyRevenues")
     val monthlyRevenues: List<MonthlyRevenueResponse> = emptyList(),
 

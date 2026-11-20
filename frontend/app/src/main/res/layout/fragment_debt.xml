@@ -4,22 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light">
+    android:background="@color/rc_canvas">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
+            style="@style/RoomCare.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@android:color/white"
             app:title="@string/debt_management"
-            app:titleTextColor="@android:color/white" />
-
+            app:titleTextAppearance="@style/RoomCare.Title" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
@@ -28,21 +28,22 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Summary & Filters Header -->
+        <!-- Summary & Filters Header (Figma 6:22907) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/surface"
-            android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="@dimen/spacing_normal">
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="12dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_badge_rounded"
+                android:background="@drawable/rc_panel"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="12dp">
+                android:padding="14dp">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -53,19 +54,19 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tổng công nợ phải thu"
-                        android:textColor="@color/text_secondary"
+                        android:text="Tổng công nợ hiện tại"
+                        android:textColor="@color/rc_muted"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/tvTotalDebtAmount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/error"
-                        android:textSize="@dimen/text_size_xlarge"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/rc_ink"
+                        android:textSize="22sp"
                         android:textStyle="bold"
-                        tools:text="6.300.000 ₫" />
-
+                        tools:text="24.800.000 ₫" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -78,8 +79,11 @@
                         android:id="@+id/tvOverdueCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_primary"
-                        android:textSize="13sp"
+                        android:background="@drawable/rc_badge_danger"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:textColor="@color/rc_danger"
+                        android:textSize="11sp"
                         android:textStyle="bold"
                         tools:text="3 hóa đơn quá hạn" />
 
@@ -87,23 +91,22 @@
                         android:id="@+id/tvRoomsWithDebt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/rc_muted"
                         android:textSize="12sp"
                         tools:text="2 phòng đang nợ" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                style="@style/RoomCare.Input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:hint="@string/debt_search_hint"
                 app:endIconMode="clear_text"
-                app:startIconDrawable="@drawable/ic_search">
+                app:startIconDrawable="@drawable/ic_search"
+                app:startIconTint="@color/rc_muted">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etSearch"
@@ -111,7 +114,6 @@
                     android:layout_height="wrap_content"
                     android:inputType="text"
                     android:maxLines="1" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
@@ -123,10 +125,10 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnMonthFilter"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    style="@style/RoomCare.Button.Secondary"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
+                    android:layout_height="44dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:text="@string/invoice_all_months"
                     android:textSize="12sp"
@@ -137,15 +139,14 @@
                     android:layout_width="0dp"
                     android:layout_height="44dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_badge_rounded"
-                    android:paddingHorizontal="8dp" />
-
+                    android:background="@drawable/rc_panel"
+                    android:paddingHorizontal="10dp" />
             </LinearLayout>
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="8dp"
                 android:scrollbars="none">
 
                 <com.google.android.material.chip.ChipGroup
@@ -161,41 +162,48 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="Tất cả" />
+                        android:text="Tất cả"
+                        app:chipBackgroundColor="@color/rc_chip_background" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipNotDue"
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Chưa quá hạn" />
+                        android:text="Chưa quá hạn"
+                        app:chipBackgroundColor="@color/rc_chip_background" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipOverdue1To7"
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Trễ 1-7 ngày" />
+                        android:text="Trễ 1-7 ngày"
+                        app:chipBackgroundColor="@color/rc_chip_background" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipOverdue8To30"
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Trễ 8-30 ngày" />
+                        android:text="Trễ 8-30 ngày"
+                        app:chipBackgroundColor="@color/rc_chip_background" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipOverdue30Plus"
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Trễ &gt; 30 ngày" />
-
+                        android:text="Trễ &gt; 30 ngày"
+                        app:chipBackgroundColor="@color/rc_chip_background" />
                 </com.google.android.material.chip.ChipGroup>
-
             </HorizontalScrollView>
-
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/rc_line" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -212,10 +220,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="16dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="88dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             <ProgressBar
@@ -223,6 +230,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:indeterminateTint="@color/rc_brand"
                 android:visibility="gone" />
 
             <TextView
@@ -233,7 +241,7 @@
                 android:gravity="center"
                 android:padding="32dp"
                 android:text="@string/debt_empty"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/rc_muted"
                 android:visibility="gone" />
 
             <LinearLayout
@@ -250,19 +258,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textColor="@color/error" />
+                    android:textColor="@color/rc_danger" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRetry"
+                    style="@style/RoomCare.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="@string/action_retry" />
-
             </LinearLayout>
-
         </FrameLayout>
-
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

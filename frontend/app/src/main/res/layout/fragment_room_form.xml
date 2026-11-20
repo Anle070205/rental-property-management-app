@@ -3,21 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/rc_canvas">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
+            style="@style/RoomCare.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
             app:navigationIcon="@drawable/ic_arrow_back"
             app:title="@string/add_room"
-            app:titleTextColor="@android:color/white" />
+            app:titleTextAppearance="@style/RoomCare.Title" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/rc_line" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -31,14 +38,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/spacing_normal">
+            android:padding="16dp">
 
-            <!-- Property Selection (visible only when adding new room without property) -->
+            <!-- Property Selection Card -->
             <LinearLayout
                 android:id="@+id/propertySelectionGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/rc_panel"
                 android:orientation="vertical"
+                android:padding="14dp"
                 android:visibility="gone"
                 tools:visibility="visible">
 
@@ -46,218 +56,420 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/select_property_first"
-                    android:textAppearance="?attr/textAppearanceBody1"
-                    android:textColor="?attr/colorOnSurface" />
+                    android:textColor="@color/rc_ink"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSelectProperty"
+                    style="@style/RoomCare.Button.Secondary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_small"
+                    android:layout_marginTop="10dp"
                     android:text="@string/select_property"
                     app:icon="@drawable/ic_home" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginVertical="@dimen/spacing_normal"
-                    android:background="?attr/colorOutline" />
-
             </LinearLayout>
 
-            <!-- Room Number -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilRoomNumber"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            <!-- Health Score Default Banner -->
+            <LinearLayout
+                android:id="@+id/healthScoreBanner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/room_number"
-                app:startIconDrawable="@drawable/ic_room">
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/rc_soft_banner"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etRoomNumber"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_health"
+                    app:tint="@color/health_good" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:maxLines="1" />
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <TextView
+                        android:id="@+id/tvDefaultHealthScore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/rc_default_health_score_title"
+                        android:textColor="@color/health_good"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
-            <!-- Floor -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilFloor"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/rc_default_health_score_desc"
+                        android:textColor="@color/rc_muted"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Basic Room Info Card -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thông tin phòng &amp; giá thuê"
+                android:textColor="@color/rc_ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_normal"
-                android:hint="@string/floor"
-                app:startIconDrawable="@drawable/ic_layers">
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rc_panel"
+                android:orientation="vertical"
+                android:padding="14dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etFloor"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilRoomNumber"
+                    style="@style/RoomCare.Input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLines="1" />
+                    android:hint="@string/room_number"
+                    app:startIconDrawable="@drawable/ic_room"
+                    app:startIconTint="@color/rc_muted">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etRoomNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Area -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilArea"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilFloor"
+                        style="@style/RoomCare.Input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:hint="@string/floor"
+                        app:startIconDrawable="@drawable/ic_layers"
+                        app:startIconTint="@color/rc_muted">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etFloor"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilArea"
+                        style="@style/RoomCare.Input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:hint="@string/area_m2"
+                        app:startIconDrawable="@drawable/ic_square_foot"
+                        app:startIconTint="@color/rc_muted"
+                        app:suffixText="m²">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etArea"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilPrice"
+                    style="@style/RoomCare.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="@string/price_per_month"
+                    app:prefixText="₫ "
+                    app:startIconDrawable="@drawable/ic_money"
+                    app:startIconTint="@color/rc_muted">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilDeposit"
+                    style="@style/RoomCare.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="@string/deposit"
+                    app:prefixText="₫ "
+                    app:startIconDrawable="@drawable/ic_money"
+                    app:startIconTint="@color/rc_muted">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etDeposit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilMaxOccupants"
+                    style="@style/RoomCare.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="@string/max_occupants"
+                    app:startIconDrawable="@drawable/ic_people"
+                    app:startIconTint="@color/rc_muted">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etMaxOccupants"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilStatus"
+                    style="@style/RoomCare.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="@string/status">
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spinnerStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <!-- Utility & Service Rates Card -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Chi phí điện, nước &amp; dịch vụ"
+                android:textColor="@color/rc_ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_normal"
-                android:hint="@string/area_m2"
-                app:startIconDrawable="@drawable/ic_square_foot"
-                app:suffixText="m²">
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rc_panel"
+                android:orientation="vertical"
+                android:padding="14dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etArea"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1" />
+                    android:orientation="horizontal">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilElectricityPrice"
+                        style="@style/RoomCare.Input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:hint="Giá điện (₫/kWh)">
 
-            <!-- Price -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilPrice"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etElectricityPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilWaterPrice"
+                        style="@style/RoomCare.Input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:hint="Giá nước (₫/m³)">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etWaterPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilInternetFee"
+                        style="@style/RoomCare.Input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:hint="Wifi/Internet (₫)">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etInternetFee"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilServiceFee"
+                        style="@style/RoomCare.Input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:hint="Phí dịch vụ (₫)">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etServiceFee"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Amenities, Image & Description Card -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Trang thiết bị, hình ảnh &amp; mô tả"
+                android:textColor="@color/rc_ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_normal"
-                android:hint="@string/price_per_month"
-                app:prefixText="₫ "
-                app:startIconDrawable="@drawable/ic_money">
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rc_panel"
+                android:orientation="vertical"
+                android:padding="14dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPrice"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chọn nhanh trang thiết bị có sẵn trong phòng:"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="12sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupAmenities"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1" />
+                    android:layout_marginTop="6dp" />
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Deposit -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilDeposit"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_normal"
-                android:hint="@string/deposit"
-                app:prefixText="₫ "
-                app:startIconDrawable="@drawable/ic_money">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etDeposit"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilAmenities"
+                    style="@style/RoomCare.Input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1" />
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/amenities"
+                    app:startIconDrawable="@drawable/ic_info"
+                    app:startIconTint="@color/rc_muted">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etAmenities"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="2" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Max Occupants -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilMaxOccupants"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_normal"
-                android:hint="@string/max_occupants"
-                app:startIconDrawable="@drawable/ic_people">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etMaxOccupants"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilImageUrl"
+                    style="@style/RoomCare.Input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLines="1" />
+                    android:layout_marginTop="12dp"
+                    android:hint="Liên kết ảnh phòng (tùy chọn)">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etImageUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textUri"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Amenities -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilAmenities"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_normal"
-                android:hint="@string/amenities"
-                app:startIconDrawable="@drawable/ic_info">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etAmenities"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilDescription"
+                    style="@style/RoomCare.Input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:maxLines="2" />
+                    android:layout_marginTop="12dp"
+                    android:hint="@string/description_optional"
+                    app:startIconDrawable="@drawable/ic_description"
+                    app:startIconTint="@color/rc_muted">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine"
+                        android:lines="3"
+                        android:maxLines="5" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
 
-            <!-- Status -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilStatus"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_normal"
-                android:hint="@string/status"
-                app:startIconDrawable="@drawable/ic_info">
-
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/spinnerStatus"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Description -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilDescription"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_normal"
-                android:hint="@string/description_optional"
-                app:startIconDrawable="@drawable/ic_description">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="top|start"
-                    android:inputType="textMultiLine"
-                    android:lines="4"
-                    android:maxLines="6" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Save Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSave"
+                style="@style/RoomCare.Button"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_large"
+                android:layout_height="52dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/save"
                 app:icon="@drawable/ic_check" />
-
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Loading -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:indeterminateTint="@color/rc_brand"
         android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

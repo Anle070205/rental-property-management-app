@@ -15,9 +15,7 @@ import com.example.rental_property_management_app.viewmodels.AuthViewModel
 import kotlinx.coroutines.launch
 
 /**
- * RegisterFragment - Đăng ký tài khoản CHỦ NHÀ
- * Lưu ý: Người thuê KHÔNG được tự đăng ký, 
- * tài khoản được tạo bởi Chủ nhà khi tạo hợp đồng
+ * RegisterFragment - Đăng ký tài khoản Chủ nhà hoặc Người thuê
  */
 class RegisterFragment : Fragment() {
     
@@ -109,8 +107,13 @@ class RegisterFragment : Fragment() {
         
         // Call register API if valid
         if (isValid) {
+            val selectedRole = if (binding.rbTenant.isChecked) {
+                Constants.Roles.TENANT
+            } else {
+                Constants.Roles.LANDLORD
+            }
             binding.root.hideKeyboard()
-            viewModel.register(fullName, email, phone, password)
+            viewModel.register(fullName, email, phone, password, selectedRole)
         }
     }
 
@@ -126,11 +129,14 @@ class RegisterFragment : Fragment() {
                         val authResponse = resource.data
                         if (authResponse != null) {
                             requireContext().showToast("Đăng ký thành công!")
-                            
-                            // Navigate to Landlord Dashboard (role is always LANDLORD)
-                            findNavController().navigate(
-                                R.id.action_registerFragment_to_loginFragment
-                            )
+                            when (authResponse.role) {
+                                Constants.Roles.TENANT -> findNavController().navigate(
+                                    R.id.action_registerFragment_to_tenantDashboardFragment
+                                )
+                                else -> findNavController().navigate(
+                                    R.id.action_registerFragment_to_landlordDashboardFragment
+                                )
+                            }
                         }
                     }
                     is Resource.Error -> {

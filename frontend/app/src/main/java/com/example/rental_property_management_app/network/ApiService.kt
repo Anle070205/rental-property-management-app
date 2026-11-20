@@ -34,6 +34,55 @@ interface ApiService {
     @GET("api/tenant/dashboard")
     suspend fun tenantDashboard(): Response<ApiResponse<TenantDashboard>>
 
+    // ============================================
+    // TENANT MARKETPLACE & BOOKING APIs
+    // ============================================
+    @GET("api/tenant/marketplace/properties")
+    suspend fun browseProperties(
+        @Query("keyword") keyword: String? = null,
+        @Query("onlyVacant") onlyVacant: Boolean? = null
+    ): Response<ApiResponse<List<MarketplaceProperty>>>
+
+    @GET("api/tenant/marketplace/properties/{propertyId}/rooms")
+    suspend fun browsePropertyRooms(
+        @Path("propertyId") propertyId: Long,
+        @Query("status") status: String? = null,
+        @Query("keyword") keyword: String? = null
+    ): Response<ApiResponse<List<MarketplaceRoom>>>
+
+    @GET("api/tenant/marketplace/rooms/{roomId}")
+    suspend fun getMarketplaceRoomDetail(
+        @Path("roomId") roomId: Long
+    ): Response<ApiResponse<MarketplaceRoom>>
+
+    @POST("api/tenant/bookings")
+    suspend fun createBookingOrContact(
+        @Body request: CreateBookingRequest
+    ): Response<ApiResponse<BookingRequestItem>>
+
+    @GET("api/tenant/bookings")
+    suspend fun getTenantBookings(): Response<ApiResponse<List<BookingRequestItem>>>
+
+    @PUT("api/tenant/bookings/{id}/cancel")
+    suspend fun cancelTenantBooking(
+        @Path("id") id: Long
+    ): Response<ApiResponse<BookingRequestItem>>
+
+    // ============================================
+    // LANDLORD BOOKING & CONTACT MANAGEMENT APIs
+    // ============================================
+    @GET("api/landlord/bookings")
+    suspend fun getLandlordBookings(
+        @Query("status") status: String? = null,
+        @Query("requestType") requestType: String? = null
+    ): Response<ApiResponse<List<BookingRequestItem>>>
+
+    @PUT("api/landlord/bookings/{id}/respond")
+    suspend fun respondLandlordBooking(
+        @Path("id") id: Long,
+        @Body request: RespondBookingRequest
+    ): Response<ApiResponse<BookingRequestItem>>
+
     @GET("api/tenant/incidents")
     suspend fun incidents(@Query("status") status: IncidentStatus?, @Query("page") page: Int):
         Response<ApiResponse<PageResponse<Incident>>>

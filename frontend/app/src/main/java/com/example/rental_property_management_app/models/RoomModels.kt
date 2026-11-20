@@ -50,6 +50,15 @@ data class RoomResponse(
     
     @SerializedName("propertyName")
     val propertyName: String,
+
+    @SerializedName("propertyAddress")
+    val propertyAddress: String? = null,
+
+    @SerializedName("landlordName")
+    val landlordName: String? = null,
+
+    @SerializedName("landlordPhone")
+    val landlordPhone: String? = null,
     
     @SerializedName("roomCode")
     val roomCode: String,
@@ -68,6 +77,21 @@ data class RoomResponse(
     
     @SerializedName("capacity")
     val capacity: Int,
+
+    @SerializedName("electricityPrice")
+    val electricityPrice: BigDecimal? = null,
+
+    @SerializedName("waterPrice")
+    val waterPrice: BigDecimal? = null,
+
+    @SerializedName("internetFee")
+    val internetFee: BigDecimal? = null,
+
+    @SerializedName("serviceFee")
+    val serviceFee: BigDecimal? = null,
+
+    @SerializedName("healthScore")
+    val healthScore: Int = 100,
     
     @SerializedName("amenities")
     val amenities: String?,
@@ -82,10 +106,10 @@ data class RoomResponse(
     val status: RoomStatus,
     
     @SerializedName("currentContract")
-    val currentContract: String?,     // TODO: Phase 3
+    val currentContract: String?,
     
     @SerializedName("currentTenant")
-    val currentTenant: String?,       // TODO: Phase 3
+    val currentTenant: String?,
     
     @SerializedName("createdAt")
     val createdAt: String,
@@ -126,7 +150,19 @@ data class CreateRoomRequest(
     val description: String?,
     
     @SerializedName("imageUrl")
-    val imageUrl: String?
+    val imageUrl: String?,
+
+    @SerializedName("electricityPrice")
+    val electricityPrice: BigDecimal? = null,
+
+    @SerializedName("waterPrice")
+    val waterPrice: BigDecimal? = null,
+
+    @SerializedName("internetFee")
+    val internetFee: BigDecimal? = null,
+
+    @SerializedName("serviceFee")
+    val serviceFee: BigDecimal? = null
 )
 
 /**
@@ -161,5 +197,17 @@ data class UpdateRoomRequest(
     val imageUrl: String?,
     
     @SerializedName("status")
-    val status: RoomStatus
+    val status: RoomStatus,
+
+    @SerializedName("electricityPrice")
+    val electricityPrice: BigDecimal? = null,
+
+    @SerializedName("waterPrice")
+    val waterPrice: BigDecimal? = null,
+
+    @SerializedName("internetFee")
+    val internetFee: BigDecimal? = null,
+
+    @SerializedName("serviceFee")
+    val serviceFee: BigDecimal? = null
 )
