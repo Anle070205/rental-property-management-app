@@ -19,6 +19,9 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    email_verified BOOLEAN NOT NULL DEFAULT TRUE,
+    email_verified_at DATETIME NULL,
+    token_version INT NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
@@ -123,6 +126,27 @@ CREATE TABLE booking_requests (
     INDEX idx_booking_landlord_created (landlord_id, created_at),
     INDEX idx_booking_tenant_created (tenant_user_id, created_at),
     INDEX idx_booking_room_status (room_id, status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- 6. AUTH_VERIFICATION_TOKENS TABLE (OTP Gmail & Quen mat khau)
+-- =====================================================
+CREATE TABLE auth_verification_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    purpose VARCHAR(30) NOT NULL,
+    code_hash VARCHAR(64) NOT NULL,
+    reset_ticket_hash VARCHAR(64) NULL,
+    expires_at DATETIME NOT NULL,
+    attempt_count INT NOT NULL DEFAULT 0,
+    max_attempts INT NOT NULL DEFAULT 5,
+    used_at DATETIME NULL,
+    invalidated BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_auth_token_email_purpose_created (email, purpose, created_at),
+    INDEX idx_auth_token_user_purpose (user_id, purpose)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================

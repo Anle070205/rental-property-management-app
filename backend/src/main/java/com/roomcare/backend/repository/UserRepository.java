@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByEmailIgnoreCase(String email);
+
     /**
      * Tìm user theo phone
      */
@@ -27,10 +29,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     Optional<User> findByEmailOrPhone(String email, String phone);
 
+    Optional<User> findByEmailIgnoreCaseOrPhone(String email, String phone);
+
     /**
      * Kiểm tra email đã tồn tại chưa
      */
     boolean existsByEmail(String email);
+
+    boolean existsByEmailIgnoreCase(String email);
 
     /**
      * Kiểm tra phone đã tồn tại chưa

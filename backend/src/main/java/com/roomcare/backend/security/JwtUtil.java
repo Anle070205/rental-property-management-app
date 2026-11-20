@@ -31,13 +31,21 @@ public class JwtUtil {
     }
 
     /**
-     * Generate JWT token
+     * Generate JWT token (default tokenVersion = 0)
      */
     public String generateToken(Long userId, String email, String role) {
+        return generateToken(userId, email, role, 0);
+    }
+
+    /**
+     * Generate JWT token bound to user's tokenVersion so password changes revoke prior tokens.
+     */
+    public String generateToken(Long userId, String email, String role, int tokenVersion) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("email", email);
         claims.put("role", role);
+        claims.put("tv", tokenVersion);
 
         return Jwts.builder()
                 .claims(claims)
@@ -46,6 +54,14 @@ public class JwtUtil {
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public int extractTokenVersion(String token) {
+        Object tv = extractClaims(token).get("tv");
+        if (tv instanceof Number number) {
+            return number.intValue();
+        }
+        return 0;
     }
 
     /**

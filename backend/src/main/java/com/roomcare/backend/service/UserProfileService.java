@@ -48,6 +48,8 @@ public class UserProfileService {
             throw new RuntimeException("Mật khẩu mới tối đa 72 byte");
         }
         user.setPassword(passwordEncoder.encode(request.newPassword()));
+        int nextVersion = (user.getTokenVersion() != null ? user.getTokenVersion() : 0) + 1;
+        user.setTokenVersion(nextVersion);
     }
 
     private User findUser(User principal) {

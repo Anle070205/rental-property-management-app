@@ -20,6 +20,10 @@ public class RegisterRequest {
 
     @NotBlank(message = "Email không được để trống")
     @Email(message = "Email không hợp lệ")
+    @Pattern(
+            regexp = "^(?i)[A-Za-z0-9._%+-]+@gmail\\.com$",
+            message = "Vui lòng sử dụng địa chỉ Gmail (@gmail.com) đang hoạt động"
+    )
     @Size(max = 100)
     private String email;
 

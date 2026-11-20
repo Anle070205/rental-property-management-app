@@ -112,6 +112,14 @@ public class DataSeeder {
                 user.setFullName(fullName);
                 dirty = true;
             }
+            if (!Boolean.TRUE.equals(user.getEmailVerified())) {
+                user.setEmailVerified(true);
+                dirty = true;
+            }
+            if (user.getTokenVersion() == null) {
+                user.setTokenVersion(0);
+                dirty = true;
+            }
             if (dirty) {
                 userRepository.save(user);
             }
@@ -173,6 +181,8 @@ public class DataSeeder {
             landlord1.setPhone("0901234567");
             landlord1.setPassword(passwordEncoder.encode("123456"));
             landlord1.setRole(Role.LANDLORD);
+            landlord1.setEmailVerified(true);
+            landlord1.setTokenVersion(0);
             landlord1 = userRepository.save(landlord1);
             
             User landlord2 = new User();
@@ -181,6 +191,8 @@ public class DataSeeder {
             landlord2.setPhone("0912345678");
             landlord2.setPassword(passwordEncoder.encode("123456"));
             landlord2.setRole(Role.LANDLORD);
+            landlord2.setEmailVerified(true);
+            landlord2.setTokenVersion(0);
             landlord2 = userRepository.save(landlord2);
             
             // 2. Tạo Tenant users
@@ -190,6 +202,8 @@ public class DataSeeder {
             tenant1.setPhone("0923456789");
             tenant1.setPassword(passwordEncoder.encode("123456"));
             tenant1.setRole(Role.TENANT);
+            tenant1.setEmailVerified(true);
+            tenant1.setTokenVersion(0);
             tenant1 = userRepository.save(tenant1);
             
             // 3. Tạo Properties

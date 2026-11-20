@@ -16,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * JWT Authentication Filter
@@ -46,16 +47,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String email = jwtUtil.extractEmail(token);
             
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                User user = userRepository.findByEmail(email)
+                User user = userRepository.findByEmailIgnoreCase(email)
                     .orElse(null);
-                
-                if (user != null && jwtUtil.validateToken(token)) {
+
+                if (user != null && jwtUtil.validateToken(token)
+                        && Boolean.TRUE.equals(user.getIsActive())
+                        && Boolean.TRUE.equals(user.getEmailVerified())
+                        && Objects.equals(
+                                jwtUtil.extractTokenVersion(token),
+                                user.getTokenVersion() != null ? user.getTokenVersion() : 0
+                        )) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         user,
                         null,
                         Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
                     );
-                    
+
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
