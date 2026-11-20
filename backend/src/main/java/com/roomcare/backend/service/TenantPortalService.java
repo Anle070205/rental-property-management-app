@@ -3,6 +3,7 @@ package com.roomcare.backend.service;
 import com.roomcare.backend.dto.PageResponse;
 import com.roomcare.backend.dto.tenant.MyContractResponse;
 import com.roomcare.backend.dto.tenant.MyRoomResponse;
+import com.roomcare.backend.dto.tenant.SubmitPaymentProofRequest;
 import com.roomcare.backend.dto.tenant.TenantDashboardResponse;
 import com.roomcare.backend.dto.tenant.TenantInvoiceResponse;
 import com.roomcare.backend.dto.tenant.TenantPaymentInfoResponse;
@@ -94,6 +95,18 @@ public class TenantPortalService {
             return Optional.empty();
         }
         return source.invoice(tenantOpt.get(), invoiceId);
+    }
+
+    public Optional<TenantInvoiceResponse> submitPaymentProof(
+            User user,
+            Long invoiceId,
+            SubmitPaymentProofRequest request) {
+        Optional<Tenant> tenantOpt = optionalTenantFor(user);
+        TenantPortalProvider source = provider.getIfAvailable();
+        if (tenantOpt.isEmpty() || source == null) {
+            return Optional.empty();
+        }
+        return source.submitPaymentProof(tenantOpt.get(), invoiceId, request);
     }
 
     public Optional<TenantPaymentInfoResponse> paymentInfo(User user, Long invoiceId) {

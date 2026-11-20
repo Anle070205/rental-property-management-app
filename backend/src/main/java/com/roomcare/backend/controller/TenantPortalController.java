@@ -4,12 +4,14 @@ import com.roomcare.backend.dto.ApiResponse;
 import com.roomcare.backend.dto.PageResponse;
 import com.roomcare.backend.dto.tenant.MyContractResponse;
 import com.roomcare.backend.dto.tenant.MyRoomResponse;
+import com.roomcare.backend.dto.tenant.SubmitPaymentProofRequest;
 import com.roomcare.backend.dto.tenant.TenantDashboardResponse;
 import com.roomcare.backend.dto.tenant.TenantInvoiceResponse;
 import com.roomcare.backend.dto.tenant.TenantPaymentInfoResponse;
 import com.roomcare.backend.dto.tenant.TenantPaymentResponse;
 import com.roomcare.backend.entity.User;
 import com.roomcare.backend.service.TenantPortalService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,6 +43,17 @@ public class TenantPortalController {
             @AuthenticationPrincipal User user, @PathVariable Long id) {
         return service.paymentInfo(user, id).map(value -> ResponseEntity.ok(ApiResponse.success(value)))
                 .orElseGet(() -> ResponseEntity.status(404).body(ApiResponse.error("Chưa có thông tin thanh toán")));
+    }
+
+    @PostMapping("/invoices/{id}/payment-proof")
+    public ResponseEntity<ApiResponse<TenantInvoiceResponse>> submitPaymentProof(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long id,
+            @Valid @RequestBody SubmitPaymentProofRequest request) {
+        return service.submitPaymentProof(user, id, request)
+                .map(value -> ResponseEntity.ok(ApiResponse.success(
+                        "Đã gửi minh chứng chuyển khoản. Vui lòng chờ chủ nhà xác nhận thực thu.", value)))
+                .orElseGet(() -> ResponseEntity.status(404).body(ApiResponse.error("Không tìm thấy hóa đơn")));
     }
 
     @GetMapping("/payments")

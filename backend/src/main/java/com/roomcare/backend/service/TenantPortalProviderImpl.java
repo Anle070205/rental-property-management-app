@@ -3,6 +3,7 @@ package com.roomcare.backend.service;
 import com.roomcare.backend.dto.roommate.RoommateResponse;
 import com.roomcare.backend.dto.tenant.MyContractResponse;
 import com.roomcare.backend.dto.tenant.MyRoomResponse;
+import com.roomcare.backend.dto.tenant.SubmitPaymentProofRequest;
 import com.roomcare.backend.dto.tenant.TenantInvoiceResponse;
 import com.roomcare.backend.dto.tenant.TenantPaymentInfoResponse;
 import com.roomcare.backend.dto.tenant.TenantPaymentResponse;
@@ -355,6 +356,19 @@ public class TenantPortalProviderImpl implements TenantPortalProvider {
                 && isVisibleToTenant(invoice)) {
             effectiveStatus = InvoiceStatus.OVERDUE.name();
         }
+        List<TenantPaymentResponse> payments = invoice.getId() != null
+                ? paymentRepository.findByInvoiceIdOrderByPaidAtDesc(invoice.getId())
+                        .stream()
+                        .map(p -> new TenantPaymentResponse(
+                                p.getId(),
+                                invoice.getId(),
+                                p.getPaidAt(),
+                                p.getAmount(),
+                                p.getPaymentMethod().name(),
+                                "CONFIRMED"
+                        ))
+                        .collect(Collectors.toList())
+                : List.of();
         return new TenantInvoiceResponse(
                 invoice.getId(),
                 invoice.getInvoiceCode(),
@@ -371,8 +385,75 @@ public class TenantPortalProviderImpl implements TenantPortalProvider {
                 invoice.getDiscountAmount(),
                 invoice.getTotalAmount(),
                 invoice.getPaidAmount(),
-                invoice.getRemainingAmount()
+                invoice.getRemainingAmount(),
+                invoice.getProperty() != null ? invoice.getProperty().getName() : null,
+                invoice.getRoom() != null ? invoice.getRoom().getRoomCode() : null,
+                invoice.getTenant() != null ? invoice.getTenant().getFullName() : null,
+                invoice.getContract() != null ? invoice.getContract().getContractCode() : null,
+                invoice.getPrevElectricIndex(),
+                invoice.getCurrElectricIndex(),
+                invoice.getElectricUsage(),
+                invoice.getElectricUnitPrice(),
+                invoice.getPrevWaterIndex(),
+                invoice.getCurrWaterIndex(),
+                invoice.getWaterUsage(),
+                invoice.getWaterUnitPrice(),
+                invoice.getWaterBillingMode() != null ? invoice.getWaterBillingMode().name() : "METERED",
+                invoice.getOccupantCount(),
+                invoice.getGarbageFee(),
+                invoice.getAdjustmentAmount(),
+                invoice.getAdjustmentReason(),
+                invoice.getNotes(),
+                invoice.getPublishedAt(),
+                invoice.getPaymentProofNote(),
+                invoice.getPaymentProofUrl(),
+                invoice.getPaymentProofSubmittedAt(),
+                payments
         );
+    }
+
+    @Override
+    public Optional<TenantInvoiceResponse> submitPaymentProof(
+            Tenant tenant,
+            Long invoiceId,
+            SubmitPaymentProofRequest request) {
+        if (invoiceId == null || request == null) {
+            return Optional.empty();
+        }
+        Optional<Invoice> invoiceOpt = invoiceRepository.findById(invoiceId)
+                .filter(inv -> inv.getTenant() != null && inv.getTenant().getId().equals(tenant.getId()))
+                .filter(this::isVisibleToTenant);
+        if (invoiceOpt.isEmpty()) {
+            return Optional.empty();
+        }
+        Invoice invoice = invoiceOpt.get();
+        if (invoice.getStatus() == InvoiceStatus.PAID || invoice.getRemainingAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Hóa đơn này đã được thanh toán đủ");
+        }
+        String note = request.note() != null ? request.note().trim() : "";
+        String url = request.proofUrl() != null ? request.proofUrl().trim() : "";
+        if (note.isEmpty() && url.isEmpty()) {
+            throw new RuntimeException("Vui lòng nhập nội dung giao dịch hoặc liên kết ảnh chứng từ chuyển khoản");
+        }
+        invoice.setPaymentProofNote(note.isEmpty() ? null : note);
+        invoice.setPaymentProofUrl(url.isEmpty() ? null : url);
+        invoice.setPaymentProofSubmittedAt(java.time.LocalDateTime.now());
+        // Không tự động đổi trạng thái thành PAID - chỉ chủ trọ xác nhận thực thu mới chốt thanh toán
+        Invoice saved = invoiceRepository.save(invoice);
+
+        if (notificationService != null && saved.getLandlord() != null) {
+            notificationService.createNotification(
+                    saved.getLandlord(),
+                    NotificationType.PAYMENT,
+                    "Khách gửi minh chứng thanh toán",
+                    "Khách thuê " + tenant.getFullName() + " đã gửi minh chứng cho hóa đơn "
+                            + saved.getInvoiceCode() + " (Phòng "
+                            + (saved.getRoom() != null ? saved.getRoom().getRoomCode() : "")
+                            + "). Vui lòng kiểm tra và xác nhận thực thu.",
+                    saved.getId()
+            );
+        }
+        return Optional.of(mapInvoice(saved));
     }
 
     private <T> Page<T> paginate(List<T> items, Pageable pageable) {

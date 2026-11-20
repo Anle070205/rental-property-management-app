@@ -6,6 +6,7 @@ import com.roomcare.backend.dto.dashboard.MonthlyRevenueResponse;
 import com.roomcare.backend.dto.health.RoomHealthScoreResponse;
 import com.roomcare.backend.entity.BookingRequest;
 import com.roomcare.backend.entity.Invoice;
+import com.roomcare.backend.entity.InvoiceStatus;
 import com.roomcare.backend.entity.Room;
 import com.roomcare.backend.entity.RoomStatus;
 import com.roomcare.backend.repository.BookingRequestRepository;
@@ -37,7 +38,10 @@ public class DashboardService {
     public LandlordDashboardResponse getLandlordDashboard(Long landlordId) {
         int totalProperties = (int) propertyRepository.findByLandlordId(landlordId, PageRequest.of(0, 1)).getTotalElements();
         List<Room> rooms = roomRepository.findByLandlordId(landlordId, PageRequest.of(0, 500)).getContent();
-        List<Invoice> invoices = invoiceRepository.findAllByLandlordWithDetails(landlordId);
+        List<Invoice> invoices = invoiceRepository.findAllByLandlordWithDetails(landlordId)
+                .stream()
+                .filter(inv -> inv.getStatus() != InvoiceStatus.DRAFT && inv.getStatus() != InvoiceStatus.CANCELLED)
+                .collect(Collectors.toList());
 
         int totalRooms = rooms.size();
         int occupiedRooms = (int) rooms.stream()

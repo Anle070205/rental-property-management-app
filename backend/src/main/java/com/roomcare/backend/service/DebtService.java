@@ -49,6 +49,7 @@ public class DebtService {
         List<Invoice> allInvoices = invoiceRepository.findAllByLandlordWithDetails(landlordId);
 
         List<Invoice> filteredInvoices = allInvoices.stream()
+                .filter(inv -> inv.getStatus() != InvoiceStatus.DRAFT && inv.getStatus() != InvoiceStatus.CANCELLED)
                 .filter(inv -> roomId == null || inv.getRoom().getId().equals(roomId))
                 .filter(inv -> tenantId == null || (inv.getTenant() != null && inv.getTenant().getId().equals(tenantId)))
                 .filter(inv -> normalizedMonth == null || inv.getBillingMonth().equals(normalizedMonth))
@@ -103,7 +104,10 @@ public class DebtService {
             throw new RuntimeException("Bạn không có quyền xem công nợ của người thuê này");
         }
 
-        List<Invoice> invoices = invoiceRepository.findByTenantIdAndLandlordIdWithDetails(tenantId, landlordId);
+        List<Invoice> invoices = invoiceRepository.findByTenantIdAndLandlordIdWithDetails(tenantId, landlordId)
+                .stream()
+                .filter(inv -> inv.getStatus() != InvoiceStatus.DRAFT && inv.getStatus() != InvoiceStatus.CANCELLED)
+                .collect(Collectors.toList());
         if (invoices.isEmpty()) {
             RoomTenantDebtResponse empty = new RoomTenantDebtResponse();
             empty.setTenantId(tenant.getId());
