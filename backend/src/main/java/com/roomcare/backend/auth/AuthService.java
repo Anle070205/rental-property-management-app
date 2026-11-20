@@ -74,8 +74,14 @@ public class AuthService {
         String requestedRole = request.getRole() != null && !request.getRole().isBlank()
                 ? request.getRole().trim().toUpperCase(Locale.ROOT)
                 : "LANDLORD";
-        if (!"LANDLORD".equals(requestedRole) && !"TENANT".equals(requestedRole)) {
-            throw new RuntimeException("Vai trò không hợp lệ. Chỉ hỗ trợ Chủ nhà hoặc Người thuê.");
+        if ("TENANT".equals(requestedRole)) {
+            throw new RuntimeException("Đăng ký công khai chỉ dành cho Chủ nhà trọ. Tài khoản Người thuê do Chủ nhà trọ cấp trực tiếp.");
+        }
+        if ("ADMIN".equals(requestedRole)) {
+            throw new RuntimeException("Không thể tự đăng ký tài khoản Quản trị viên (ADMIN).");
+        }
+        if (!"LANDLORD".equals(requestedRole)) {
+            throw new RuntimeException("Vai trò không hợp lệ. Đăng ký công khai chỉ hỗ trợ Chủ nhà trọ.");
         }
         if (request.getPassword().getBytes(StandardCharsets.UTF_8).length > 72) {
             throw new RuntimeException("Mật khẩu tối đa 72 byte");

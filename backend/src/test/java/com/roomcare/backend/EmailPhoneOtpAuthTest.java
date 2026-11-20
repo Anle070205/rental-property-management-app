@@ -383,7 +383,7 @@ class EmailPhoneOtpAuthTest {
 
     @Test
     void registerAndVerifyViaGmail_createsEmailOnlyUserHashesOtpAndBlocksLoginUntilVerified() {
-        RegisterRequest req = new RegisterRequest("Nguyễn Minh Anh", "MinhAnh.Dev@gmail.com", null, "Secret123", "TENANT");
+        RegisterRequest req = new RegisterRequest("Nguyễn Minh Anh", "MinhAnh.Dev@gmail.com", null, "Secret123", "LANDLORD");
         req.setVerificationMethod("EMAIL");
 
         var pending = authService.register(req, "192.168.1.10");
@@ -493,7 +493,7 @@ class EmailPhoneOtpAuthTest {
         };
         initServices(5, 60, 5, 20, 5);
 
-        RegisterRequest req = new RegisterRequest("Lê Hoàng", null, "0912345678", "Pass123", "TENANT");
+        RegisterRequest req = new RegisterRequest("Lê Hoàng", null, "0912345678", "Pass123", "LANDLORD");
         req.setVerificationMethod("PHONE");
         authService.register(req, "10.0.0.6");
 
@@ -515,7 +515,7 @@ class EmailPhoneOtpAuthTest {
 
     @Test
     void otpSecurity_locksAfterFiveWrongAttempts_rejectsExpired_andSingleUseOnly() {
-        RegisterRequest req = new RegisterRequest("Phạm Lan", "phamlan.test@gmail.com", null, "Secret123", "TENANT");
+        RegisterRequest req = new RegisterRequest("Phạm Lan", "phamlan.test@gmail.com", null, "Secret123", "LANDLORD");
         req.setVerificationMethod("EMAIL");
         authService.register(req, "127.0.0.1");
 
@@ -810,8 +810,8 @@ class EmailPhoneOtpAuthTest {
 
     @Test
     void mockMvcAuthEndpoints_enforce403Unverified_429RateLimit_503MissingProvider_and200Flows() throws Exception {
-        // 1. Register via Gmail through HTTP
-        RegisterRequest registerReq = new RegisterRequest("HTTP Tester", "httptest@gmail.com", null, "Pass123", "TENANT");
+        // 1. Register via Gmail through HTTP (Landlord only)
+        RegisterRequest registerReq = new RegisterRequest("HTTP Tester", "httptest@gmail.com", null, "Pass123", "LANDLORD");
         registerReq.setVerificationMethod("EMAIL");
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -868,12 +868,31 @@ class EmailPhoneOtpAuthTest {
                 "", "", "", "RoomCare"
         );
         initServices(5, 60, 5, 20, 5);
-        RegisterRequest noSmtpReq = new RegisterRequest("No SMTP", "nosmtp@gmail.com", null, "Pass123", "TENANT");
+        RegisterRequest noSmtpReq = new RegisterRequest("No SMTP", "nosmtp@gmail.com", null, "Pass123", "LANDLORD");
         noSmtpReq.setVerificationMethod("EMAIL");
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(noSmtpReq)))
                 .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    void publicRegister_rejectsTenantAndAdminRoles() throws Exception {
+        RegisterRequest tenantReq = new RegisterRequest("Tenant Try", "tenanttry@gmail.com", null, "Pass123", "TENANT");
+        tenantReq.setVerificationMethod("EMAIL");
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tenantReq)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
+
+        RegisterRequest adminReq = new RegisterRequest("Admin Try", "admintry@gmail.com", null, "Pass123", "ADMIN");
+        adminReq.setVerificationMethod("EMAIL");
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(adminReq)))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false));
     }
 }

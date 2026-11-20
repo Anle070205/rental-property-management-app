@@ -230,39 +230,34 @@
 
             <TextView
                 android:id="@+id/tv_role_label"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Loại tài khoản"
-                android:textColor="@color/rc_ink"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rc_pill_tint"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:text="Đăng ký công khai dành riêng cho Chủ nhà trọ. Người thuê nhận tài khoản từ Chủ nhà."
+                android:textColor="@color/rc_brand_dark"
+                android:textSize="12sp" />
 
             <RadioGroup
                 android:id="@+id/rg_role"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:orientation="horizontal">
+                android:visibility="gone">
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
                     android:id="@+id/rb_landlord"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:checked="true"
-                    android:text="Chủ nhà"
-                    android:textColor="@color/rc_ink"
-                    app:buttonTint="@color/rc_brand" />
+                    android:text="Chủ nhà" />
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
                     android:id="@+id/rb_tenant"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Người thuê"
-                    android:textColor="@color/rc_ink"
-                    app:buttonTint="@color/rc_brand" />
+                    android:text="Người thuê" />
             </RadioGroup>
 
             <FrameLayout

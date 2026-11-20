@@ -136,11 +136,8 @@ class RegisterFragment : Fragment() {
         }
 
         if (isValid) {
-            val selectedRole = if (binding.rbTenant.isChecked) {
-                Constants.Roles.TENANT
-            } else {
-                Constants.Roles.LANDLORD
-            }
+            // Đăng ký công khai chỉ dành cho Chủ nhà trọ; tài khoản Người thuê do Chủ nhà cấp
+            val selectedRole = Constants.Roles.LANDLORD
             binding.root.hideKeyboard()
             if (phoneMethod) {
                 val normalizedPhone = ValidationUtils.normalizeVietnamPhoneToE164(phone) ?: phone

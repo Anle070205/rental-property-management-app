@@ -38,6 +38,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
+                // Admin endpoints - chỉ ADMIN role (tài khoản cấp nội bộ)
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Landlord endpoints - chỉ LANDLORD role
                 .requestMatchers("/api/landlord/**").hasRole("LANDLORD")
                 // Tenant endpoints - chỉ TENANT role (Phase 4)
