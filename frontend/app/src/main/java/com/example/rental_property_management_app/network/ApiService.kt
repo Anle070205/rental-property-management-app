@@ -493,4 +493,91 @@ interface ApiService {
     // ============================================
     @GET("api/landlord/dashboard")
     suspend fun getLandlordDashboard(): Response<ApiResponse<LandlordDashboardResponse>>
+
+    // ============================================
+    // ADMIN APIs
+    // ============================================
+    @GET("api/admin/dashboard")
+    suspend fun getAdminDashboard(): Response<ApiResponse<AdminDashboardResponse>>
+
+    @GET("api/admin/accounts")
+    suspend fun getAdminAccounts(
+        @Query("role") role: String? = null,
+        @Query("isActive") isActive: Boolean? = null,
+        @Query("keyword") keyword: String? = null,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 10
+    ): Response<ApiResponse<AdminAccountPageResult>>
+
+    @GET("api/admin/accounts/{id}")
+    suspend fun getAdminAccountDetail(@Path("id") id: Long): Response<ApiResponse<AdminAccountItem>>
+
+    @POST("api/admin/accounts")
+    suspend fun createAdminAccount(@Body request: AdminCreateAccountRequest): Response<ApiResponse<AdminAccountItem>>
+
+    @PUT("api/admin/accounts/{id}")
+    suspend fun updateAdminAccount(
+        @Path("id") id: Long,
+        @Body request: AdminUpdateAccountRequest
+    ): Response<ApiResponse<AdminAccountItem>>
+
+    @POST("api/admin/accounts/{id}/lock")
+    suspend fun lockAdminAccount(@Path("id") id: Long): Response<ApiResponse<AdminAccountItem>>
+
+    @POST("api/admin/accounts/{id}/unlock")
+    suspend fun unlockAdminAccount(@Path("id") id: Long): Response<ApiResponse<AdminAccountItem>>
+
+    @GET("api/admin/landlords")
+    suspend fun getAdminLandlords(@Query("keyword") keyword: String? = null): Response<ApiResponse<AdminLandlordListResult>>
+
+    @GET("api/admin/landlords/{id}")
+    suspend fun getAdminLandlordDetail(@Path("id") id: Long): Response<ApiResponse<AdminLandlordItem>>
+
+    @GET("api/admin/properties")
+    suspend fun getAdminProperties(@Query("keyword") keyword: String? = null): Response<ApiResponse<AdminPropertyListResult>>
+
+    @GET("api/admin/properties/{id}")
+    suspend fun getAdminPropertyDetail(@Path("id") id: Long): Response<ApiResponse<AdminPropertyItem>>
+
+    @GET("api/admin/reports")
+    suspend fun getAdminReports(
+        @Query("keyword") keyword: String? = null,
+        @Query("status") status: String? = null
+    ): Response<ApiResponse<AdminReportListResult>>
+
+    @GET("api/admin/reports/{id}")
+    suspend fun getAdminReportDetail(@Path("id") id: Long): Response<ApiResponse<AdminReportItem>>
+
+    @POST("api/admin/reports/{id}/resolve")
+    suspend fun resolveAdminReport(
+        @Path("id") id: Long,
+        @Body request: AdminResolveReportRequest
+    ): Response<ApiResponse<AdminReportItem>>
+
+    @GET("api/admin/broadcasts/audience-counts")
+    suspend fun getAdminBroadcastAudienceCounts(): Response<ApiResponse<AdminBroadcastAudienceCounts>>
+
+    @GET("api/admin/broadcasts")
+    suspend fun getAdminBroadcasts(@Query("keyword") keyword: String? = null): Response<ApiResponse<AdminBroadcastListResult>>
+
+    @GET("api/admin/broadcasts/{id}")
+    suspend fun getAdminBroadcastDetail(@Path("id") id: Long): Response<ApiResponse<AdminBroadcastItem>>
+
+    @POST("api/admin/broadcasts")
+    suspend fun createAdminBroadcast(
+        @Body request: AdminBroadcastRequest,
+        @Query("sendNow") sendNow: Boolean = false
+    ): Response<ApiResponse<AdminBroadcastItem>>
+
+    @PUT("api/admin/broadcasts/{id}")
+    suspend fun updateAdminBroadcast(
+        @Path("id") id: Long,
+        @Body request: AdminBroadcastRequest
+    ): Response<ApiResponse<AdminBroadcastItem>>
+
+    @POST("api/admin/broadcasts/{id}/send")
+    suspend fun sendAdminBroadcast(@Path("id") id: Long): Response<ApiResponse<AdminBroadcastItem>>
+
+    @PUT("api/admin/profile/password")
+    suspend fun changeAdminPassword(@Body request: ChangePasswordRequest): Response<ApiResponse<AdminChangePasswordResponse>>
 }

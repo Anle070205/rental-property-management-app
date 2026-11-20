@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@id/adminDashboardFragment"
+        android:icon="@drawable/ic_home"
+        android:title="Tổng quan" />
+    <item
+        android:id="@id/adminAccountListFragment"
+        android:icon="@drawable/ic_people"
+        android:title="Tài khoản" />
+    <item
+        android:id="@id/adminLandlordListFragment"
+        android:icon="@drawable/ic_room"
+        android:title="Chủ nhà" />
+    <item
+        android:id="@id/adminBroadcastListFragment"
+        android:icon="@drawable/rc_bell"
+        android:title="Thông báo" />
+    <item
+        android:id="@id/adminHubFragment"
+        android:icon="@drawable/ic_settings"
+        android:title="Thêm" />
+</menu>

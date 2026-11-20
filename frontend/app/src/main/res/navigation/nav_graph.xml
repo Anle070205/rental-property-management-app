@@ -24,6 +24,11 @@
             app:destination="@id/tenantDashboardFragment"
             app:popUpTo="@id/splashFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_adminDashboardFragment"
+            app:destination="@id/adminDashboardFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!-- Authentication Flow -->
@@ -48,6 +53,11 @@
         <action
             android:id="@+id/action_loginFragment_to_tenantDashboardFragment"
             app:destination="@id/tenantDashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_adminDashboardFragment"
+            app:destination="@id/adminDashboardFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
     </fragment>
@@ -382,4 +392,69 @@
     </fragment>
 
 
+    <!-- Admin Management Flow -->
+    <fragment
+        android:id="@+id/adminDashboardFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminDashboardFragment"
+        android:label="Tổng quan hệ thống" />
+    <fragment
+        android:id="@+id/adminAccountListFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminAccountListFragment"
+        android:label="Quản lý tài khoản" />
+    <fragment
+        android:id="@+id/adminAccountDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminAccountDetailFragment"
+        android:label="Chi tiết tài khoản" />
+    <fragment
+        android:id="@+id/adminAccountFormFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminAccountFormFragment"
+        android:label="Tài khoản" />
+    <fragment
+        android:id="@+id/adminLandlordListFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminLandlordListFragment"
+        android:label="Quản lý chủ nhà" />
+    <fragment
+        android:id="@+id/adminLandlordDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminLandlordDetailFragment"
+        android:label="Chi tiết chủ nhà" />
+    <fragment
+        android:id="@+id/adminPropertyListFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminPropertyListFragment"
+        android:label="Quản lý nhà trọ" />
+    <fragment
+        android:id="@+id/adminPropertyDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminPropertyDetailFragment"
+        android:label="Chi tiết nhà trọ" />
+    <fragment
+        android:id="@+id/adminReportListFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminReportListFragment"
+        android:label="Quản lý báo cáo" />
+    <fragment
+        android:id="@+id/adminReportDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminReportDetailFragment"
+        android:label="Chi tiết báo cáo" />
+    <fragment
+        android:id="@+id/adminBroadcastListFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminBroadcastListFragment"
+        android:label="Quản lý thông báo" />
+    <fragment
+        android:id="@+id/adminBroadcastDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminBroadcastDetailFragment"
+        android:label="Chi tiết thông báo" />
+    <fragment
+        android:id="@+id/adminBroadcastFormFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminBroadcastFormFragment"
+        android:label="Soạn thông báo" />
+    <fragment
+        android:id="@+id/adminHubFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminHubFragment"
+        android:label="Trung tâm quản trị" />
+    <fragment
+        android:id="@+id/adminProfileFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminProfileFragment"
+        android:label="Hồ sơ Admin" />
+    <fragment
+        android:id="@+id/adminChangePasswordFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminChangePasswordFragment"
+        android:label="Đổi mật khẩu" />
 </navigation>

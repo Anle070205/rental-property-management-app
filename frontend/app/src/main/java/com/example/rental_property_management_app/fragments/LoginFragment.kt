@@ -125,6 +125,11 @@ class LoginFragment : Fragment() {
                                         R.id.action_loginFragment_to_tenantDashboardFragment
                                     )
                                 }
+                                Constants.Roles.ADMIN -> {
+                                    findNavController().navigate(
+                                        R.id.action_loginFragment_to_adminDashboardFragment
+                                    )
+                                }
                             }
                         }
                     }
