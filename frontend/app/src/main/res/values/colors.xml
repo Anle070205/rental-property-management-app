@@ -60,6 +60,8 @@
     <color name="status_needs_attention_bg">#FBE8E7</color>
 
     <!-- Finance, Invoice & Health Score Colors -->
+    <color name="invoice_draft">#66736F</color>
+    <color name="invoice_draft_bg">#EEF3F1</color>
     <color name="invoice_unpaid">#B76B16</color>
     <color name="invoice_unpaid_bg">#FFF0D8</color>
     <color name="invoice_partial">#3E6091</color>
@@ -68,6 +70,8 @@
     <color name="invoice_paid_bg">#E1F3E8</color>
     <color name="invoice_overdue">#C44747</color>
     <color name="invoice_overdue_bg">#FBE8E7</color>
+    <color name="invoice_cancelled">#7B8481</color>
+    <color name="invoice_cancelled_bg">#E8ECEB</color>
 
     <color name="health_good">#218A58</color>
     <color name="health_good_bg">#E1F3E8</color>

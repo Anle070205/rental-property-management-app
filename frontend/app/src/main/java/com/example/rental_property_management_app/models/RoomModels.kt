@@ -110,6 +110,15 @@ data class RoomResponse(
     
     @SerializedName("currentTenant")
     val currentTenant: String?,
+
+    @SerializedName("currentContractId")
+    val currentContractId: Long? = null,
+
+    @SerializedName("currentContractStatus")
+    val currentContractStatus: String? = null,
+
+    @SerializedName("currentTenantId")
+    val currentTenantId: Long? = null,
     
     @SerializedName("createdAt")
     val createdAt: String,

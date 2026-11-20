@@ -22,6 +22,12 @@ interface ApiService {
     @GET("api/tenant/invoices/{id}")
     suspend fun tenantInvoice(@Path("id") id: Long): Response<ApiResponse<TenantInvoice>>
 
+    @POST("api/tenant/invoices/{id}/payment-proof")
+    suspend fun submitTenantPaymentProof(
+        @Path("id") id: Long,
+        @Body request: SubmitPaymentProofRequest
+    ): Response<ApiResponse<TenantInvoice>>
+
     @GET("api/tenant/my-contract")
     suspend fun myContract(): Response<ApiResponse<MyContract>>
 
@@ -174,6 +180,11 @@ interface ApiService {
     suspend fun resetPassword(
         @Body request: ResetPasswordRequest
     ): Response<ApiResponse<Unit>>
+
+    @POST("api/auth/activate-account")
+    suspend fun activateAccount(
+        @Body request: ActivateAccountRequest
+    ): Response<ApiResponse<Unit>>
     
     // ============================================
     // PROPERTY APIs (Landlord)
@@ -281,6 +292,84 @@ interface ApiService {
         @Path("id") id: Long
     ): Response<ApiResponse<Unit>>
 
+    @POST("api/landlord/tenants/{id}/provision-account")
+    suspend fun provisionTenantAccount(
+        @Path("id") id: Long,
+        @Body request: ProvisionTenantAccountRequest
+    ): Response<ApiResponse<ProvisionTenantAccountResponse>>
+
+    @POST("api/landlord/tenants/{id}/resend-activation")
+    suspend fun resendTenantActivation(
+        @Path("id") id: Long,
+        @Query("channel") channel: String
+    ): Response<ApiResponse<ProvisionTenantAccountResponse>>
+
+    // ============================================
+    // CONTRACT & ROOMMATE APIs (Landlord)
+    // ============================================
+    @GET("api/landlord/contracts")
+    suspend fun getContracts(
+        @Query("propertyId") propertyId: Long? = null,
+        @Query("roomId") roomId: Long? = null,
+        @Query("tenantId") tenantId: Long? = null,
+        @Query("status") status: String? = null
+    ): Response<ApiResponse<List<ContractResponse>>>
+
+    @GET("api/landlord/contracts/{id}")
+    suspend fun getContractById(
+        @Path("id") id: Long
+    ): Response<ApiResponse<ContractResponse>>
+
+    @POST("api/landlord/contracts")
+    suspend fun createContract(
+        @Body request: CreateContractRequest
+    ): Response<ApiResponse<ContractResponse>>
+
+    @PUT("api/landlord/contracts/{id}")
+    suspend fun updateContract(
+        @Path("id") id: Long,
+        @Body request: UpdateContractRequest
+    ): Response<ApiResponse<ContractResponse>>
+
+    @POST("api/landlord/contracts/{id}/sign")
+    suspend fun signContract(
+        @Path("id") id: Long
+    ): Response<ApiResponse<ContractResponse>>
+
+    @POST("api/landlord/contracts/{id}/activate")
+    suspend fun activateContract(
+        @Path("id") id: Long
+    ): Response<ApiResponse<ContractResponse>>
+
+    @POST("api/landlord/contracts/{id}/terminate")
+    suspend fun terminateContract(
+        @Path("id") id: Long,
+        @Body request: TerminateContractRequest = TerminateContractRequest()
+    ): Response<ApiResponse<ContractResponse>>
+
+    @GET("api/landlord/roommates")
+    suspend fun getRoommates(
+        @Query("tenantId") tenantId: Long? = null,
+        @Query("roomId") roomId: Long? = null,
+        @Query("contractId") contractId: Long? = null
+    ): Response<ApiResponse<List<RoommateResponse>>>
+
+    @POST("api/landlord/roommates")
+    suspend fun addRoommate(
+        @Body request: CreateRoommateRequest
+    ): Response<ApiResponse<RoommateResponse>>
+
+    @PUT("api/landlord/roommates/{id}")
+    suspend fun updateRoommate(
+        @Path("id") id: Long,
+        @Body request: UpdateRoommateRequest
+    ): Response<ApiResponse<RoommateResponse>>
+
+    @DELETE("api/landlord/roommates/{id}")
+    suspend fun deleteRoommate(
+        @Path("id") id: Long
+    ): Response<ApiResponse<Unit>>
+
     // ============================================
     // PHASE 4 - INVOICE APIs (GĐ4.1)
     // ============================================
@@ -292,9 +381,37 @@ interface ApiService {
         @Query("status") status: String? = null
     ): Response<ApiResponse<List<InvoiceResponse>>>
 
+    @POST("api/landlord/invoices/preview")
+    suspend fun previewInvoice(
+        @Body request: CreateInvoiceRequest
+    ): Response<ApiResponse<InvoiceResponse>>
+
     @POST("api/landlord/invoices")
     suspend fun createInvoice(
         @Body request: CreateInvoiceRequest
+    ): Response<ApiResponse<InvoiceResponse>>
+
+    @PUT("api/landlord/invoices/{id}")
+    suspend fun updateDraftInvoice(
+        @Path("id") id: Long,
+        @Body request: CreateInvoiceRequest
+    ): Response<ApiResponse<InvoiceResponse>>
+
+    @POST("api/landlord/invoices/{id}/publish")
+    suspend fun publishInvoice(
+        @Path("id") id: Long
+    ): Response<ApiResponse<InvoiceResponse>>
+
+    @POST("api/landlord/invoices/{id}/adjust")
+    suspend fun adjustInvoice(
+        @Path("id") id: Long,
+        @Body request: AdjustInvoiceRequest
+    ): Response<ApiResponse<InvoiceResponse>>
+
+    @POST("api/landlord/invoices/{id}/cancel")
+    suspend fun cancelInvoice(
+        @Path("id") id: Long,
+        @Body request: CancelInvoiceRequest = CancelInvoiceRequest()
     ): Response<ApiResponse<InvoiceResponse>>
 
     @POST("api/landlord/invoices/batch")

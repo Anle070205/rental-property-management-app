@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +15,7 @@ import com.example.rental_property_management_app.R
 import com.example.rental_property_management_app.databinding.FragmentTenantFormBinding
 import com.example.rental_property_management_app.models.CreateTenantRequest
 import com.example.rental_property_management_app.models.UpdateTenantRequest
+import com.example.rental_property_management_app.utils.CccdQrParser
 import com.example.rental_property_management_app.utils.DateUtils
 import com.example.rental_property_management_app.utils.ValidationUtils
 import com.example.rental_property_management_app.viewmodels.PropertyViewModel
@@ -56,7 +59,6 @@ class TenantFormFragment : Fragment() {
         setupListeners()
         observeStates()
 
-        // Check if edit mode
         if (args.tenantId != 0L) {
             isEditMode = true
             binding.toolbar.title = getString(R.string.edit_tenant)
@@ -80,10 +82,7 @@ class TenantFormFragment : Fragment() {
                     getString(R.string.property_selected)
                 }
             }
-
-            if (args.roomId != 0L) {
-                selectedPropertyId = args.roomId
-            }
+            // Không gán args.roomId vào selectedPropertyId để tránh lệch nhà trọ
             propertyViewModel.loadProperties()
         }
     }
@@ -99,6 +98,10 @@ class TenantFormFragment : Fragment() {
             showDatePicker()
         }
 
+        binding.btnPasteCccdQr.setOnClickListener {
+            showCccdQrInputDialog()
+        }
+
         binding.btnSave.setOnClickListener {
             if (validateForm()) {
                 if (isEditMode) {
@@ -108,6 +111,39 @@ class TenantFormFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun showCccdQrInputDialog() {
+        val input = EditText(requireContext()).apply {
+            hint = "VD: 079200001234||Nguyễn Văn An|15081998|Nam|TP.HCM|01012022"
+            minLines = 2
+            setPadding(36, 24, 36, 24)
+        }
+        AlertDialog.Builder(requireContext())
+            .setTitle("Nhập nhanh từ chuỗi QR CCCD")
+            .setMessage("Dán chuỗi QR quét từ CCCD gắn chip để tự điền họ tên, số CCCD, ngày sinh và địa chỉ:")
+            .setView(input)
+            .setPositiveButton("Giải mã") { _, _ ->
+                val parsed = CccdQrParser.parse(input.text?.toString())
+                if (parsed == null) {
+                    showError("Chuỗi QR CCCD không hợp lệ. Định dạng chuẩn dùng dấu |")
+                } else {
+                    binding.etIdCard.setText(parsed.identityNumber)
+                    binding.etFullName.setText(parsed.fullName)
+                    parsed.address?.let { binding.etNotes.setText(it) }
+                    parsed.dateOfBirthIso?.let { iso ->
+                        try {
+                            selectedDateOfBirth = DateUtils.parseApiDate(iso)
+                            selectedDateOfBirth?.let { binding.etMoveInDate.setText(dateFormat.format(it)) }
+                        } catch (_: Exception) {
+                        }
+                    }
+                    binding.cbCccdConsent.isChecked = true
+                    Snackbar.make(binding.root, "Đã điền thông tin từ QR CCCD", Snackbar.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
     }
 
     private fun showDatePicker() {
@@ -137,7 +173,6 @@ class TenantFormFragment : Fragment() {
             }
         }
 
-        // Observe tenant detail for edit mode
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.tenantDetailState.collect { state ->
                 when {
@@ -154,7 +189,6 @@ class TenantFormFragment : Fragment() {
             }
         }
 
-        // Observe create/update result
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.createUpdateState.collect { state ->
                 when {
@@ -185,8 +219,9 @@ class TenantFormFragment : Fragment() {
         selectedPropertyId = tenant.propertyId
         binding.etFullName.setText(tenant.fullName)
         binding.etPhone.setText(tenant.phone.orEmpty())
-        binding.etEmail.setText(tenant.email)
-        binding.etIdCard.setText(tenant.identityNumber)
+        binding.etEmail.setText(tenant.email.orEmpty())
+        binding.etIdCard.setText(tenant.identityNumber.orEmpty())
+        binding.cbCccdConsent.isChecked = !tenant.identityNumber.isNullOrBlank()
 
         tenant.dateOfBirth?.let { dateStr ->
             try {
@@ -198,8 +233,8 @@ class TenantFormFragment : Fragment() {
             }
         }
 
-        binding.etEmergencyContact.setText(tenant.emergencyContact)
-        binding.etNotes.setText(tenant.address)
+        binding.etEmergencyContact.setText(tenant.emergencyContact.orEmpty())
+        binding.etNotes.setText(tenant.address.orEmpty())
     }
 
     private fun validateForm(): Boolean {
@@ -210,7 +245,6 @@ class TenantFormFragment : Fragment() {
             return false
         }
 
-        // Validate full name
         val fullName = binding.etFullName.text.toString().trim()
         if (fullName.isEmpty()) {
             binding.tilFullName.error = getString(R.string.error_full_name_required)
@@ -219,44 +253,37 @@ class TenantFormFragment : Fragment() {
             binding.tilFullName.error = null
         }
 
-        // Validate phone
         val phone = binding.etPhone.text.toString().trim()
-        if (phone.isEmpty()) {
-            binding.tilPhone.error = getString(R.string.error_phone_required)
-            isValid = false
-        } else if (!ValidationUtils.isValidPhone(phone)) {
-            binding.tilPhone.error = getString(R.string.error_phone_invalid)
-            isValid = false
-        } else {
-            binding.tilPhone.error = null
-        }
-
-        // Validate email (optional but must be valid if provided)
         val email = binding.etEmail.text.toString().trim()
-        if (email.isNotEmpty() && !ValidationUtils.isValidEmail(email)) {
-            binding.tilEmail.error = getString(R.string.error_email_invalid)
+        if (phone.isEmpty() && email.isEmpty()) {
+            binding.tilPhone.error = "Nhập số điện thoại hoặc email"
+            binding.tilEmail.error = "Nhập email hoặc số điện thoại"
             isValid = false
         } else {
-            binding.tilEmail.error = null
+            if (phone.isNotEmpty() && !ValidationUtils.isValidPhone(phone)) {
+                binding.tilPhone.error = getString(R.string.error_phone_invalid)
+                isValid = false
+            } else {
+                binding.tilPhone.error = null
+            }
+
+            if (email.isNotEmpty() && !ValidationUtils.isValidEmail(email)) {
+                binding.tilEmail.error = getString(R.string.error_email_invalid)
+                isValid = false
+            } else {
+                binding.tilEmail.error = null
+            }
         }
 
-        // Validate ID card
         val idCard = binding.etIdCard.text.toString().trim()
-        if (idCard.isEmpty()) {
-            binding.tilIdCard.error = getString(R.string.error_id_card_required)
+        if (idCard.isNotEmpty() && !binding.cbCccdConsent.isChecked) {
+            binding.tilIdCard.error = "Cần tick xác nhận khách đồng ý lưu CCCD"
             isValid = false
         } else {
             binding.tilIdCard.error = null
         }
 
-        // Validate date of birth
-        if (selectedDateOfBirth == null) {
-            binding.tilMoveInDate.error = "Vui lòng chọn ngày sinh"
-            isValid = false
-        } else {
-            binding.tilMoveInDate.error = null
-        }
-
+        binding.tilMoveInDate.error = null
         return isValid
     }
 
@@ -264,9 +291,10 @@ class TenantFormFragment : Fragment() {
         val request = CreateTenantRequest(
             propertyId = selectedPropertyId!!,
             fullName = binding.etFullName.text.toString().trim(),
-            phone = binding.etPhone.text.toString().trim(),
+            phone = binding.etPhone.text.toString().trim().ifEmpty { null },
             email = binding.etEmail.text.toString().trim().ifEmpty { null },
-            identityNumber = binding.etIdCard.text.toString().trim(),
+            identityNumber = binding.etIdCard.text.toString().trim().ifEmpty { null },
+            consentConfirmed = binding.cbCccdConsent.isChecked,
             dateOfBirth = selectedDateOfBirth?.let { DateUtils.formatToApiDate(it) },
             address = binding.etNotes.text.toString().trim().ifEmpty { null },
             emergencyContact = binding.etEmergencyContact.text.toString().trim().ifEmpty { null }
@@ -278,9 +306,10 @@ class TenantFormFragment : Fragment() {
     private fun updateTenant() {
         val request = UpdateTenantRequest(
             fullName = binding.etFullName.text.toString().trim(),
-            phone = binding.etPhone.text.toString().trim(),
+            phone = binding.etPhone.text.toString().trim().ifEmpty { null },
             email = binding.etEmail.text.toString().trim().ifEmpty { null },
-            identityNumber = binding.etIdCard.text.toString().trim(),
+            identityNumber = binding.etIdCard.text.toString().trim().ifEmpty { null },
+            consentConfirmed = binding.cbCccdConsent.isChecked,
             dateOfBirth = selectedDateOfBirth?.let { DateUtils.formatToApiDate(it) },
             address = binding.etNotes.text.toString().trim().ifEmpty { null },
             emergencyContact = binding.etEmergencyContact.text.toString().trim().ifEmpty { null }

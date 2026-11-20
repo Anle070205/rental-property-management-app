@@ -48,6 +48,9 @@ class TenantViewModel : ViewModel() {
     
     private val _deleteState = MutableStateFlow(DeleteState())
     val deleteState: StateFlow<DeleteState> = _deleteState.asStateFlow()
+
+    private val _provisionState = MutableStateFlow<Resource<ProvisionTenantAccountResponse>?>(null)
+    val provisionState: StateFlow<Resource<ProvisionTenantAccountResponse>?> = _provisionState.asStateFlow()
     
     // Filters
     private val _selectedPropertyId = MutableStateFlow<Long?>(null)
@@ -196,5 +199,28 @@ class TenantViewModel : ViewModel() {
     
     fun resetDeleteState() {
         _deleteState.value = DeleteState()
+    }
+
+    fun provisionTenantAccount(id: Long, request: ProvisionTenantAccountRequest) {
+        viewModelScope.launch {
+            _provisionState.value = Resource.Loading()
+            val res = tenantRepository.provisionTenantAccount(id, request)
+            _provisionState.value = res
+            if (res is Resource.Success) {
+                loadTenantDetail(id)
+            }
+        }
+    }
+
+    fun resendTenantActivation(id: Long, channel: String) {
+        viewModelScope.launch {
+            _provisionState.value = Resource.Loading()
+            val res = tenantRepository.resendTenantActivation(id, channel)
+            _provisionState.value = res
+        }
+    }
+
+    fun resetProvisionState() {
+        _provisionState.value = null
     }
 }

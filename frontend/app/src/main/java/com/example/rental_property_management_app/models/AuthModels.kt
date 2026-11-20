@@ -157,6 +157,23 @@ data class ResetPasswordRequest(
     val confirmPassword: String
 )
 
+data class ActivateAccountRequest(
+    @SerializedName("channel")
+    val channel: String,
+
+    @SerializedName("target")
+    val target: String,
+
+    @SerializedName("otp")
+    val otp: String,
+
+    @SerializedName("newPassword")
+    val newPassword: String,
+
+    @SerializedName("confirmPassword")
+    val confirmPassword: String
+)
+
 /**
  * Generic API Response wrapper
  */

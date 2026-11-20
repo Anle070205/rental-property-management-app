@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -58,6 +59,14 @@ class RoomDetailFragment : Fragment() {
         binding.btnHealthScore.setOnClickListener {
             val bundle = Bundle().apply { putLong("roomId", args.roomId) }
             findNavController().navigate(R.id.healthScoreFragment, bundle)
+        }
+
+        binding.btnRoomContracts.setOnClickListener {
+            findNavController().navigate(R.id.contractListFragment, bundleOf("roomId" to args.roomId))
+        }
+
+        binding.btnRoomInvoices.setOnClickListener {
+            findNavController().navigate(R.id.invoiceFragment, bundleOf("roomId" to args.roomId))
         }
         
         binding.btnBack.setOnClickListener {
@@ -113,6 +122,13 @@ class RoomDetailFragment : Fragment() {
                 tvTenantInfo.text = "Khách thuê: ${room.currentTenant}"
             } else {
                 tvTenantInfo.text = "Chưa có khách thuê"
+            }
+
+            tvContractSummary.text = if (!room.currentContract.isNullOrBlank()) {
+                val st = room.currentContractStatus?.let { " ($it)" } ?: ""
+                "Hợp đồng hiện tại: ${room.currentContract}$st"
+            } else {
+                "Chưa có hợp đồng đang gắn với phòng"
             }
         }
     }

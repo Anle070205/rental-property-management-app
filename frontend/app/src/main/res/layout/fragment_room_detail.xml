@@ -295,6 +295,15 @@
                         android:textStyle="bold"
                         tools:text="Khách thuê: Phạm Gia Bảo" />
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvContractSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="12sp"
+                    tools:text="Hợp đồng: HD-202611-P101 (Đang hiệu lực)" />
             </LinearLayout>
 
             <!-- Amenities & Description Card -->
@@ -378,11 +387,29 @@
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnEdit"
+                android:id="@+id/btnRoomContracts"
                 style="@style/RoomCare.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="16dp"
+                android:text="Hợp đồng &amp; Khách thuê phòng này"
+                app:icon="@drawable/ic_description" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRoomInvoices"
+                style="@style/RoomCare.Button.Tonal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Hóa đơn của phòng này"
+                app:icon="@drawable/ic_receipt" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEdit"
+                style="@style/RoomCare.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="Chỉnh sửa phòng"
                 app:icon="@drawable/ic_edit" />
 

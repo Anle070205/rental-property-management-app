@@ -96,6 +96,74 @@
                     tools:text="Phòng: P.305" />
             </LinearLayout>
 
+            <!-- Account Provisioning & Contract Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Tài khoản cổng khách thuê"
+                android:textColor="@color/rc_ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rc_panel"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:id="@+id/tvAccountStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_badge_rounded"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:textColor="@color/rc_brand"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    tools:text="Chưa tạo tài khoản" />
+
+                <TextView
+                    android:id="@+id/tvAccountHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Chủ trọ cấp tài khoản và gửi OTP kích hoạt; khách tự đặt mật khẩu lần đầu."
+                    android:textColor="@color/rc_muted"
+                    android:textSize="12sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnProvisionAccount"
+                    style="@style/RoomCare.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Tạo / Liên kết tài khoản khách thuê"
+                    app:icon="@drawable/ic_person" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnResendActivation"
+                    style="@style/RoomCare.Button.Tonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Gửi lại OTP kích hoạt"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_email" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnViewContracts"
+                    style="@style/RoomCare.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Hợp đồng thuê của khách"
+                    app:icon="@drawable/ic_description" />
+            </LinearLayout>
+
             <!-- Personal Information Card -->
             <TextView
                 android:layout_width="wrap_content"

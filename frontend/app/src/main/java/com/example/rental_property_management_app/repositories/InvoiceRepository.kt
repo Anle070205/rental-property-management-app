@@ -17,9 +17,34 @@ class InvoiceRepository {
         apiService.getInvoices(month, roomId, propertyId, status?.name)
     }
 
+    suspend fun previewInvoice(request: CreateInvoiceRequest): Resource<InvoiceResponse> =
+        ApiResultHandler.execute {
+            apiService.previewInvoice(request)
+        }
+
     suspend fun createInvoice(request: CreateInvoiceRequest): Resource<InvoiceResponse> =
         ApiResultHandler.execute {
             apiService.createInvoice(request)
+        }
+
+    suspend fun updateDraftInvoice(id: Long, request: CreateInvoiceRequest): Resource<InvoiceResponse> =
+        ApiResultHandler.execute {
+            apiService.updateDraftInvoice(id, request)
+        }
+
+    suspend fun publishInvoice(id: Long): Resource<InvoiceResponse> =
+        ApiResultHandler.execute {
+            apiService.publishInvoice(id)
+        }
+
+    suspend fun adjustInvoice(id: Long, request: AdjustInvoiceRequest): Resource<InvoiceResponse> =
+        ApiResultHandler.execute {
+            apiService.adjustInvoice(id, request)
+        }
+
+    suspend fun cancelInvoice(id: Long, reason: String? = null): Resource<InvoiceResponse> =
+        ApiResultHandler.execute {
+            apiService.cancelInvoice(id, CancelInvoiceRequest(reason))
         }
 
     suspend fun batchCreateInvoices(request: BatchCreateInvoiceRequest): Resource<BatchCreateInvoiceResult> =

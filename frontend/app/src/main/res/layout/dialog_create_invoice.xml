@@ -127,9 +127,9 @@
                     android:id="@+id/etElectricity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="Tự lấy"
                     android:inputType="numberDecimal"
-                    android:maxLines="1"
-                    android:text="0" />
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -144,9 +144,9 @@
                     android:id="@+id/etWater"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="Tự lấy"
                     android:inputType="numberDecimal"
-                    android:maxLines="1"
-                    android:text="0" />
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
@@ -169,9 +169,9 @@
                     android:id="@+id/etInternet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="Tự lấy"
                     android:inputType="numberDecimal"
-                    android:maxLines="1"
-                    android:text="0" />
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -186,12 +186,27 @@
                     android:id="@+id/etService"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="Tự lấy"
                     android:inputType="numberDecimal"
-                    android:maxLines="1"
-                    android:text="0" />
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Phí rác (₫ - bỏ trống lấy theo hợp đồng)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etGarbageFee"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -264,6 +279,42 @@
                 android:inputType="textMultiLine"
                 android:maxLines="3" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbAutoCarryDebt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:checked="true"
+            android:text="Tự động cộng nợ các kỳ chưa thanh toán trước đó"
+            android:textSize="13sp" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbSaveAsDraft"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Lưu dạng Nháp (DRAFT) để kiểm tra trước khi phát hành cho khách"
+            android:textSize="13sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPreviewInvoice"
+            style="@style/RoomCare.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Xem trước tính toán từ hệ thống" />
+
+        <TextView
+            android:id="@+id/tvPreviewBreakdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/rc_soft_banner"
+            android:padding="10dp"
+            android:textColor="@color/rc_ink"
+            android:textSize="12sp"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"

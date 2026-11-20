@@ -39,13 +39,30 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Thông tin người thuê"
-                android:textColor="@color/rc_ink"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Thông tin người thuê"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPasteCccdQr"
+                    style="@style/RoomCare.Button.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Quét/Dán QR CCCD"
+                    android:textSize="12sp"
+                    app:icon="@drawable/ic_card" />
+            </LinearLayout>
 
             <!-- Form Card (Figma 56:1136) -->
             <LinearLayout
@@ -115,7 +132,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:hint="@string/id_card"
+                    android:hint="CMND/CCCD (tùy chọn nếu chưa thu)"
                     app:startIconDrawable="@drawable/ic_card"
                     app:startIconTint="@color/rc_muted">
 
@@ -126,6 +143,15 @@
                         android:inputType="text"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/cbCccdConsent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Khách đã đồng ý cung cấp CCCD phục vụ hợp đồng và tạm trú"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="12sp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/selectProperty"

@@ -127,6 +127,16 @@
                                 tools:text="Người thuê: Lê Văn C (0923456789)" />
 
                             <TextView
+                                android:id="@+id/tvContractCode"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/rc_brand"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
+
+                            <TextView
                                 android:id="@+id/tvDueDate"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -176,6 +186,50 @@
                                 android:textColor="@color/rc_muted"
                                 android:textSize="12sp"
                                 android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tvAdjustmentHistory"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/rc_soft_banner"
+                                android:padding="8dp"
+                                android:textColor="@color/rc_ink"
+                                android:textSize="11sp"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Tenant Payment Proof Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardPaymentProof"
+                        style="@style/RoomCare.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Minh chứng thanh toán từ khách thuê"
+                                android:textColor="@color/rc_brand"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvPaymentProofInfo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:textColor="@color/rc_ink"
+                                android:textSize="13sp" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -280,13 +334,43 @@
                                 app:trackThickness="8dp" />
 
                             <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnRecordPayment"
+                                android:id="@+id/btnPublishInvoice"
                                 style="@style/RoomCare.Button"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="14dp"
+                                android:text="Phát hành hóa đơn cho khách thuê"
+                                android:visibility="gone"
+                                app:icon="@drawable/ic_check" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnRecordPayment"
+                                style="@style/RoomCare.Button"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
                                 android:text="@string/record_payment"
                                 app:icon="@drawable/ic_money" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnAdjustInvoice"
+                                style="@style/RoomCare.Button.Tonal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Điều chỉnh hóa đơn (+/-)"
+                                android:visibility="gone"
+                                app:icon="@drawable/ic_edit" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnCancelInvoice"
+                                style="@style/RoomCare.Button.Danger"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Hủy hóa đơn"
+                                android:visibility="gone"
+                                app:icon="@drawable/ic_delete" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
