@@ -107,3 +107,21 @@ CREATE TABLE IF NOT EXISTS auth_verification_tokens (
     INDEX idx_otp_user_channel_purpose (user_id, channel, purpose),
     INDEX idx_otp_ip_channel_created (client_ip, channel, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 6. Nang cap idempotent neu bang auth_verification_tokens cu da ton tai tu phien ban truoc
+ALTER TABLE auth_verification_tokens MODIFY COLUMN channel VARCHAR(20) NOT NULL;
+ALTER TABLE auth_verification_tokens MODIFY COLUMN purpose VARCHAR(30) NOT NULL;
+UPDATE auth_verification_tokens SET purpose = 'REGISTRATION' WHERE purpose = 'EMAIL_VERIFICATION';
+
+SET @has_legacy_token_email := (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'auth_verification_tokens' AND COLUMN_NAME = 'email'
+);
+SET @sql_stmt := IF(
+    @has_legacy_token_email > 0,
+    'ALTER TABLE auth_verification_tokens MODIFY COLUMN email VARCHAR(100) NULL',
+    'SELECT ''auth_verification_tokens.email already removed'' AS info'
+);
+PREPARE stmt FROM @sql_stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
