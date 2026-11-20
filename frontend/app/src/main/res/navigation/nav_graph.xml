@@ -88,6 +88,11 @@
     </fragment>
 
     <fragment
+        android:id="@+id/activateAccountFragment"
+        android:name="com.example.rental_property_management_app.fragments.ActivateAccountFragment"
+        android:label="Kích hoạt tài khoản" />
+
+    <fragment
         android:id="@+id/forgotPasswordFragment"
         android:name="com.example.rental_property_management_app.fragments.ForgotPasswordFragment"
         android:label="Quên mật khẩu">

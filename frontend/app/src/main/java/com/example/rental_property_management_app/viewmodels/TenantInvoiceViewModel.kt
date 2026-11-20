@@ -22,6 +22,8 @@ class TenantInvoiceViewModel : ViewModel() {
     val list = _list.asStateFlow()
     private val _detail = MutableStateFlow<Resource<TenantInvoice>>(Resource.Loading())
     val detail = _detail.asStateFlow()
+    private val _proofState = MutableStateFlow<Resource<TenantInvoice>?>(null)
+    val proofState = _proofState.asStateFlow()
     private var month: String? = null
     private var status: TenantInvoiceStatus? = null
     private var job: Job? = null
@@ -57,5 +59,20 @@ class TenantInvoiceViewModel : ViewModel() {
     fun loadDetail(id: Long) {
         _detail.value = Resource.Loading()
         viewModelScope.launch { _detail.value = repository.invoice(id) }
+    }
+
+    fun submitPaymentProof(id: Long, note: String?, proofUrl: String?) {
+        viewModelScope.launch {
+            _proofState.value = Resource.Loading()
+            val res = repository.submitPaymentProof(id, note, proofUrl)
+            _proofState.value = res
+            if (res is Resource.Success) {
+                _detail.value = res
+            }
+        }
+    }
+
+    fun resetProofState() {
+        _proofState.value = null
     }
 }

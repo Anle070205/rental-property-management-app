@@ -1,5 +1,6 @@
 package com.example.rental_property_management_app.repositories
 
+import com.example.rental_property_management_app.models.ActivateAccountRequest
 import com.example.rental_property_management_app.models.ApiResponse
 import com.example.rental_property_management_app.models.AuthResponse
 import com.example.rental_property_management_app.models.ForgotPasswordRequest
@@ -178,6 +179,25 @@ class AuthRepository {
                 ResetPasswordRequest(channel, target.trim(), resetToken.trim(), newPassword, confirmPassword)
             )
             handleUnitMessageResponse(response, "Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.")
+        } catch (_: IOException) {
+            Resource.Error("Không thể kết nối máy chủ RoomCare. Vui lòng kiểm tra mạng.")
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: Constants.ErrorMessages.NETWORK_ERROR)
+        }
+    }
+
+    suspend fun activateAccount(
+        channel: String,
+        target: String,
+        otp: String,
+        newPassword: String,
+        confirmPassword: String
+    ): Resource<String> = withContext(Dispatchers.IO) {
+        try {
+            val response = apiService.activateAccount(
+                ActivateAccountRequest(channel, target.trim(), otp.trim(), newPassword, confirmPassword)
+            )
+            handleUnitMessageResponse(response, "Kích hoạt tài khoản thành công! Vui lòng đăng nhập.")
         } catch (_: IOException) {
             Resource.Error("Không thể kết nối máy chủ RoomCare. Vui lòng kiểm tra mạng.")
         } catch (e: Exception) {

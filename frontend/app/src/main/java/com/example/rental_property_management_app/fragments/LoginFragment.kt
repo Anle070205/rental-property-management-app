@@ -52,6 +52,11 @@ class LoginFragment : Fragment() {
             findNavController().navigate(R.id.action_loginFragment_to_forgotPasswordFragment)
         }
 
+        // Navigate to First-time Tenant Account Activation
+        binding.tvActivateAccount.setOnClickListener {
+            findNavController().navigate(R.id.activateAccountFragment)
+        }
+
         // Login button
         binding.btnLogin.setOnClickListener {
             handleLogin()

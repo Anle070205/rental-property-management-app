@@ -54,6 +54,8 @@ class MyContractFragment : Fragment(R.layout.fragment_my_contract) {
     private fun display(contract: MyContract) {
         binding.sample.isVisible = Constants.USE_MOCK_TENANT_DATA
         val status = when (contract.status) {
+            "DRAFT" -> "Bản nháp"
+            "SIGNED" -> "Đã ký (Chờ hiệu lực)"
             "ACTIVE" -> getString(R.string.rc_contract_active)
             "EXPIRED" -> getString(R.string.rc_contract_expired)
             "TERMINATED" -> getString(R.string.rc_contract_terminated)
@@ -61,10 +63,54 @@ class MyContractFragment : Fragment(R.layout.fragment_my_contract) {
             else -> contract.status.orEmpty()
         }
         binding.contractStatus.text = getString(R.string.rc_contract_status, status)
+        val metaParts = listOfNotNull(
+            contract.contractCode?.let { "Mã HĐ: $it" },
+            contract.roomCode?.let { rc ->
+                val prop = contract.propertyName?.let { " • $it" } ?: ""
+                "Phòng $rc$prop"
+            },
+            contract.landlordName?.let { ln ->
+                val phone = contract.landlordPhone?.let { " ($it)" } ?: ""
+                "Chủ trọ: $ln$phone"
+            }
+        )
+        binding.tvContractMeta.text = metaParts.joinToString("\n")
+        binding.tvContractMeta.isVisible = metaParts.isNotEmpty()
+
         binding.startDate.text = getString(R.string.rc_contract_start, date(contract.startDate))
         binding.endDate.text = getString(R.string.rc_contract_end, date(contract.endDate))
         binding.rent.text = getString(R.string.rc_room_rent, contract.rentPrice?.let(CurrencyUtils::formatVND).orEmpty())
         binding.deposit.text = getString(R.string.rc_contract_deposit, contract.deposit?.let(CurrencyUtils::formatVND).orEmpty())
+
+        val rateLines = listOfNotNull(
+            contract.electricityUnitPrice?.let { "• Đơn giá điện: ${CurrencyUtils.formatVND(it)}/kWh" },
+            contract.waterUnitPrice?.let {
+                val mode = when (contract.waterBillingMode) {
+                    "FIXED" -> "Khoán tháng"
+                    "PER_PERSON" -> "Theo đầu người"
+                    else -> "Theo m³"
+                }
+                "• Đơn giá nước ($mode): ${CurrencyUtils.formatVND(it)}"
+            },
+            contract.internetFee?.let { "• Internet: ${CurrencyUtils.formatVND(it)}" },
+            contract.garbageFee?.let { "• Phí rác: ${CurrencyUtils.formatVND(it)}" },
+            contract.serviceFee?.let { "• Dịch vụ chung: ${CurrencyUtils.formatVND(it)}" },
+            contract.paymentDayOfMonth?.let { "• Hạn thanh toán hàng tháng: Ngày $it" }
+        )
+        binding.tvContractRates.isVisible = rateLines.isNotEmpty()
+        binding.tvContractRates.text = rateLines.joinToString("\n")
+
+        val hasRoommates = contract.roommates.isNotEmpty()
+        binding.tvRoommatesHeader.isVisible = hasRoommates
+        binding.tvContractRoommates.isVisible = hasRoommates
+        if (hasRoommates) {
+            binding.tvContractRoommates.text = contract.roommates.joinToString("\n") { rm ->
+                val rel = rm.relationship?.let { " ($it)" } ?: ""
+                val phone = rm.phone?.takeIf { it.isNotBlank() }?.let { " - $it" } ?: ""
+                "• ${rm.fullName}$rel$phone"
+            }
+        }
+
         binding.terms.text = contract.terms
         binding.renew.isVisible = contract.status == "ACTIVE" && contract.id != null
         binding.renew.setOnClickListener {

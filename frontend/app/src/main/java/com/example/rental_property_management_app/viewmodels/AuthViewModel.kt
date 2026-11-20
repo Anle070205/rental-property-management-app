@@ -46,6 +46,9 @@ class AuthViewModel : ViewModel() {
     private val _resetPasswordState = MutableStateFlow<Resource<String>?>(null)
     val resetPasswordState: StateFlow<Resource<String>?> = _resetPasswordState
 
+    private val _activateAccountState = MutableStateFlow<Resource<String>?>(null)
+    val activateAccountState: StateFlow<Resource<String>?> = _activateAccountState
+
     // Lưu trạng thái chống mất khi xoay màn hình (configuration change)
     var verificationCooldownEndMs: Long = 0L
     var resetCooldownEndMs: Long = 0L
@@ -236,5 +239,23 @@ class AuthViewModel : ViewModel() {
 
     fun resetPasswordResetState() {
         _resetPasswordState.value = null
+    }
+
+    fun activateAccount(
+        channel: String,
+        target: String,
+        otp: String,
+        newPassword: String,
+        confirmPassword: String
+    ) {
+        if (_activateAccountState.value is Resource.Loading) return
+        viewModelScope.launch {
+            _activateAccountState.value = Resource.Loading()
+            _activateAccountState.value = repository.activateAccount(channel, target, otp, newPassword, confirmPassword)
+        }
+    }
+
+    fun resetActivateAccountState() {
+        _activateAccountState.value = null
     }
 }

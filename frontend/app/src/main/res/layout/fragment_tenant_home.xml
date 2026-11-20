@@ -171,6 +171,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/rc_browse_properties"
+                android:visibility="gone"
                 app:icon="@drawable/ic_search" />
 
             <com.google.android.material.button.MaterialButton
@@ -180,6 +181,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/rc_my_bookings"
+                android:visibility="gone"
                 app:icon="@drawable/ic_description" />
         </LinearLayout>
 
