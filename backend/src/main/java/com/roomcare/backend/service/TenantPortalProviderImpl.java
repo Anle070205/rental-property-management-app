@@ -59,7 +59,9 @@ public class TenantPortalProviderImpl implements TenantPortalProvider {
 
     @Override
     public Optional<MyRoomResponse> room(Tenant tenant) {
-        return findActiveRoom(tenant).map(room -> {
+        Optional<Contract> primaryContract = findPrimaryContractForTenant(tenant);
+        Optional<Room> roomOpt = primaryContract.map(Contract::getRoom).or(() -> findActiveRoom(tenant));
+        return roomOpt.map(room -> {
             List<String> amenities = room.getAmenities() == null || room.getAmenities().isBlank()
                     ? List.of()
                     : Arrays.stream(room.getAmenities().split(","))
@@ -68,10 +70,35 @@ public class TenantPortalProviderImpl implements TenantPortalProvider {
                     .collect(Collectors.toList());
             String fullAddress = room.getProperty().getName() + " - " + room.getProperty().getAddress();
             int healthScore = room.getHealthScore() != null ? room.getHealthScore() : 100;
+
+            Contract c = primaryContract.orElse(null);
+            List<String> roommates = (c != null && roommateRepository != null)
+                    ? roommateRepository.findByContractIdOrderByCreatedAtAsc(c.getId())
+                    .stream()
+                    .map(rm -> rm.getRelationship() != null && !rm.getRelationship().isBlank()
+                            ? rm.getFullName() + " (" + rm.getRelationship() + ")"
+                            : rm.getFullName())
+                    .collect(Collectors.toList())
+                    : List.of();
+            int currentOccupants = 1 + roommates.size();
+
+            BigDecimal rentPrice = c != null && c.getMonthlyRent() != null ? c.getMonthlyRent() : room.getRentPrice();
+            BigDecimal deposit = c != null && c.getDepositAmount() != null ? c.getDepositAmount() : room.getDeposit();
+            BigDecimal elecPrice = c != null && c.getElectricityUnitPrice() != null ? c.getElectricityUnitPrice() : room.getElectricityPrice();
+            BigDecimal waterPrice = c != null && c.getWaterUnitPrice() != null ? c.getWaterUnitPrice() : room.getWaterPrice();
+            BigDecimal internetFee = c != null && c.getInternetFee() != null ? c.getInternetFee() : room.getInternetFee();
+            BigDecimal serviceFee = c != null && c.getServiceFee() != null ? c.getServiceFee() : room.getServiceFee();
+
+            Optional<Invoice> latestInvoiceOpt = invoiceRepository
+                    .findByTenantIdOrderByBillingMonthDescCreatedAtDesc(tenant.getId())
+                    .stream()
+                    .filter(this::isVisibleToTenant)
+                    .findFirst();
+
             return new MyRoomResponse(
                     room.getRoomCode(),
                     fullAddress,
-                    room.getRentPrice(),
+                    rentPrice,
                     amenities,
                     tenant.getLandlord().getFullName(),
                     tenant.getLandlord().getPhone(),
@@ -80,11 +107,33 @@ public class TenantPortalProviderImpl implements TenantPortalProvider {
                     room.getProperty().getId(),
                     room.getFloor(),
                     room.getArea(),
-                    room.getDeposit(),
-                    room.getElectricityPrice(),
-                    room.getWaterPrice(),
-                    room.getInternetFee(),
-                    room.getServiceFee()
+                    deposit,
+                    elecPrice,
+                    waterPrice,
+                    internetFee,
+                    serviceFee,
+                    room.getCapacity(),
+                    currentOccupants,
+                    room.getStatus() != null ? room.getStatus().name() : null,
+                    room.getDescription(),
+                    c != null ? c.getId() : null,
+                    c != null ? c.getContractCode() : null,
+                    c != null && c.getStatus() != null ? c.getStatus().name() : null,
+                    c != null ? c.getStartDate() : null,
+                    c != null ? c.getEndDate() : null,
+                    c != null ? c.getPaymentDayOfMonth() : null,
+                    tenant.getFullName(),
+                    roommates,
+                    latestInvoiceOpt.map(Invoice::getBillingMonth).orElse(null),
+                    latestInvoiceOpt.map(Invoice::getTotalAmount).orElse(null),
+                    latestInvoiceOpt.map(inv -> {
+                        if (inv.getRemainingAmount().compareTo(BigDecimal.ZERO) > 0
+                                && inv.getDueDate() != null
+                                && inv.getDueDate().isBefore(LocalDate.now())) {
+                            return "OVERDUE";
+                        }
+                        return inv.getStatus().name();
+                    }).orElse(null)
             );
         });
     }

@@ -26,7 +26,22 @@ data class MyRoom(
     val electricityPrice: BigDecimal? = null,
     val waterPrice: BigDecimal? = null,
     val internetFee: BigDecimal? = null,
-    val serviceFee: BigDecimal? = null
+    val serviceFee: BigDecimal? = null,
+    val capacity: Int? = null,
+    val currentOccupants: Int? = null,
+    val roomStatus: String? = null,
+    val description: String? = null,
+    val contractId: Long? = null,
+    val contractCode: String? = null,
+    val contractStatus: String? = null,
+    val contractStartDate: String? = null,
+    val contractEndDate: String? = null,
+    val paymentDayOfMonth: Int? = null,
+    val primaryTenantName: String? = null,
+    val roommates: List<String> = emptyList(),
+    val latestInvoiceMonth: String? = null,
+    val latestInvoiceAmount: BigDecimal? = null,
+    val latestInvoiceStatus: String? = null
 )
 
 data class MyContract(
