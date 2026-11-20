@@ -590,4 +590,52 @@ interface ApiService {
 
     @PUT("api/admin/profile/password")
     suspend fun changeAdminPassword(@Body request: ChangePasswordRequest): Response<ApiResponse<AdminChangePasswordResponse>>
+
+    // ============================================
+    // GUEST STAY (KHAI BÁO KHÁCH LƯU TRÚ & CCCD)
+    // ============================================
+    @GET("api/tenant/guest-stays")
+    suspend fun getTenantGuestStays(
+        @Query("status") status: String? = null,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 50
+    ): Response<ApiResponse<PageResponse<GuestStayResponse>>>
+
+    @POST("api/tenant/guest-stays")
+    suspend fun createTenantGuestStay(
+        @Body request: CreateGuestStayRequest
+    ): Response<ApiResponse<GuestStayResponse>>
+
+    @GET("api/tenant/guest-stays/{id}")
+    suspend fun getTenantGuestStayDetail(
+        @Path("id") id: Long
+    ): Response<ApiResponse<GuestStayResponse>>
+
+    @PATCH("api/tenant/guest-stays/{id}/cancel")
+    suspend fun cancelTenantGuestStay(
+        @Path("id") id: Long
+    ): Response<ApiResponse<GuestStayResponse>>
+
+    @DELETE("api/tenant/guest-stays/{id}")
+    suspend fun deleteTenantGuestStay(
+        @Path("id") id: Long
+    ): Response<ApiResponse<Unit>>
+
+    @GET("api/landlord/guest-stays")
+    suspend fun getLandlordGuestStays(
+        @Query("status") status: String? = null,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 50
+    ): Response<ApiResponse<PageResponse<GuestStayResponse>>>
+
+    @GET("api/landlord/guest-stays/{id}")
+    suspend fun getLandlordGuestStayDetail(
+        @Path("id") id: Long
+    ): Response<ApiResponse<GuestStayResponse>>
+
+    @PATCH("api/landlord/guest-stays/{id}/status")
+    suspend fun updateLandlordGuestStayStatus(
+        @Path("id") id: Long,
+        @Body request: UpdateGuestStayStatusRequest
+    ): Response<ApiResponse<GuestStayResponse>>
 }

@@ -129,6 +129,9 @@ class LandlordHomeFragment : Fragment() {
         binding.cardContracts.setOnClickListener {
             findNavController().navigate(R.id.contractListFragment)
         }
+        binding.cardGuestStays.setOnClickListener {
+            findNavController().navigate(R.id.guestStayListFragment)
+        }
     }
 
     private fun observeStates() {

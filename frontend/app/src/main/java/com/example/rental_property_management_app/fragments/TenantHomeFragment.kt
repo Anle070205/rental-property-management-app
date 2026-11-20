@@ -34,6 +34,7 @@ class TenantHomeFragment : Fragment(R.layout.fragment_tenant_home) {
         binding.notificationBell.setOnClickListener { nav.navigate(R.id.notificationFragment) }
         binding.notifications.setOnClickListener { nav.navigate(R.id.notificationFragment) }
         binding.incidents.setOnClickListener { nav.navigate(R.id.incidentListFragment) }
+        binding.btnGuestStays.setOnClickListener { nav.navigate(R.id.guestStayListFragment) }
         binding.retry.setOnClickListener { viewModel.refresh() }
         binding.sample.isVisible = Constants.USE_MOCK_TENANT_DATA
         viewLifecycleOwner.lifecycleScope.launch {

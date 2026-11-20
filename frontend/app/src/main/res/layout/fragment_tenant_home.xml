@@ -332,6 +332,15 @@
                 app:iconGravity="top" />
         </LinearLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGuestStays"
+            style="@style/RoomCare.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Khách lưu trú (Quét CCCD)"
+            app:icon="@drawable/ic_qr_code" />
+
         <TextView
             android:id="@+id/sample"
             android:layout_width="match_parent"

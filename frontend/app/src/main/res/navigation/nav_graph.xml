@@ -276,6 +276,21 @@
         android:label="@string/rc_incident_detail">
         <argument android:name="incidentId" app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/guestStayListFragment"
+        android:name="com.example.rental_property_management_app.fragments.GuestStayListFragment"
+        android:label="Khách lưu trú" />
+    <fragment
+        android:id="@+id/guestStayFormFragment"
+        android:name="com.example.rental_property_management_app.fragments.GuestStayFormFragment"
+        android:label="Khai báo khách lưu trú" />
+    <fragment
+        android:id="@+id/guestStayDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.GuestStayDetailFragment"
+        android:label="Chi tiết khách lưu trú">
+        <argument android:name="guestStayId" app:argType="long" />
+        <argument android:name="isLandlord" android:defaultValue="false" app:argType="boolean" />
+    </fragment>
     <fragment android:id="@+id/myRoomFragment"
         android:name="com.example.rental_property_management_app.fragments.MyRoomFragment" android:label="@string/rc_my_room" />
     <fragment android:id="@+id/myContractFragment"
