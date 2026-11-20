@@ -82,7 +82,7 @@ class SharedPreferencesManager(context: Context) {
         userId: Long,
         role: String,
         name: String,
-        email: String
+        email: String?
     ) {
         editor.apply {
             putString(Constants.PrefsKeys.KEY_ACCESS_TOKEN, accessToken)
@@ -90,7 +90,11 @@ class SharedPreferencesManager(context: Context) {
             putLong(Constants.PrefsKeys.KEY_USER_ID, userId)
             putString(Constants.PrefsKeys.KEY_USER_ROLE, role)
             putString(Constants.PrefsKeys.KEY_USER_NAME, name)
-            putString(Constants.PrefsKeys.KEY_USER_EMAIL, email)
+            if (!email.isNullOrBlank()) {
+                putString(Constants.PrefsKeys.KEY_USER_EMAIL, email)
+            } else {
+                remove(Constants.PrefsKeys.KEY_USER_EMAIL)
+            }
             putBoolean(Constants.PrefsKeys.KEY_IS_LOGGED_IN, true)
         }.apply()
     }

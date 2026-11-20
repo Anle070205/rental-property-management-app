@@ -63,7 +63,10 @@ class TenantPropertyAdapter(
                     else -> "${CurrencyUtils.formatVND(item.minRentPrice)}/tháng"
                 }
 
-                tvLandlordContact.text = "${item.landlordName} • ${item.landlordPhone}"
+                val contact = item.landlordPhone?.takeIf { it.isNotBlank() }
+                    ?: item.landlordEmail?.takeIf { it.isNotBlank() }
+                    ?: "Chưa cập nhật liên hệ"
+                tvLandlordContact.text = "${item.landlordName} • $contact"
                 root.setOnClickListener { onPropertyClick(item) }
             }
         }

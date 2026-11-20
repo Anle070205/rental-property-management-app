@@ -15,6 +15,10 @@ class UserRepository {
     suspend fun update(request: UpdateProfileRequest) = apiResult({ api.updateProfile(request) }) { it.data }
     suspend fun changePassword(request: ChangePasswordRequest) =
         apiResult({ api.changePassword(request) }) { Unit }
+    suspend fun requestContactOtp(request: RequestContactOtpRequest) =
+        apiResult({ api.requestContactOtp(request) }) { Unit }
+    suspend fun verifyContactOtp(request: VerifyContactOtpRequest) =
+        apiResult({ api.verifyContactOtp(request) }) { it.data }
 }
 
 internal suspend fun <T, R : Any> apiResult(

@@ -25,7 +25,7 @@ data class TenantResponse(
     val fullName: String,
     
     @SerializedName("phone")
-    val phone: String,
+    val phone: String?,
     
     @SerializedName("email")
     val email: String?,
@@ -66,7 +66,7 @@ data class CreateTenantRequest(
     val fullName: String,
     
     @SerializedName("phone")
-    val phone: String,
+    val phone: String?,
     
     @SerializedName("email")
     val email: String?,
@@ -92,7 +92,7 @@ data class UpdateTenantRequest(
     val fullName: String,
     
     @SerializedName("phone")
-    val phone: String,
+    val phone: String?,
     
     @SerializedName("email")
     val email: String?,

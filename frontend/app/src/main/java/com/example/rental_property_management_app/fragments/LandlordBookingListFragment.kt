@@ -158,7 +158,10 @@ class LandlordBookingListFragment : Fragment() {
                 if (targetStatus == BookingRequestStatus.APPROVED && item.requestType == BookingRequestType.BOOKING) {
                     "Đã duyệt đặt phòng ${item.roomCode}. Mời bạn liên hệ nhận phòng."
                 } else if (targetStatus == BookingRequestStatus.APPROVED) {
-                    "Chủ nhà đã tiếp nhận liên hệ. Bạn có thể gọi ${item.landlordPhone} để hẹn xem phòng."
+                    val phoneHint = item.landlordPhone?.takeIf { it.isNotBlank() }
+                        ?.let { " Bạn có thể gọi $it để hẹn xem phòng." }
+                        ?: ""
+                    "Chủ nhà đã tiếp nhận liên hệ.$phoneHint"
                 } else {
                     ""
                 }
@@ -176,9 +179,12 @@ class LandlordBookingListFragment : Fragment() {
                 "Từ chối yêu cầu phòng ${item.roomCode}?"
         }
 
+        val tenantContact = item.tenantPhone?.takeIf { it.isNotBlank() }
+            ?: item.tenantEmail?.takeIf { it.isNotBlank() }
+            ?: "Chưa có SĐT"
         MaterialAlertDialogBuilder(ctx)
             .setTitle(title)
-            .setMessage("Người thuê: ${item.tenantName} (${item.tenantPhone})")
+            .setMessage("Người thuê: ${item.tenantName} ($tenantContact)")
             .setView(container)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.confirm) { _, _ ->

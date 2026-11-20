@@ -184,7 +184,7 @@ class TenantFormFragment : Fragment() {
     private fun populateForm(tenant: com.example.rental_property_management_app.models.TenantResponse) {
         selectedPropertyId = tenant.propertyId
         binding.etFullName.setText(tenant.fullName)
-        binding.etPhone.setText(tenant.phone)
+        binding.etPhone.setText(tenant.phone.orEmpty())
         binding.etEmail.setText(tenant.email)
         binding.etIdCard.setText(tenant.identityNumber)
 

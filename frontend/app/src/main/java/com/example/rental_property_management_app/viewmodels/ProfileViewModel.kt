@@ -40,6 +40,22 @@ class ProfileViewModel : ViewModel() {
         repository.changePassword(request)
     }
 
+    fun requestContactOtp(channel: String, target: String, onResult: (Resource<Unit>) -> Unit) {
+        viewModelScope.launch {
+            onResult(repository.requestContactOtp(RequestContactOtpRequest(channel, target)))
+        }
+    }
+
+    fun verifyContactOtp(channel: String, target: String, otp: String, onResult: (Resource<ProfileResponse>) -> Unit) {
+        viewModelScope.launch {
+            val res = repository.verifyContactOtp(VerifyContactOtpRequest(channel, target, otp))
+            if (res is Resource.Success) {
+                _profile.value = res
+            }
+            onResult(res)
+        }
+    }
+
     fun consumeMutation() {
         _mutation.value = null
     }

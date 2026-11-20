@@ -121,6 +121,12 @@ interface ApiService {
 
     @PUT("api/users/me/password")
     suspend fun changePassword(@Body request: ChangePasswordRequest): Response<ApiResponse<Unit>>
+
+    @POST("api/users/me/contact/request-otp")
+    suspend fun requestContactOtp(@Body request: RequestContactOtpRequest): Response<ApiResponse<Unit>>
+
+    @POST("api/users/me/contact/verify-otp")
+    suspend fun verifyContactOtp(@Body request: VerifyContactOtpRequest): Response<ApiResponse<ProfileResponse>>
     
     // ============================================
     // TEST API
@@ -135,6 +141,16 @@ interface ApiService {
     suspend fun register(
         @Body request: RegisterRequest
     ): Response<ApiResponse<AuthResponse>>
+
+    @POST("api/auth/verify-otp")
+    suspend fun verifyOtp(
+        @Body request: VerifyOtpRequest
+    ): Response<ApiResponse<Unit>>
+
+    @POST("api/auth/resend-otp")
+    suspend fun resendOtp(
+        @Body request: ResendOtpRequest
+    ): Response<ApiResponse<Unit>>
     
     @POST("api/auth/login")
     suspend fun login(
@@ -146,7 +162,17 @@ interface ApiService {
     
     @POST("api/auth/forgot-password")
     suspend fun forgotPassword(
-        @Query("email") email: String
+        @Body request: ForgotPasswordRequest
+    ): Response<ApiResponse<Unit>>
+
+    @POST("api/auth/forgot-password/verify-otp")
+    suspend fun verifyResetOtp(
+        @Body request: VerifyResetOtpRequest
+    ): Response<ApiResponse<VerifyResetOtpResponse>>
+
+    @POST("api/auth/reset-password")
+    suspend fun resetPassword(
+        @Body request: ResetPasswordRequest
     ): Response<ApiResponse<Unit>>
     
     // ============================================

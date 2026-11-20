@@ -116,7 +116,7 @@ class TenantDetailFragment : Fragment() {
     private fun displayTenantDetail(tenant: TenantResponse) {
         binding.apply {
             tvTenantName.text = tenant.fullName
-            tvPhone.text = tenant.phone
+            tvPhone.text = tenant.phone?.takeIf { it.isNotBlank() } ?: "Chưa có SĐT"
             tvEmail.text = tenant.email ?: "Chưa có email"
             tvIdentity.text = "CMND/CCCD: ${tenant.identityNumber}"
             tvDateOfBirth.text = "Ngày sinh: ${tenant.dateOfBirth ?: "Chưa có"}"

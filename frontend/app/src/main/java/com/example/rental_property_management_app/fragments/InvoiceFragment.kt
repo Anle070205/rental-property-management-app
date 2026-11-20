@@ -296,7 +296,10 @@ class InvoiceFragment : Fragment() {
         dialogBinding.spinnerRoom.adapter = roomAdapter
 
         val tenantOptions = mutableListOf("Không chọn / tự lấy theo phòng")
-        tenantOptions.addAll(tenantsList.map { "${it.fullName} - ${it.phone}" })
+        tenantOptions.addAll(tenantsList.map {
+            val contact = it.phone?.takeIf { p -> p.isNotBlank() } ?: it.email?.takeIf { e -> e.isNotBlank() } ?: "Chưa có SĐT"
+            "${it.fullName} - $contact"
+        })
         val tenantAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, tenantOptions)
         tenantAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         dialogBinding.spinnerTenant.adapter = tenantAdapter
