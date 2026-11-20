@@ -282,7 +282,12 @@ public class RoomService {
                             room.getId(), BookingRequest.RequestType.BOOKING, BookingRequest.Status.APPROVED);
             if (approvedBooking.isPresent()) {
                 BookingRequest b = approvedBooking.get();
-                tenantLabel = b.getTenantName() + " (" + b.getTenantPhone() + ")";
+                String contact = b.getTenantPhone() != null && !b.getTenantPhone().isBlank()
+                        ? b.getTenantPhone()
+                        : b.getTenantEmail();
+                tenantLabel = contact != null && !contact.isBlank()
+                        ? b.getTenantName() + " (" + contact + ")"
+                        : b.getTenantName();
             }
         }
         if (tenantLabel == null) {
@@ -291,7 +296,10 @@ public class RoomService {
                     .map(Invoice::getTenant)
                     .filter(java.util.Objects::nonNull)
                     .findFirst()
-                    .map(t -> t.getFullName() + " (" + t.getPhone() + ")")
+                    .map(t -> {
+                        String contact = t.getPhone() != null && !t.getPhone().isBlank() ? t.getPhone() : t.getEmail();
+                        return contact != null && !contact.isBlank() ? t.getFullName() + " (" + contact + ")" : t.getFullName();
+                    })
                     .orElse(null);
         }
         response.setCurrentContract(room.getStatus() == RoomStatus.VACANT ? null : "Đang hiệu lực");

@@ -127,13 +127,22 @@ public class TenantPortalService {
 
     private Optional<Tenant> optionalTenantFor(User user) {
         return tenants.findByUserId(user.getId())
-                .or(() -> tenants.findFirstByEmailIgnoreCaseOrPhone(user.getEmail(), user.getPhone())
-                        .map(found -> {
-                            if (found.getUser() == null) {
-                                found.setUser(user);
-                                return tenants.save(found);
-                            }
-                            return found;
-                        }));
+                .or(() -> {
+                    Optional<Tenant> byEmailOrPhone = tenants.findFirstByEmailIgnoreCaseOrPhone(
+                            user.getEmail(), user.getPhone()
+                    );
+                    if (byEmailOrPhone.isEmpty() && user.getPhone() != null && !user.getPhone().isBlank()) {
+                        byEmailOrPhone = tenants.findFirstByPhoneIn(
+                                com.roomcare.backend.util.PhoneNumberUtils.lookupVariants(user.getPhone())
+                        );
+                    }
+                    return byEmailOrPhone.map(found -> {
+                        if (found.getUser() == null) {
+                            found.setUser(user);
+                            return tenants.save(found);
+                        }
+                        return found;
+                    });
+                });
     }
 }

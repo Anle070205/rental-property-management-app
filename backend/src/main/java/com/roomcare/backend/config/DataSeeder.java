@@ -112,6 +112,18 @@ public class DataSeeder {
                 user.setFullName(fullName);
                 dirty = true;
             }
+            if (!Boolean.TRUE.equals(user.getEmailVerified())) {
+                user.setEmailVerified(true);
+                dirty = true;
+            }
+            if (!Boolean.TRUE.equals(user.getPhoneVerified())) {
+                user.setPhoneVerified(true);
+                dirty = true;
+            }
+            if (user.getTokenVersion() == null) {
+                user.setTokenVersion(0);
+                dirty = true;
+            }
             if (dirty) {
                 userRepository.save(user);
             }

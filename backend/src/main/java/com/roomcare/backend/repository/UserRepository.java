@@ -1,6 +1,7 @@
 package com.roomcare.backend.repository;
 
 import com.roomcare.backend.entity.User;
+import java.util.Collection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,10 +18,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByEmailIgnoreCase(String email);
+
     /**
      * Tìm user theo phone
      */
     Optional<User> findByPhone(String phone);
+
+    Optional<User> findFirstByPhoneIn(Collection<String> phones);
 
     /**
      * Tìm user theo email hoặc phone (cho login)
@@ -32,8 +37,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     boolean existsByEmail(String email);
 
+    boolean existsByEmailIgnoreCase(String email);
+
     /**
      * Kiểm tra phone đã tồn tại chưa
      */
     boolean existsByPhone(String phone);
+
+    boolean existsByPhoneIn(Collection<String> phones);
 }

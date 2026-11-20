@@ -14,11 +14,16 @@ USE RoomCare;
 CREATE TABLE users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    phone VARCHAR(15) NOT NULL UNIQUE,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(20) UNIQUE,
     password VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    email_verified BOOLEAN NOT NULL DEFAULT TRUE,
+    email_verified_at DATETIME NULL,
+    phone_verified BOOLEAN NOT NULL DEFAULT TRUE,
+    phone_verified_at DATETIME NULL,
+    token_version INT NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
@@ -79,7 +84,7 @@ CREATE TABLE tenants (
     landlord_id BIGINT NOT NULL,
     property_id BIGINT NOT NULL,
     full_name VARCHAR(100) NOT NULL,
-    phone VARCHAR(20) NOT NULL UNIQUE,
+    phone VARCHAR(20) UNIQUE,
     email VARCHAR(100),
     identity_number VARCHAR(20) NOT NULL UNIQUE,
     date_of_birth DATE,
@@ -108,7 +113,7 @@ CREATE TABLE booking_requests (
     request_type VARCHAR(20) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
     tenant_name VARCHAR(100) NOT NULL,
-    tenant_phone VARCHAR(20) NOT NULL,
+    tenant_phone VARCHAR(20),
     tenant_email VARCHAR(100),
     identity_number VARCHAR(20),
     move_in_date DATE,
@@ -123,6 +128,32 @@ CREATE TABLE booking_requests (
     INDEX idx_booking_landlord_created (landlord_id, created_at),
     INDEX idx_booking_tenant_created (tenant_user_id, created_at),
     INDEX idx_booking_room_status (room_id, status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- 6. AUTH_VERIFICATION_TOKENS TABLE (OTP Email & SMS)
+-- =====================================================
+CREATE TABLE auth_verification_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    channel VARCHAR(20) NOT NULL,
+    purpose VARCHAR(30) NOT NULL,
+    target VARCHAR(100) NOT NULL,
+    code_hash VARCHAR(64) NOT NULL,
+    reset_ticket_hash VARCHAR(64) NULL,
+    provider VARCHAR(30) NOT NULL DEFAULT 'LOCAL_HASH',
+    provider_reference VARCHAR(120) NULL,
+    client_ip VARCHAR(64) NULL,
+    expires_at DATETIME NOT NULL,
+    attempt_count INT NOT NULL DEFAULT 0,
+    max_attempts INT NOT NULL DEFAULT 5,
+    used_at DATETIME NULL,
+    invalidated BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_otp_target_channel_purpose_created (target, channel, purpose, created_at),
+    INDEX idx_otp_user_channel_purpose (user_id, channel, purpose),
+    INDEX idx_otp_ip_channel_created (client_ip, channel, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================

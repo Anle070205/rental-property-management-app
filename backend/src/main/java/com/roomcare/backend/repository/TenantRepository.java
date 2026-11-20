@@ -1,6 +1,7 @@
 package com.roomcare.backend.repository;
 
 import com.roomcare.backend.entity.Tenant;
+import java.util.Collection;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,13 @@ import org.springframework.stereotype.Repository;
 public interface TenantRepository extends JpaRepository<Tenant, Long> {
     Optional<Tenant> findByUserId(Long userId);
 
-    Optional<Tenant> findFirstByEmailIgnoreCaseOrPhone(String email, String phone);
+    @Query("SELECT t FROM Tenant t WHERE (:email IS NOT NULL AND :email <> '' AND LOWER(t.email) = LOWER(:email)) " +
+           "OR (:phone IS NOT NULL AND :phone <> '' AND t.phone = :phone)")
+    Optional<Tenant> findFirstByEmailIgnoreCaseOrPhone(@Param("email") String email, @Param("phone") String phone);
+
+    Optional<Tenant> findFirstByPhoneIn(Collection<String> phones);
+
+    boolean existsByPhoneIn(Collection<String> phones);
 
     Optional<Tenant> findFirstByPropertyIdOrderByIdAsc(Long propertyId);
     

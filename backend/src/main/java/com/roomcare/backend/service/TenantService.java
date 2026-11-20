@@ -79,13 +79,15 @@ public class TenantService {
 
     private Optional<User> resolveMatchingTenantUser(String email, String phone) {
         if (email != null && !email.isBlank()) {
-            Optional<User> byEmail = userRepository.findByEmail(email.trim());
+            Optional<User> byEmail = userRepository.findByEmailIgnoreCase(email.trim());
             if (byEmail.isPresent() && byEmail.get().getRole() == Role.TENANT) {
                 return byEmail;
             }
         }
         if (phone != null && !phone.isBlank()) {
-            Optional<User> byPhone = userRepository.findByPhone(phone.trim());
+            Optional<User> byPhone = userRepository.findFirstByPhoneIn(
+                    com.roomcare.backend.util.PhoneNumberUtils.lookupVariants(phone)
+            );
             if (byPhone.isPresent() && byPhone.get().getRole() == Role.TENANT) {
                 return byPhone;
             }
@@ -145,7 +147,7 @@ public class TenantService {
         }
         
         // Kiểm tra số điện thoại nếu thay đổi
-        if (!tenant.getPhone().equals(request.getPhone())) {
+        if (!java.util.Objects.equals(tenant.getPhone(), request.getPhone())) {
             if (tenantRepository.existsByPhone(request.getPhone())) {
                 throw new RuntimeException("Số điện thoại đã được sử dụng");
             }

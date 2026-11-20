@@ -36,7 +36,7 @@ public class Tenant {
     @Column(name = "full_name", nullable = false)
     private String fullName;
     
-    @Column(nullable = false, unique = true, length = 20)
+    @Column(unique = true, length = 20)
     private String phone;
     
     @Column(length = 100)

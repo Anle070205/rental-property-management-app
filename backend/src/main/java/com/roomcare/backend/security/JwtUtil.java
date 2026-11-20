@@ -31,21 +31,38 @@ public class JwtUtil {
     }
 
     /**
-     * Generate JWT token
+     * Generate JWT token (default tokenVersion = 0)
      */
-    public String generateToken(Long userId, String email, String role) {
+    public String generateToken(Long userId, String identifier, String role) {
+        return generateToken(userId, identifier, role, 0);
+    }
+
+    /**
+     * Generate JWT token bound to userId & tokenVersion so password changes revoke old tokens.
+     * Supports both email-only and phone-only accounts cleanly.
+     */
+    public String generateToken(Long userId, String identifier, String role, int tokenVersion) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
-        claims.put("email", email);
+        claims.put("email", identifier);
         claims.put("role", role);
+        claims.put("tv", tokenVersion);
 
         return Jwts.builder()
                 .claims(claims)
-                .subject(email)
+                .subject(identifier)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public int extractTokenVersion(String token) {
+        Object tv = extractClaims(token).get("tv");
+        if (tv instanceof Number number) {
+            return number.intValue();
+        }
+        return 0;
     }
 
     /**

@@ -72,9 +72,14 @@ public class IncidentService {
             healthScoreService.syncRoomHealthScore(resolvedRoom);
         }
 
+        String tenantContact = tenant.getPhone() != null && !tenant.getPhone().isBlank()
+                ? tenant.getPhone()
+                : (tenant.getEmail() != null ? tenant.getEmail() : "");
         notifications.createNotification(tenant.getLandlord(), NotificationType.INCIDENT,
                 "Có báo cáo sự cố mới",
-                tenant.getFullName() + (resolvedRoom != null ? " (Phòng " + resolvedRoom.getRoomCode() + ")" : "")
+                tenant.getFullName()
+                        + (resolvedRoom != null ? " (Phòng " + resolvedRoom.getRoomCode() + ")" : "")
+                        + (!tenantContact.isBlank() ? " • " + tenantContact : "")
                         + ": " + incident.getTitle(),
                 incident.getId());
         return IncidentResponse.from(incident);
@@ -138,7 +143,11 @@ public class IncidentService {
 
     private Optional<Tenant> optionalTenantFor(User user) {
         return tenants.findByUserId(user.getId())
-                .or(() -> tenants.findFirstByEmailIgnoreCaseOrPhone(user.getEmail(), user.getPhone()));
+                .or(() -> tenants.findFirstByEmailIgnoreCaseOrPhone(user.getEmail(), user.getPhone()))
+                .or(() -> user.getPhone() != null && !user.getPhone().isBlank()
+                        ? tenants.findFirstByPhoneIn(
+                                com.roomcare.backend.util.PhoneNumberUtils.lookupVariants(user.getPhone()))
+                        : Optional.empty());
     }
 
     private Tenant tenantFor(User user) {
