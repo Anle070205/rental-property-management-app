@@ -26,5 +26,8 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Application Properties (if contains sensitive data)
+# Application Properties & Local Env Secrets
 # application-local.properties
+.env
+.env.local
+.env.*.local

@@ -3,6 +3,7 @@ package com.roomcare.backend.service;
 import com.roomcare.backend.dto.PageResponse;
 import com.roomcare.backend.dto.tenant.MyContractResponse;
 import com.roomcare.backend.dto.tenant.MyRoomResponse;
+import com.roomcare.backend.dto.tenant.SubmitPaymentProofRequest;
 import com.roomcare.backend.dto.tenant.TenantDashboardResponse;
 import com.roomcare.backend.dto.tenant.TenantInvoiceResponse;
 import com.roomcare.backend.dto.tenant.TenantPaymentInfoResponse;
@@ -11,6 +12,7 @@ import com.roomcare.backend.entity.Tenant;
 import com.roomcare.backend.entity.User;
 import com.roomcare.backend.repository.TenantRepository;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -95,6 +97,18 @@ public class TenantPortalService {
         return source.invoice(tenantOpt.get(), invoiceId);
     }
 
+    public Optional<TenantInvoiceResponse> submitPaymentProof(
+            User user,
+            Long invoiceId,
+            SubmitPaymentProofRequest request) {
+        Optional<Tenant> tenantOpt = optionalTenantFor(user);
+        TenantPortalProvider source = provider.getIfAvailable();
+        if (tenantOpt.isEmpty() || source == null) {
+            return Optional.empty();
+        }
+        return source.submitPaymentProof(tenantOpt.get(), invoiceId, request);
+    }
+
     public Optional<TenantPaymentInfoResponse> paymentInfo(User user, Long invoiceId) {
         Optional<Tenant> tenantOpt = optionalTenantFor(user);
         TenantPortalProvider source = provider.getIfAvailable();
@@ -127,13 +141,24 @@ public class TenantPortalService {
 
     private Optional<Tenant> optionalTenantFor(User user) {
         return tenants.findByUserId(user.getId())
-                .or(() -> tenants.findFirstByEmailIgnoreCaseOrPhone(user.getEmail(), user.getPhone())
-                        .map(found -> {
-                            if (found.getUser() == null) {
-                                found.setUser(user);
-                                return tenants.save(found);
-                            }
-                            return found;
-                        }));
+                .or(() -> {
+                    Optional<Tenant> byEmailOrPhone = tenants.findFirstByEmailIgnoreCaseOrPhone(
+                            user.getEmail(), user.getPhone()
+                    );
+                    if (byEmailOrPhone.isEmpty() && user.getPhone() != null && !user.getPhone().isBlank()) {
+                        byEmailOrPhone = tenants.findFirstByPhoneIn(
+                                com.roomcare.backend.util.PhoneNumberUtils.lookupVariants(user.getPhone())
+                        );
+                    }
+                    return byEmailOrPhone
+                            .filter(found -> found.getUser() == null || Objects.equals(found.getUser().getId(), user.getId()))
+                            .map(found -> {
+                                if (found.getUser() == null) {
+                                    found.setUser(user);
+                                    return tenants.save(found);
+                                }
+                                return found;
+                            });
+                });
     }
 }

@@ -67,7 +67,7 @@ public class BookingRequest {
     @Column(name = "tenant_name", nullable = false, length = 100)
     private String tenantName;
 
-    @Column(name = "tenant_phone", nullable = false, length = 20)
+    @Column(name = "tenant_phone", length = 20)
     private String tenantPhone;
 
     @Column(name = "tenant_email", length = 100)

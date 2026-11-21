@@ -108,12 +108,14 @@ public class HealthScoreService {
     }
 
     public RoomHealthScoreResponse calculateRoomHealthScore(Room room) {
-        List<Invoice> invoices = invoiceRepository != null
+        List<Invoice> rawInvoices = invoiceRepository != null
                 ? invoiceRepository.findByRoomIdOrderByBillingMonthDesc(room.getId())
                 : List.of();
-        if (invoices == null) {
-            invoices = List.of();
-        }
+        List<Invoice> invoices = rawInvoices == null
+                ? List.of()
+                : rawInvoices.stream()
+                        .filter(inv -> inv.getStatus() != InvoiceStatus.DRAFT && inv.getStatus() != InvoiceStatus.CANCELLED)
+                        .collect(Collectors.toList());
         List<UtilityRecord> utilities = utilityRecordRepository != null
                 ? utilityRecordRepository.findByRoomIdOrderByBillingMonthDesc(room.getId())
                 : List.of();

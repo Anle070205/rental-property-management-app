@@ -66,11 +66,15 @@ class BookingRequestAdapter(
                 val phoneToCall: String
                 if (isLandlordMode) {
                     val cccd = item.identityNumber?.takeIf { it.isNotBlank() }?.let { " • CCCD: $it" }.orEmpty()
-                    tvCounterpart.text = "Người thuê: ${item.tenantName} • ${item.tenantPhone}$cccd"
-                    phoneToCall = item.tenantPhone
+                    val tenantContact = item.tenantPhone?.takeIf { it.isNotBlank() }
+                        ?: item.tenantEmail?.takeIf { it.isNotBlank() }
+                        ?: "Chưa cập nhật liên hệ"
+                    tvCounterpart.text = "Người thuê: ${item.tenantName} • $tenantContact$cccd"
+                    phoneToCall = item.tenantPhone.orEmpty()
                 } else {
-                    tvCounterpart.text = "Chủ nhà: ${item.landlordName} • ${item.landlordPhone}"
-                    phoneToCall = item.landlordPhone
+                    val landlordContact = item.landlordPhone?.takeIf { it.isNotBlank() } ?: "Chưa cập nhật SĐT"
+                    tvCounterpart.text = "Chủ nhà: ${item.landlordName} • $landlordContact"
+                    phoneToCall = item.landlordPhone.orEmpty()
                 }
 
                 val formattedMoveIn = item.moveInDate?.let {

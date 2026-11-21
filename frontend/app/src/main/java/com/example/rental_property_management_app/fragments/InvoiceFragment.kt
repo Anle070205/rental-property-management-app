@@ -40,6 +40,10 @@ class InvoiceFragment : Fragment() {
     private var roomsList: List<RoomResponse> = emptyList()
     private var propertiesList: List<PropertyResponse> = emptyList()
     private var tenantsList: List<TenantResponse> = emptyList()
+    private var preselectRoomId: Long? = null
+    private var preselectContractId: Long? = null
+    private var activePreviewLabel: android.widget.TextView? = null
+    private var activePreviewTotalLabel: android.widget.TextView? = null
 
     private val billingMonthRegex = Regex("^\\d{4}-(0[1-9]|1[0-2])$")
     private val isoDateRegex = Regex("^\\d{4}-\\d{2}-\\d{2}$")
@@ -56,6 +60,9 @@ class InvoiceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        preselectRoomId = arguments?.getLong("roomId", 0L)?.takeIf { it > 0L }
+        preselectContractId = arguments?.getLong("contractId", 0L)?.takeIf { it > 0L }
+
         setupToolbar()
         setupRecyclerView()
         setupFilters()
@@ -63,7 +70,7 @@ class InvoiceFragment : Fragment() {
         observeStates()
 
         viewModel.loadReferenceData()
-        viewModel.loadInvoices()
+        viewModel.loadInvoices(roomId = preselectRoomId)
     }
 
     private fun setupToolbar() {
@@ -100,10 +107,12 @@ class InvoiceFragment : Fragment() {
 
         binding.chipGroupStatus.setOnCheckedStateChangeListener { _, checkedIds ->
             val status = when (checkedIds.firstOrNull()) {
+                R.id.chipDraft -> InvoiceStatus.DRAFT
                 R.id.chipUnpaid -> InvoiceStatus.UNPAID
                 R.id.chipPartial -> InvoiceStatus.PARTIALLY_PAID
                 R.id.chipOverdue -> InvoiceStatus.OVERDUE
                 R.id.chipPaid -> InvoiceStatus.PAID
+                R.id.chipCancelled -> InvoiceStatus.CANCELLED
                 else -> null
             }
             viewModel.loadInvoices(status = status)
@@ -204,6 +213,37 @@ class InvoiceFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.previewState.collectLatest { resource ->
+                resource ?: return@collectLatest
+                when (resource) {
+                    is Resource.Loading -> Unit
+                    is Resource.Success -> {
+                        val p = resource.data
+                        if (p != null) {
+                            activePreviewTotalLabel?.text = CurrencyUtils.formatVND(p.totalAmount)
+                            activePreviewLabel?.visibility = View.VISIBLE
+                            activePreviewLabel?.text = buildString {
+                                append("Dự tính kỳ ${p.billingMonth} (${p.contractCode ?: "Theo phòng"}):\n")
+                                append("• Phòng: ${CurrencyUtils.formatVND(p.roomRent)}\n")
+                                append("• Điện: ${CurrencyUtils.formatVND(p.electricityAmount)}\n")
+                                append("• Nước (${p.waterBillingMode ?: "METERED"}): ${CurrencyUtils.formatVND(p.waterAmount)}\n")
+                                append("• Internet: ${CurrencyUtils.formatVND(p.internetAmount)} | Rác: ${CurrencyUtils.formatVND(p.garbageFee)} | DV: ${CurrencyUtils.formatVND(p.serviceAmount)}\n")
+                                if (p.previousDebt.signum() > 0) append("• Nợ kỳ trước: ${CurrencyUtils.formatVND(p.previousDebt)}\n")
+                                append("⇒ TỔNG: ${CurrencyUtils.formatVND(p.totalAmount)}")
+                            }
+                        }
+                        viewModel.resetPreviewState()
+                    }
+                    is Resource.Error -> {
+                        activePreviewLabel?.visibility = View.VISIBLE
+                        activePreviewLabel?.text = resource.message ?: "Không xem trước được hóa đơn"
+                        viewModel.resetPreviewState()
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.batchCreateState.collectLatest { resource ->
                 resource ?: return@collectLatest
                 when (resource) {
@@ -296,10 +336,18 @@ class InvoiceFragment : Fragment() {
         dialogBinding.spinnerRoom.adapter = roomAdapter
 
         val tenantOptions = mutableListOf("Không chọn / tự lấy theo phòng")
-        tenantOptions.addAll(tenantsList.map { "${it.fullName} - ${it.phone}" })
+        tenantOptions.addAll(tenantsList.map {
+            val contact = it.phone?.takeIf { p -> p.isNotBlank() } ?: it.email?.takeIf { e -> e.isNotBlank() } ?: "Chưa có SĐT"
+            "${it.fullName} - $contact"
+        })
         val tenantAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, tenantOptions)
         tenantAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         dialogBinding.spinnerTenant.adapter = tenantAdapter
+
+        preselectRoomId?.let { targetId ->
+            val idx = roomsList.indexOfFirst { it.id == targetId }
+            if (idx >= 0) dialogBinding.spinnerRoom.setSelection(idx)
+        }
 
         val defaultMonth = SimpleDateFormat("yyyy-MM", Locale.US).format(Calendar.getInstance().time)
         val dueCal = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 7) }
@@ -312,13 +360,81 @@ class InvoiceFragment : Fragment() {
             val elec = parseBigDecimal(dialogBinding.etElectricity.text?.toString())
             val water = parseBigDecimal(dialogBinding.etWater.text?.toString())
             val internet = parseBigDecimal(dialogBinding.etInternet.text?.toString())
+            val garbage = parseBigDecimal(dialogBinding.etGarbageFee.text?.toString())
             val service = parseBigDecimal(dialogBinding.etService.text?.toString())
             val other = parseBigDecimal(dialogBinding.etOtherFees.text?.toString())
             val prevDebt = parseBigDecimal(dialogBinding.etPreviousDebt.text?.toString())
             val discount = parseBigDecimal(dialogBinding.etDiscount.text?.toString())
-            val total = (rent + elec + water + internet + service + other + prevDebt - discount)
+            val total = (rent + elec + water + internet + garbage + service + other + prevDebt - discount)
                 .max(BigDecimal.ZERO)
             dialogBinding.tvPreviewTotal.text = CurrencyUtils.formatVND(total)
+        }
+
+        fun buildRequestOrShowError(): CreateInvoiceRequest? {
+            val billingMonth = dialogBinding.etBillingMonth.text?.toString()?.trim().orEmpty()
+            val dueDate = dialogBinding.etDueDate.text?.toString()?.trim().orEmpty()
+
+            if (!billingMonthRegex.matches(billingMonth)) {
+                dialogBinding.tilBillingMonth.error = "Kỳ hóa đơn phải theo định dạng YYYY-MM"
+                return null
+            }
+            dialogBinding.tilBillingMonth.error = null
+
+            if (!isoDateRegex.matches(dueDate)) {
+                dialogBinding.tilDueDate.error = "Hạn thanh toán phải theo định dạng YYYY-MM-DD"
+                return null
+            }
+            dialogBinding.tilDueDate.error = null
+
+            val selectedRoom = roomsList.getOrNull(dialogBinding.spinnerRoom.selectedItemPosition)
+            if (selectedRoom == null) {
+                showMessage("Vui lòng chọn phòng")
+                return null
+            }
+
+            val tenantPos = dialogBinding.spinnerTenant.selectedItemPosition
+            val selectedTenantId = if (tenantPos > 0) tenantsList.getOrNull(tenantPos - 1)?.id else null
+
+            val rent = parseBigDecimalOrNull(dialogBinding.etRoomRent.text?.toString())
+            val elec = parseBigDecimalOrNull(dialogBinding.etElectricity.text?.toString())
+            val water = parseBigDecimalOrNull(dialogBinding.etWater.text?.toString())
+            val internet = parseBigDecimalOrNull(dialogBinding.etInternet.text?.toString())
+            val garbage = parseBigDecimalOrNull(dialogBinding.etGarbageFee.text?.toString())
+            val service = parseBigDecimalOrNull(dialogBinding.etService.text?.toString())
+            val other = parseBigDecimal(dialogBinding.etOtherFees.text?.toString())
+            val prevDebt = parseBigDecimalOrNull(dialogBinding.etPreviousDebt.text?.toString())
+            val discount = parseBigDecimal(dialogBinding.etDiscount.text?.toString())
+
+            if ((rent != null && rent < BigDecimal.ZERO) || (elec != null && elec < BigDecimal.ZERO) ||
+                (water != null && water < BigDecimal.ZERO) || (internet != null && internet < BigDecimal.ZERO) ||
+                (garbage != null && garbage < BigDecimal.ZERO) || (service != null && service < BigDecimal.ZERO) ||
+                other < BigDecimal.ZERO || (prevDebt != null && prevDebt < BigDecimal.ZERO) ||
+                discount < BigDecimal.ZERO
+            ) {
+                showErrorDialog("Dữ liệu không hợp lệ", "Các khoản tiền không được nhỏ hơn 0")
+                return null
+            }
+
+            return CreateInvoiceRequest(
+                roomId = selectedRoom.id,
+                tenantId = selectedTenantId,
+                contractId = if (selectedRoom.id == preselectRoomId) preselectContractId else null,
+                billingMonth = billingMonth,
+                dueDate = dueDate,
+                roomRent = rent,
+                electricityAmount = elec,
+                waterAmount = water,
+                internetAmount = internet,
+                garbageFee = garbage,
+                serviceAmount = service,
+                otherFees = other,
+                previousDebt = prevDebt,
+                discountAmount = discount,
+                useUtilityRecord = dialogBinding.cbUseUtilityRecord.isChecked,
+                autoCarryPreviousDebt = dialogBinding.cbAutoCarryDebt.isChecked,
+                saveAsDraft = dialogBinding.cbSaveAsDraft.isChecked,
+                notes = dialogBinding.etNotes.text?.toString()?.trim()?.ifEmpty { null }
+            )
         }
 
         dialogBinding.spinnerRoom.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -336,12 +452,21 @@ class InvoiceFragment : Fragment() {
             dialogBinding.etElectricity,
             dialogBinding.etWater,
             dialogBinding.etInternet,
+            dialogBinding.etGarbageFee,
             dialogBinding.etService,
             dialogBinding.etOtherFees,
             dialogBinding.etPreviousDebt,
             dialogBinding.etDiscount
         ).forEach { editText ->
             editText.addTextChangedListener { updatePreviewTotal() }
+        }
+
+        activePreviewLabel = dialogBinding.tvPreviewBreakdown
+        activePreviewTotalLabel = dialogBinding.tvPreviewTotal
+
+        dialogBinding.btnPreviewInvoice.setOnClickListener {
+            val req = buildRequestOrShowError() ?: return@setOnClickListener
+            viewModel.previewInvoice(req)
         }
 
         val dialog = AlertDialog.Builder(requireContext())
@@ -351,67 +476,14 @@ class InvoiceFragment : Fragment() {
             .setNegativeButton(getString(R.string.cancel), null)
             .create()
 
+        dialog.setOnDismissListener {
+            activePreviewLabel = null
+            activePreviewTotalLabel = null
+        }
+
         dialog.setOnShowListener {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val billingMonth = dialogBinding.etBillingMonth.text?.toString()?.trim().orEmpty()
-                val dueDate = dialogBinding.etDueDate.text?.toString()?.trim().orEmpty()
-
-                if (!billingMonthRegex.matches(billingMonth)) {
-                    dialogBinding.tilBillingMonth.error = "Kỳ hóa đơn phải theo định dạng YYYY-MM"
-                    return@setOnClickListener
-                }
-                dialogBinding.tilBillingMonth.error = null
-
-                if (!isoDateRegex.matches(dueDate)) {
-                    dialogBinding.tilDueDate.error = "Hạn thanh toán phải theo định dạng YYYY-MM-DD"
-                    return@setOnClickListener
-                }
-                dialogBinding.tilDueDate.error = null
-
-                val selectedRoom = roomsList.getOrNull(dialogBinding.spinnerRoom.selectedItemPosition)
-                if (selectedRoom == null) {
-                    showMessage("Vui lòng chọn phòng")
-                    return@setOnClickListener
-                }
-
-                val tenantPos = dialogBinding.spinnerTenant.selectedItemPosition
-                val selectedTenantId = if (tenantPos > 0) tenantsList.getOrNull(tenantPos - 1)?.id else null
-
-                val rent = parseBigDecimalOrNull(dialogBinding.etRoomRent.text?.toString())
-                val elec = parseBigDecimal(dialogBinding.etElectricity.text?.toString())
-                val water = parseBigDecimal(dialogBinding.etWater.text?.toString())
-                val internet = parseBigDecimal(dialogBinding.etInternet.text?.toString())
-                val service = parseBigDecimal(dialogBinding.etService.text?.toString())
-                val other = parseBigDecimal(dialogBinding.etOtherFees.text?.toString())
-                val prevDebt = parseBigDecimalOrNull(dialogBinding.etPreviousDebt.text?.toString())
-                val discount = parseBigDecimal(dialogBinding.etDiscount.text?.toString())
-
-                if ((rent != null && rent < BigDecimal.ZERO) || elec < BigDecimal.ZERO ||
-                    water < BigDecimal.ZERO || internet < BigDecimal.ZERO || service < BigDecimal.ZERO ||
-                    other < BigDecimal.ZERO || (prevDebt != null && prevDebt < BigDecimal.ZERO) ||
-                    discount < BigDecimal.ZERO
-                ) {
-                    showErrorDialog("Dữ liệu không hợp lệ", "Các khoản tiền không được nhỏ hơn 0")
-                    return@setOnClickListener
-                }
-
-                val request = CreateInvoiceRequest(
-                    roomId = selectedRoom.id,
-                    tenantId = selectedTenantId,
-                    billingMonth = billingMonth,
-                    dueDate = dueDate,
-                    roomRent = rent,
-                    electricityAmount = elec,
-                    waterAmount = water,
-                    internetAmount = internet,
-                    serviceAmount = service,
-                    otherFees = other,
-                    previousDebt = prevDebt,
-                    discountAmount = discount,
-                    useUtilityRecord = dialogBinding.cbUseUtilityRecord.isChecked,
-                    notes = dialogBinding.etNotes.text?.toString()?.trim()?.ifEmpty { null }
-                )
-
+                val request = buildRequestOrShowError() ?: return@setOnClickListener
                 viewModel.createInvoice(request)
                 dialog.dismiss()
             }

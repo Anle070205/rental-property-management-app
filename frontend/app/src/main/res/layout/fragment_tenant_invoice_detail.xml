@@ -130,6 +130,15 @@
                     android:background="@color/rc_line" />
 
                 <TextView
+                    android:id="@+id/tvInvoiceMeta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
+                <TextView
                     android:id="@+id/dueDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -162,7 +171,38 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/tvInvoiceNotes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvPaymentProofBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rc_soft_banner"
+                android:padding="12dp"
+                android:textColor="@color/rc_brand"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvConfirmedPayments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rc_panel"
+                android:padding="12dp"
+                android:textColor="@color/rc_ink"
+                android:textSize="12sp"
+                android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/payment"
@@ -170,9 +210,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
                 android:text="@string/rc_payment_qr"
                 app:icon="@drawable/ic_card" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmitPaymentProof"
+                style="@style/RoomCare.Button.Tonal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:text="Gửi minh chứng chuyển khoản"
+                android:visibility="gone"
+                app:icon="@drawable/ic_check" />
         </LinearLayout>
     </ScrollView>
 

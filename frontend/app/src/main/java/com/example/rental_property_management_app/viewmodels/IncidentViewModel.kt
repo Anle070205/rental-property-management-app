@@ -27,9 +27,11 @@ class IncidentViewModel : ViewModel() {
     val save = _save.asStateFlow()
     private var listJob: Job? = null
     private var filter: IncidentStatus? = null
+    private var landlordMode: Boolean = false
 
-    fun loadList(status: IncidentStatus?) {
+    fun loadList(status: IncidentStatus?, isLandlord: Boolean = false) {
         filter = status
+        landlordMode = isLandlord
         loadPage(0, emptyList())
     }
 
@@ -42,7 +44,7 @@ class IncidentViewModel : ViewModel() {
         listJob?.cancel()
         _list.value = IncidentListState(previous, loading = true)
         listJob = viewModelScope.launch {
-            val result = repository.list(filter, page)
+            val result = repository.list(filter, page, landlordMode)
             val data = result.data
             _list.value = if (data == null) {
                 IncidentListState(previous, error = result.message, nextPage = page.takeIf { it > 0 })
@@ -55,18 +57,31 @@ class IncidentViewModel : ViewModel() {
         }
     }
 
-    fun loadDetail(id: Long) {
+    fun loadDetail(id: Long, isLandlord: Boolean = false) {
         _detail.value = Resource.Loading()
-        viewModelScope.launch { _detail.value = repository.get(id) }
+        viewModelScope.launch { _detail.value = repository.get(id, isLandlord) }
     }
 
     fun create(request: CreateIncidentRequest) = submit { repository.create(request) }
 
     fun supplement(id: Long, request: UpdateIncidentRequest) = submit { repository.supplement(id, request) }
 
+    fun updateLandlordStatus(id: Long, request: UpdateIncidentStatusRequest) =
+        submit { repository.updateLandlordStatus(id, request) }
+
+    fun clearSaveState() {
+        _save.value = null
+    }
+
     private fun submit(action: suspend () -> Resource<Incident>) {
         if (_save.value is Resource.Loading) return
         _save.value = Resource.Loading()
-        viewModelScope.launch { _save.value = action() }
+        viewModelScope.launch {
+            val res = action()
+            _save.value = res
+            if (res is Resource.Success && res.data != null) {
+                _detail.value = res
+            }
+        }
     }
 }

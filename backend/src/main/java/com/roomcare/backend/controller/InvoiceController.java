@@ -1,8 +1,10 @@
 package com.roomcare.backend.controller;
 
 import com.roomcare.backend.dto.ApiResponse;
+import com.roomcare.backend.dto.invoice.AdjustInvoiceRequest;
 import com.roomcare.backend.dto.invoice.BatchCreateInvoiceRequest;
 import com.roomcare.backend.dto.invoice.BatchCreateInvoiceResult;
+import com.roomcare.backend.dto.invoice.CancelInvoiceRequest;
 import com.roomcare.backend.dto.invoice.CreateInvoiceRequest;
 import com.roomcare.backend.dto.invoice.CreatePaymentRequest;
 import com.roomcare.backend.dto.invoice.InvoiceResponse;
@@ -45,13 +47,59 @@ public class InvoiceController {
         return ApiResponse.success(response);
     }
 
+    @PostMapping("/preview")
+    public ApiResponse<InvoiceResponse> previewInvoice(
+            @AuthenticationPrincipal User landlord,
+            @Valid @RequestBody CreateInvoiceRequest request) {
+        InvoiceResponse response = invoiceService.previewInvoice(landlord.getId(), request);
+        return ApiResponse.success("Xem trước hóa đơn thành công", response);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<InvoiceResponse> createInvoice(
             @AuthenticationPrincipal User landlord,
             @Valid @RequestBody CreateInvoiceRequest request) {
         InvoiceResponse response = invoiceService.createInvoice(landlord.getId(), request);
-        return ApiResponse.success("Tạo hóa đơn thành công", response);
+        String msg = Boolean.TRUE.equals(request.getSaveAsDraft())
+                ? "Lưu hóa đơn nháp thành công"
+                : "Tạo hóa đơn thành công";
+        return ApiResponse.success(msg, response);
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<InvoiceResponse> updateDraftInvoice(
+            @AuthenticationPrincipal User landlord,
+            @PathVariable Long id,
+            @Valid @RequestBody CreateInvoiceRequest request) {
+        InvoiceResponse response = invoiceService.updateDraftInvoice(landlord.getId(), id, request);
+        return ApiResponse.success("Cập nhật hóa đơn nháp thành công", response);
+    }
+
+    @PostMapping("/{id}/publish")
+    public ApiResponse<InvoiceResponse> publishInvoice(
+            @AuthenticationPrincipal User landlord,
+            @PathVariable Long id) {
+        InvoiceResponse response = invoiceService.publishInvoice(landlord.getId(), id);
+        return ApiResponse.success("Phát hành hóa đơn thành công", response);
+    }
+
+    @PostMapping("/{id}/adjust")
+    public ApiResponse<InvoiceResponse> adjustInvoice(
+            @AuthenticationPrincipal User landlord,
+            @PathVariable Long id,
+            @Valid @RequestBody AdjustInvoiceRequest request) {
+        InvoiceResponse response = invoiceService.adjustInvoice(landlord.getId(), id, request);
+        return ApiResponse.success("Điều chỉnh hóa đơn thành công", response);
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ApiResponse<InvoiceResponse> cancelInvoice(
+            @AuthenticationPrincipal User landlord,
+            @PathVariable Long id,
+            @Valid @RequestBody(required = false) CancelInvoiceRequest request) {
+        InvoiceResponse response = invoiceService.cancelInvoice(landlord.getId(), id, request);
+        return ApiResponse.success("Hủy hóa đơn thành công", response);
     }
 
     @PostMapping("/batch")

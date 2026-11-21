@@ -13,7 +13,41 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidCredentials(InvalidCredentialsException ex) {
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(UnverifiedAccountException.class)
+    public ResponseEntity<ApiResponse<Map<String, Object>>> handleUnverifiedAccount(UnverifiedAccountException ex) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("requiresVerification", true);
+        data.put("verificationChannel", ex.getVerificationChannel() != null ? ex.getVerificationChannel().name() : null);
+        data.put("verificationTarget", ex.getVerificationTarget());
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ApiResponse.error(ex.getMessage(), data));
+    }
+
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ResponseEntity<ApiResponse<Map<String, Object>>> handleTooManyRequests(TooManyRequestsException ex) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("retryAfterSeconds", ex.getRetryAfterSeconds());
+        return ResponseEntity
+            .status(HttpStatus.TOO_MANY_REQUESTS)
+            .body(ApiResponse.error(ex.getMessage(), data));
+    }
+
+    @ExceptionHandler({MailDeliveryException.class, SmsDeliveryException.class})
+    public ResponseEntity<ApiResponse<Void>> handleDeliveryException(RuntimeException ex) {
+        return ResponseEntity
+            .status(HttpStatus.SERVICE_UNAVAILABLE)
+            .body(ApiResponse.error(ex.getMessage()));
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Void>> handleRuntimeException(RuntimeException ex) {
         return ResponseEntity

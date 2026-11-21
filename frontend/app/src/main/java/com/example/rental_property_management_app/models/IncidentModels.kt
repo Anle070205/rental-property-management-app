@@ -6,6 +6,7 @@ enum class IncidentStatus { RECEIVED, IN_PROGRESS, DONE }
 
 data class Incident(
     val id: Long,
+    val roomId: Long? = null,
     val type: IncidentType,
     val title: String,
     val description: String,
@@ -14,7 +15,9 @@ data class Incident(
     val imageUrl: String?,
     val landlordResponse: String?,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
+    val roomCode: String? = null,
+    val tenantName: String? = null
 )
 
 data class CreateIncidentRequest(
@@ -23,3 +26,5 @@ data class CreateIncidentRequest(
 )
 
 data class UpdateIncidentRequest(val description: String?, val imageUrl: String?)
+
+data class UpdateIncidentStatusRequest(val status: IncidentStatus, val landlordResponse: String? = null)

@@ -16,6 +16,12 @@ public interface IncidentRepository extends JpaRepository<Incident, Long> {
 
     Optional<Incident> findByIdAndTenantId(Long id, Long tenantId);
 
+    Page<Incident> findByTenantLandlordId(Long landlordId, Pageable pageable);
+
+    Page<Incident> findByTenantLandlordIdAndStatus(Long landlordId, Incident.Status status, Pageable pageable);
+
+    Optional<Incident> findByIdAndTenantLandlordId(Long id, Long landlordId);
+
     List<Incident> findByRoomIdOrderByCreatedAtDesc(Long roomId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

@@ -51,7 +51,7 @@ data class MarketplaceProperty(
     @SerializedName("landlordName")
     val landlordName: String,
     @SerializedName("landlordPhone")
-    val landlordPhone: String,
+    val landlordPhone: String?,
     @SerializedName("landlordEmail")
     val landlordEmail: String?,
     @SerializedName("totalRooms")
@@ -80,7 +80,7 @@ data class MarketplaceRoom(
     @SerializedName("landlordName")
     val landlordName: String,
     @SerializedName("landlordPhone")
-    val landlordPhone: String,
+    val landlordPhone: String?,
     @SerializedName("landlordEmail")
     val landlordEmail: String?,
     @SerializedName("roomCode")
@@ -163,13 +163,13 @@ data class BookingRequestItem(
     @SerializedName("landlordName")
     val landlordName: String,
     @SerializedName("landlordPhone")
-    val landlordPhone: String,
+    val landlordPhone: String?,
     @SerializedName("tenantUserId")
     val tenantUserId: Long,
     @SerializedName("tenantName")
     val tenantName: String,
     @SerializedName("tenantPhone")
-    val tenantPhone: String,
+    val tenantPhone: String?,
     @SerializedName("tenantEmail")
     val tenantEmail: String?,
     @SerializedName("identityNumber")

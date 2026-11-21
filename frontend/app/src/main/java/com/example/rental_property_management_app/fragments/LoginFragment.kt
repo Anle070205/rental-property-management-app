@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -32,6 +33,10 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val prefill = arguments?.getString("prefillIdentifier")?.trim()
+        if (!prefill.isNullOrBlank()) {
+            binding.tilEmail.setText(prefill)
+        }
         setupClickListeners()
         observeLoginState()
     }
@@ -45,6 +50,11 @@ class LoginFragment : Fragment() {
         // Navigate to Forgot Password
         binding.tvForgotPassword.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_forgotPasswordFragment)
+        }
+
+        // Navigate to First-time Tenant Account Activation
+        binding.tvActivateAccount.setOnClickListener {
+            findNavController().navigate(R.id.activateAccountFragment)
         }
 
         // Login button
@@ -115,12 +125,32 @@ class LoginFragment : Fragment() {
                                         R.id.action_loginFragment_to_tenantDashboardFragment
                                     )
                                 }
+                                Constants.Roles.ADMIN -> {
+                                    findNavController().navigate(
+                                        R.id.action_loginFragment_to_adminDashboardFragment
+                                    )
+                                }
                             }
                         }
                     }
                     is Resource.Error -> {
                         showLoading(false)
-                        view?.showSnackbar(resource.message ?: Constants.ErrorMessages.UNKNOWN_ERROR)
+                        val message = resource.message ?: Constants.ErrorMessages.UNKNOWN_ERROR
+                        val challenge = viewModel.unverifiedChallenge.value
+                        if (challenge != null) {
+                            view?.showSnackbarWithAction(message, getString(R.string.rc_verify_now)) {
+                                findNavController().navigate(
+                                    R.id.action_loginFragment_to_verifyOtpFragment,
+                                    bundleOf(
+                                        "channel" to challenge.channel,
+                                        "target" to challenge.target,
+                                        "cooldownSeconds" to 0
+                                    )
+                                )
+                            }
+                        } else {
+                            view?.showSnackbar(message)
+                        }
                     }
                     null -> {
                         // Initial state

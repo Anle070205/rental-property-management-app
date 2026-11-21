@@ -69,10 +69,10 @@ class MainActivity : AppCompatActivity() {
             val role = RoomCareApplication.prefsManager.getUserRole()
             if (role != activeMenuRole) {
                 binding.tenantNavigation.menu.clear()
-                val menuRes = if (role == "LANDLORD") {
-                    R.menu.landlord_navigation
-                } else {
-                    R.menu.tenant_navigation
+                val menuRes = when (role) {
+                    "LANDLORD" -> R.menu.landlord_navigation
+                    "ADMIN" -> R.menu.admin_navigation
+                    else -> R.menu.tenant_navigation
                 }
                 binding.tenantNavigation.inflateMenu(menuRes)
                 activeMenuRole = role
@@ -82,12 +82,16 @@ class MainActivity : AppCompatActivity() {
             bars.isAppearanceLightStatusBars = lightScreen || defaultLightStatusBar
             val item = binding.tenantNavigation.menu.findItem(destination.id)
             binding.tenantNavigation.isVisible = item != null &&
-                (role == "TENANT" || role == "LANDLORD")
+                (role == "TENANT" || role == "LANDLORD" || role == "ADMIN")
             if (binding.tenantNavigation.isVisible) item?.isChecked = true
         }
         binding.tenantNavigation.setOnItemSelectedListener { item ->
             val role = RoomCareApplication.prefsManager.getUserRole()
-            val home = if (role == "LANDLORD") R.id.landlordDashboardFragment else R.id.tenantDashboardFragment
+            val home = when (role) {
+                "LANDLORD" -> R.id.landlordDashboardFragment
+                "ADMIN" -> R.id.adminDashboardFragment
+                else -> R.id.tenantDashboardFragment
+            }
             if (navController.currentDestination?.id == item.itemId) return@setOnItemSelectedListener true
             if (item.itemId == home) {
                 navController.popBackStack(home, false)

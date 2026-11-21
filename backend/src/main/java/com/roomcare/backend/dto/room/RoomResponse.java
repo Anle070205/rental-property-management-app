@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -33,8 +34,16 @@ public class RoomResponse {
     private String description;
     private String imageUrl;
     private RoomStatus status;
+    private Long currentContractId;
+    private String currentContractStatus;
     private String currentContract;
+    private Long currentTenantId;
     private String currentTenant;
+    private Integer currentOccupants;
+    private List<String> currentRoommates;
+    private Boolean canAddPrimaryTenant;
+    private Boolean canAddRoommate;
+    private String occupancyMessage;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

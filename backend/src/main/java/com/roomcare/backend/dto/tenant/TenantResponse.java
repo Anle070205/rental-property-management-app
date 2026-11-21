@@ -23,8 +23,13 @@ public class TenantResponse {
     private LocalDate dateOfBirth;
     private String address;
     private String emergencyContact;
-    private String currentRoom; // TODO: Phase 3 - phòng đang thuê
-    private String currentContract; // TODO: Phase 3 - hợp đồng hiện tại
+    private Long currentRoomId;
+    private String currentRoom;
+    private Long currentContractId;
+    private String currentContractStatus;
+    private String currentContract;
+    private String accountStatus; // NONE, PENDING_ACTIVATION, ACTIVE
+    private Integer roommateCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     

@@ -65,8 +65,33 @@ public class DataSeeder {
                 seedSampleIncidentsAndNotifications();
             }
 
+            ensureDevAdminAccount();
             syncAllRoomHealthScores();
         };
+    }
+
+    private void ensureDevAdminAccount() {
+        boolean hasAdmin = userRepository.findAll().stream().anyMatch(u -> u.getRole() == Role.ADMIN);
+        if (hasAdmin) {
+            return;
+        }
+        String devAdminPw = System.getenv("ROOMCARE_DEV_ADMIN_PASSWORD");
+        if (devAdminPw == null || devAdminPw.isBlank()) {
+            devAdminPw = "Admin@123456";
+        }
+        User admin = new User();
+        admin.setFullName("Nguyễn Minh Anh");
+        admin.setEmail("admin@roomcare.vn");
+        admin.setPhone("0908112233");
+        admin.setPassword(passwordEncoder.encode(devAdminPw));
+        admin.setRole(Role.ADMIN);
+        admin.setIsActive(true);
+        admin.setEmailVerified(true);
+        admin.setPhoneVerified(true);
+        admin.setEmailVerifiedAt(LocalDateTime.now());
+        admin.setPhoneVerifiedAt(LocalDateTime.now());
+        admin.setTokenVersion(0);
+        userRepository.save(admin);
     }
 
     private void syncAllRoomHealthScores() {
@@ -110,6 +135,18 @@ public class DataSeeder {
             }
             if (user.getFullName() == null || user.getFullName().contains("?")) {
                 user.setFullName(fullName);
+                dirty = true;
+            }
+            if (!Boolean.TRUE.equals(user.getEmailVerified())) {
+                user.setEmailVerified(true);
+                dirty = true;
+            }
+            if (!Boolean.TRUE.equals(user.getPhoneVerified())) {
+                user.setPhoneVerified(true);
+                dirty = true;
+            }
+            if (user.getTokenVersion() == null) {
+                user.setTokenVersion(0);
                 dirty = true;
             }
             if (dirty) {

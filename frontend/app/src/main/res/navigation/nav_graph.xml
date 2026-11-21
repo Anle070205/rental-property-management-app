@@ -24,6 +24,11 @@
             app:destination="@id/tenantDashboardFragment"
             app:popUpTo="@id/splashFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_adminDashboardFragment"
+            app:destination="@id/adminDashboardFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!-- Authentication Flow -->
@@ -38,6 +43,9 @@
             android:id="@+id/action_loginFragment_to_forgotPasswordFragment"
             app:destination="@id/forgotPasswordFragment" />
         <action
+            android:id="@+id/action_loginFragment_to_verifyOtpFragment"
+            app:destination="@id/verifyOtpFragment" />
+        <action
             android:id="@+id/action_loginFragment_to_landlordDashboardFragment"
             app:destination="@id/landlordDashboardFragment"
             app:popUpTo="@id/loginFragment"
@@ -45,6 +53,11 @@
         <action
             android:id="@+id/action_loginFragment_to_tenantDashboardFragment"
             app:destination="@id/tenantDashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_adminDashboardFragment"
+            app:destination="@id/adminDashboardFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
     </fragment>
@@ -59,6 +72,9 @@
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
         <action
+            android:id="@+id/action_registerFragment_to_verifyOtpFragment"
+            app:destination="@id/verifyOtpFragment" />
+        <action
             android:id="@+id/action_registerFragment_to_landlordDashboardFragment"
             app:destination="@id/landlordDashboardFragment"
             app:popUpTo="@id/loginFragment"
@@ -71,9 +87,40 @@
     </fragment>
 
     <fragment
+        android:id="@+id/verifyOtpFragment"
+        android:name="com.example.rental_property_management_app.fragments.VerifyOtpFragment"
+        android:label="Xác thực OTP">
+        <action
+            android:id="@+id/action_verifyOtpFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/activateAccountFragment"
+        android:name="com.example.rental_property_management_app.fragments.ActivateAccountFragment"
+        android:label="Kích hoạt tài khoản" />
+
+    <fragment
         android:id="@+id/forgotPasswordFragment"
         android:name="com.example.rental_property_management_app.fragments.ForgotPasswordFragment"
-        android:label="Quên mật khẩu" />
+        android:label="Quên mật khẩu">
+        <action
+            android:id="@+id/action_forgotPasswordFragment_to_resetPasswordFragment"
+            app:destination="@id/resetPasswordFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/resetPasswordFragment"
+        android:name="com.example.rental_property_management_app.fragments.ResetPasswordFragment"
+        android:label="Đặt lại mật khẩu">
+        <action
+            android:id="@+id/action_resetPasswordFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <!-- Landlord Dashboard (GĐ4.6 Unified Landlord Home) -->
     <fragment
@@ -172,6 +219,14 @@
         <argument
             android:name="tenantId"
             app:argType="long" />
+        <argument
+            android:name="openProvision"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
+            android:name="roomId"
+            android:defaultValue="0L"
+            app:argType="long" />
         <action
             android:id="@+id/action_tenantDetail_to_tenantForm"
             app:destination="@id/tenantFormFragment" />
@@ -189,6 +244,14 @@
             android:name="roomId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="propertyId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="roomCode"
+            android:defaultValue=""
+            app:argType="string" />
     </fragment>
 
     <!-- Tenant Dashboard -->
@@ -228,6 +291,21 @@
         android:name="com.example.rental_property_management_app.fragments.IncidentDetailFragment"
         android:label="@string/rc_incident_detail">
         <argument android:name="incidentId" app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/guestStayListFragment"
+        android:name="com.example.rental_property_management_app.fragments.GuestStayListFragment"
+        android:label="Khách lưu trú" />
+    <fragment
+        android:id="@+id/guestStayFormFragment"
+        android:name="com.example.rental_property_management_app.fragments.GuestStayFormFragment"
+        android:label="Khai báo khách lưu trú" />
+    <fragment
+        android:id="@+id/guestStayDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.GuestStayDetailFragment"
+        android:label="Chi tiết khách lưu trú">
+        <argument android:name="guestStayId" app:argType="long" />
+        <argument android:name="isLandlord" android:defaultValue="false" app:argType="boolean" />
     </fragment>
     <fragment android:id="@+id/myRoomFragment"
         android:name="com.example.rental_property_management_app.fragments.MyRoomFragment" android:label="@string/rc_my_room" />
@@ -330,5 +408,84 @@
         android:name="com.example.rental_property_management_app.fragments.LandlordBookingListFragment"
         android:label="@string/rc_booking_requests" />
 
+    <fragment
+        android:id="@+id/contractListFragment"
+        android:name="com.example.rental_property_management_app.fragments.ContractListFragment"
+        android:label="Quản lý hợp đồng" />
 
+    <fragment
+        android:id="@+id/contractDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.ContractDetailFragment"
+        android:label="Chi tiết hợp đồng">
+        <argument
+            android:name="contractId"
+            app:argType="long" />
+    </fragment>
+
+
+    <!-- Admin Management Flow -->
+    <fragment
+        android:id="@+id/adminDashboardFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminDashboardFragment"
+        android:label="Tổng quan hệ thống" />
+    <fragment
+        android:id="@+id/adminAccountListFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminAccountListFragment"
+        android:label="Quản lý tài khoản" />
+    <fragment
+        android:id="@+id/adminAccountDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminAccountDetailFragment"
+        android:label="Chi tiết tài khoản" />
+    <fragment
+        android:id="@+id/adminAccountFormFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminAccountFormFragment"
+        android:label="Tài khoản" />
+    <fragment
+        android:id="@+id/adminLandlordListFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminLandlordListFragment"
+        android:label="Quản lý chủ nhà" />
+    <fragment
+        android:id="@+id/adminLandlordDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminLandlordDetailFragment"
+        android:label="Chi tiết chủ nhà" />
+    <fragment
+        android:id="@+id/adminPropertyListFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminPropertyListFragment"
+        android:label="Quản lý nhà trọ" />
+    <fragment
+        android:id="@+id/adminPropertyDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminPropertyDetailFragment"
+        android:label="Chi tiết nhà trọ" />
+    <fragment
+        android:id="@+id/adminReportListFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminReportListFragment"
+        android:label="Quản lý báo cáo" />
+    <fragment
+        android:id="@+id/adminReportDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminReportDetailFragment"
+        android:label="Chi tiết báo cáo" />
+    <fragment
+        android:id="@+id/adminBroadcastListFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminBroadcastListFragment"
+        android:label="Quản lý thông báo" />
+    <fragment
+        android:id="@+id/adminBroadcastDetailFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminBroadcastDetailFragment"
+        android:label="Chi tiết thông báo" />
+    <fragment
+        android:id="@+id/adminBroadcastFormFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminBroadcastFormFragment"
+        android:label="Soạn thông báo" />
+    <fragment
+        android:id="@+id/adminHubFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminHubFragment"
+        android:label="Trung tâm quản trị" />
+    <fragment
+        android:id="@+id/adminProfileFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminProfileFragment"
+        android:label="Hồ sơ Admin" />
+    <fragment
+        android:id="@+id/adminChangePasswordFragment"
+        android:name="com.example.rental_property_management_app.fragments.AdminChangePasswordFragment"
+        android:label="Đổi mật khẩu" />
 </navigation>

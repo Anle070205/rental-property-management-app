@@ -103,6 +103,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tvRoomStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/rc_badge_success"
@@ -119,19 +120,28 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:textColor="@color/rc_ink"
-                            android:textSize="24sp"
+                            android:textSize="22sp"
                             android:textStyle="bold"
                             tools:text="P.305 · Tầng 3" />
+
+                        <TextView
+                            android:id="@+id/tvRoomSpecs"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="@color/rc_muted"
+                            android:textSize="13sp"
+                            tools:text="24 m² · Đang ở 1/2 người" />
                     </LinearLayout>
 
                     <FrameLayout
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
                         android:background="@drawable/rc_icon_box_tint">
 
                         <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
                             android:layout_gravity="center"
                             android:importantForAccessibility="no"
                             android:src="@drawable/ic_room"
@@ -145,14 +155,30 @@
                     android:layout_marginVertical="12dp"
                     android:background="@color/rc_line" />
 
-                <TextView
-                    android:id="@+id/rentPrice"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/rc_brand"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    tools:text="Giá thuê: 3.800.000 ₫" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/rentPrice"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/rc_brand"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="Giá thuê: 3.800.000 ₫" />
+
+                    <TextView
+                        android:id="@+id/tvDeposit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/rc_muted"
+                        android:textSize="13sp"
+                        tools:text="Cọc: 7.600.000 ₫" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tvHealthScore"
@@ -168,12 +194,85 @@
                     tools:text="Health Score: 100/100" />
             </LinearLayout>
 
-            <!-- Room Info Rows Card -->
+            <!-- Contract Card (Figma 34:23805) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Hợp đồng thuê"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/btnViewContract"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:text="Xem chi tiết"
+                    android:textColor="@color/rc_brand"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/rc_panel"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:id="@+id/tvContractCodeStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="Hợp đồng: HD-2026-P305 · Đang hiệu lực" />
+
+                <TextView
+                    android:id="@+id/tvContractPeriod"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="13sp"
+                    tools:text="Thời hạn: 01/11/2025 – 31/10/2026" />
+
+                <TextView
+                    android:id="@+id/tvContractPaymentDay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="13sp"
+                    tools:text="Ngày thanh toán: Ngày 05 hàng tháng" />
+
+                <TextView
+                    android:id="@+id/tvPrimaryAndRoommates"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="13sp"
+                    tools:text="Người thuê chính: Phạm Gia Bảo" />
+            </LinearLayout>
+
+            <!-- Room Info, Utilities & Amenities Card -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Thông tin phòng &amp; tiện nghi"
+                android:text="Thông tin phòng, điện nước &amp; tiện nghi"
                 android:textColor="@color/rc_ink"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -215,7 +314,7 @@
                         android:layout_weight="1"
                         android:textColor="@color/rc_ink"
                         android:textSize="14sp"
-                        tools:text="Địa chỉ: Nhà trọ An Phúc, Bình Thạnh" />
+                        tools:text="Địa chỉ: Nhà trọ An Phúc" />
                 </LinearLayout>
 
                 <View
@@ -224,45 +323,119 @@
                     android:layout_marginVertical="10dp"
                     android:background="@color/rc_line" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvUtilityFees"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingVertical="4dp">
+                    android:textColor="@color/rc_ink"
+                    android:textSize="13sp"
+                    tools:text="Điện: 3.500 ₫/kWh · Nước: 15.000 ₫/m³ · Wifi: 100.000 ₫ · Dịch vụ: 50.000 ₫" />
 
-                    <FrameLayout
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/rc_icon_box_soft">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="10dp"
+                    android:background="@color/rc_line" />
 
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_gravity="center"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/ic_info"
-                            app:tint="@color/rc_brand" />
-                    </FrameLayout>
+                <TextView
+                    android:id="@+id/amenities"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="14sp"
+                    tools:text="Tiện ích: Điều hòa, Nóng lạnh, Wifi" />
 
-                    <TextView
-                        android:id="@+id/amenities"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1"
-                        android:textColor="@color/rc_ink"
-                        android:textSize="14sp"
-                        tools:text="Tiện ích: Máy lạnh, Tủ lạnh, Wifi" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/tvRoomDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/rc_muted"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
             </LinearLayout>
 
-            <!-- Landlord Contact Card -->
+            <!-- Latest Invoice Card (Figma 34:23805) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Hóa đơn gần nhất"
+                    android:textColor="@color/rc_ink"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/btnViewInvoices"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:text="Xem tất cả"
+                    android:textColor="@color/rc_brand"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/rc_panel"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLatestInvoiceMonth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/rc_ink"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        tools:text="Kỳ 2026-11" />
+
+                    <TextView
+                        android:id="@+id/tvLatestInvoiceAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/rc_muted"
+                        android:textSize="13sp"
+                        tools:text="4.950.000 ₫" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvLatestInvoiceStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rc_badge"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:textColor="@color/rc_brand"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    tools:text="Đã thanh toán" />
+            </LinearLayout>
+
+            <!-- Landlord Contact & Quick Actions Card -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Liên hệ chủ trọ"
+                android:text="Liên hệ chủ trọ &amp; Thao tác"
                 android:textColor="@color/rc_ink"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -305,7 +478,7 @@
                         android:textColor="@color/rc_ink"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        tools:text="Liên hệ chủ nhà: Tài Bình An · 0901 234 567" />
+                        tools:text="Liên hệ chủ nhà: Nguyễn Văn A · 0901234567" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -313,9 +486,37 @@
                     style="@style/RoomCare.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="12dp"
                     android:text="@string/rc_call_landlord"
                     app:icon="@drawable/ic_phone" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnReportIncident"
+                        style="@style/RoomCare.Button.Secondary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:text="Báo sự cố"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGuestStay"
+                        style="@style/RoomCare.Button.Secondary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:text="Khách lưu trú"
+                        android:textSize="12sp"
+                        app:icon="@drawable/ic_qr_code" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

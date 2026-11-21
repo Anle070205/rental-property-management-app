@@ -1,6 +1,7 @@
 package com.example.rental_property_management_app.repositories
 
 import com.example.rental_property_management_app.models.ApiResponse
+import com.example.rental_property_management_app.models.SubmitPaymentProofRequest
 import com.example.rental_property_management_app.models.TenantInvoiceStatus
 import com.example.rental_property_management_app.network.RetrofitClient
 import retrofit2.Response
@@ -25,6 +26,9 @@ class TenantPortalRepository {
             Response.success(ApiResponse(true, "", sample))
         }
     }) { it.data }
+
+    suspend fun submitPaymentProof(invoiceId: Long, note: String?, proofUrl: String?) =
+        apiResult({ api.submitTenantPaymentProof(invoiceId, SubmitPaymentProofRequest(note, proofUrl)) }) { it.data }
 
     suspend fun paymentInfo(invoiceId: Long) = apiResult({
         val response = api.tenantPaymentInfo(invoiceId)

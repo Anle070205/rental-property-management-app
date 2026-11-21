@@ -38,7 +38,7 @@ class TenantAdapter(
                 tvTenantName.text = tenant.fullName
                 
                 // Phone
-                tvPhone.text = tenant.phone
+                tvPhone.text = tenant.phone?.takeIf { it.isNotBlank() } ?: "Chưa có SĐT"
                 
                 // Property name
                 tvPropertyName.text = tenant.propertyName

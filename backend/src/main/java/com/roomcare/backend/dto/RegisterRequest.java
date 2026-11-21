@@ -6,8 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Register Request DTO
- * CHỈ CHO LANDLORD - Tenant account được tạo bởi Landlord
+ * Register Request DTO - Hỗ trợ chọn 1 trong 2 phương thức: EMAIL (Gmail) hoặc PHONE (Số điện thoại VN)
  */
 @Data
 @NoArgsConstructor
@@ -18,21 +17,31 @@ public class RegisterRequest {
     @Size(min = 2, max = 100, message = "Họ tên phải từ 2-100 ký tự")
     private String fullName;
 
-    @NotBlank(message = "Email không được để trống")
-    @Email(message = "Email không hợp lệ")
-    @Size(max = 100)
+    @Pattern(
+            regexp = "^(?i)(EMAIL|PHONE)$",
+            message = "Phương thức xác thực chỉ hỗ trợ EMAIL hoặc PHONE"
+    )
+    private String verificationMethod = "EMAIL";
+
+    @Size(max = 100, message = "Email tối đa 100 ký tự")
     private String email;
 
-    @NotBlank(message = "Số điện thoại không được để trống")
-    @Pattern(regexp = "^0\\d{9}$", message = "Số điện thoại phải có 10 số và bắt đầu bằng 0")
+    @Size(max = 20, message = "Số điện thoại tối đa 20 ký tự")
     private String phone;
 
     @NotBlank(message = "Mật khẩu không được để trống")
     @Size(min = 6, max = 50, message = "Mật khẩu phải từ 6-50 ký tự")
     private String password;
 
-    // Role sẽ luôn là LANDLORD cho register API
-    // TENANT account được tạo bởi Landlord thông qua Contract creation
-    private String role = "LANDLORD"; // Default và fixed value
+    private String role = "LANDLORD";
+
+    public RegisterRequest(String fullName, String email, String phone, String password, String role) {
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.role = role;
+        this.verificationMethod = (email != null && !email.isBlank()) ? "EMAIL" : "PHONE";
+    }
 }
 

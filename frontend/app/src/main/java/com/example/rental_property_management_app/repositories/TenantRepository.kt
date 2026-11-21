@@ -7,17 +7,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-/**
- * Tenant Repository
- * Xử lý data layer cho Tenant
- */
 class TenantRepository {
-    
+
     private val apiService = RetrofitClient.apiService
-    
-    /**
-     * Get tenants với filters
-     */
+
     suspend fun getTenants(
         propertyId: Long? = null,
         keyword: String? = null,
@@ -33,10 +26,7 @@ class TenantRepository {
             Resource.Error(e.message ?: "Lỗi kết nối")
         }
     }
-    
-    /**
-     * Get tenant by ID
-     */
+
     suspend fun getTenantById(id: Long): Resource<TenantResponse> = withContext(Dispatchers.IO) {
         try {
             val response = apiService.getTenantById(id)
@@ -45,11 +35,8 @@ class TenantRepository {
             Resource.Error(e.message ?: "Lỗi kết nối")
         }
     }
-    
-    /**
-     * Create new tenant
-     */
-    suspend fun createTenant(request: CreateTenantRequest): Resource<TenantResponse> = 
+
+    suspend fun createTenant(request: CreateTenantRequest): Resource<TenantResponse> =
         withContext(Dispatchers.IO) {
             try {
                 val response = apiService.createTenant(request)
@@ -58,11 +45,8 @@ class TenantRepository {
                 Resource.Error(e.message ?: "Lỗi kết nối")
             }
         }
-    
-    /**
-     * Update tenant
-     */
-    suspend fun updateTenant(id: Long, request: UpdateTenantRequest): Resource<TenantResponse> = 
+
+    suspend fun updateTenant(id: Long, request: UpdateTenantRequest): Resource<TenantResponse> =
         withContext(Dispatchers.IO) {
             try {
                 val response = apiService.updateTenant(id, request)
@@ -71,10 +55,7 @@ class TenantRepository {
                 Resource.Error(e.message ?: "Lỗi kết nối")
             }
         }
-    
-    /**
-     * Delete tenant
-     */
+
     suspend fun deleteTenant(id: Long): Resource<Unit> = withContext(Dispatchers.IO) {
         try {
             val response = apiService.deleteTenant(id)
@@ -92,10 +73,21 @@ class TenantRepository {
             Resource.Error(e.message ?: "Lỗi kết nối")
         }
     }
-    
-    /**
-     * Helper function để xử lý API response
-     */
+
+    suspend fun provisionTenantAccount(
+        id: Long,
+        request: ProvisionTenantAccountRequest
+    ): Resource<ProvisionTenantAccountResponse> = ApiResultHandler.execute {
+        apiService.provisionTenantAccount(id, request)
+    }
+
+    suspend fun resendTenantActivation(
+        id: Long,
+        channel: String
+    ): Resource<ProvisionTenantAccountResponse> = ApiResultHandler.execute {
+        apiService.resendTenantActivation(id, channel)
+    }
+
     private fun <T> handleApiResponse(response: Response<ApiResponse<T>>): Resource<T> {
         return if (response.isSuccessful) {
             val apiResponse = response.body()

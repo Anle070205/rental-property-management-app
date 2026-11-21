@@ -154,11 +154,17 @@ class TenantMarketplaceRoomDetailFragment : Fragment() {
             tvAmenities.text = room.amenities?.takeIf { it.isNotBlank() } ?: "Trang bị cơ bản"
             tvDescription.text = room.description?.takeIf { it.isNotBlank() } ?: "Chưa có mô tả chi tiết"
 
-            val emailPart = room.landlordEmail?.takeIf { it.isNotBlank() }?.let { "\nEmail: $it" }.orEmpty()
-            tvLandlordContact.text = "${room.landlordName} • ${room.landlordPhone}$emailPart"
+            val phone = room.landlordPhone?.takeIf { it.isNotBlank() }
+            val contactPart = phone ?: room.landlordEmail?.takeIf { it.isNotBlank() } ?: "Chưa cập nhật liên hệ"
+            val emailPart = if (phone != null) {
+                room.landlordEmail?.takeIf { it.isNotBlank() }?.let { "\nEmail: $it" }.orEmpty()
+            } else {
+                ""
+            }
+            tvLandlordContact.text = "${room.landlordName} • $contactPart$emailPart"
 
-            btnCallLandlord.isVisible = room.landlordPhone.isNotBlank()
-            btnCallLandlord.setOnClickListener { dialPhone(room.landlordPhone) }
+            btnCallLandlord.isVisible = phone != null
+            btnCallLandlord.setOnClickListener { phone?.let(::dialPhone) }
             btnContactLandlord.setOnClickListener { showContactDialog(room) }
 
             val canBook = room.status == RoomStatus.VACANT && !room.hasPendingBookingByMe

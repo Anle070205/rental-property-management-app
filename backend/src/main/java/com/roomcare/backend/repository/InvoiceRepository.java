@@ -44,6 +44,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     Optional<Invoice> findByRoomIdAndBillingMonth(Long roomId, String billingMonth);
 
+    List<Invoice> findAllByRoomIdAndBillingMonthOrderByCreatedAtDesc(Long roomId, String billingMonth);
+
+    boolean existsByRoomIdAndBillingMonthAndStatusNot(Long roomId, String billingMonth, InvoiceStatus excludedStatus);
+
     List<Invoice> findByRoomIdAndBillingMonthLessThanAndRemainingAmountGreaterThan(
         Long roomId,
         String billingMonth,

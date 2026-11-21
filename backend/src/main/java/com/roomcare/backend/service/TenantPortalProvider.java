@@ -2,6 +2,7 @@ package com.roomcare.backend.service;
 
 import com.roomcare.backend.dto.tenant.MyContractResponse;
 import com.roomcare.backend.dto.tenant.MyRoomResponse;
+import com.roomcare.backend.dto.tenant.SubmitPaymentProofRequest;
 import com.roomcare.backend.dto.tenant.TenantInvoiceResponse;
 import com.roomcare.backend.dto.tenant.TenantPaymentInfoResponse;
 import com.roomcare.backend.dto.tenant.TenantPaymentResponse;
@@ -51,6 +52,13 @@ public interface TenantPortalProvider {
     }
 
     default Optional<AmountDue> amountDue(Tenant tenant) {
+        return Optional.empty();
+    }
+
+    default Optional<TenantInvoiceResponse> submitPaymentProof(
+            Tenant tenant,
+            Long invoiceId,
+            SubmitPaymentProofRequest request) {
         return Optional.empty();
     }
 }

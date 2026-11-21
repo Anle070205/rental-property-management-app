@@ -150,7 +150,7 @@ public class UtilityService {
             throw new RuntimeException("Bạn không có quyền chỉnh sửa bản ghi này");
         }
 
-        Optional<Invoice> linkedInvoice = invoiceRepository.findByRoomIdAndBillingMonth(
+        Optional<Invoice> linkedInvoice = findActiveLinkedInvoice(
                 record.getRoom().getId(), record.getBillingMonth()
         );
         if (linkedInvoice.isPresent() && linkedInvoice.get().getStatus() == InvoiceStatus.PAID) {
@@ -241,7 +241,7 @@ public class UtilityService {
     }
 
     private void syncLinkedInvoiceIfPresent(UtilityRecord record) {
-        Optional<Invoice> invoiceOpt = invoiceRepository.findByRoomIdAndBillingMonth(
+        Optional<Invoice> invoiceOpt = findActiveLinkedInvoice(
                 record.getRoom().getId(), record.getBillingMonth()
         );
         if (invoiceOpt.isEmpty()) {
@@ -254,7 +254,15 @@ public class UtilityService {
         }
 
         invoice.setUtilityRecordId(record.getId());
+        invoice.setPrevElectricIndex(record.getPrevElectricIndex());
+        invoice.setCurrElectricIndex(record.getCurrElectricIndex());
+        invoice.setElectricUsage(record.getElectricUsage());
+        invoice.setElectricUnitPrice(record.getElectricUnitPrice());
         invoice.setElectricityAmount(record.getElectricityAmount());
+        invoice.setPrevWaterIndex(record.getPrevWaterIndex());
+        invoice.setCurrWaterIndex(record.getCurrWaterIndex());
+        invoice.setWaterUsage(record.getWaterUsage());
+        invoice.setWaterUnitPrice(record.getWaterUnitPrice());
         invoice.setWaterAmount(record.getWaterAmount());
         invoice.setInternetAmount(record.getInternetFee());
         invoice.setServiceAmount(record.getServiceFee());
@@ -263,9 +271,11 @@ public class UtilityService {
                 .add(record.getElectricityAmount())
                 .add(record.getWaterAmount())
                 .add(record.getInternetFee())
+                .add(invoice.getGarbageFee() != null ? invoice.getGarbageFee() : BigDecimal.ZERO)
                 .add(record.getServiceFee())
                 .add(invoice.getOtherFees())
                 .add(invoice.getPreviousDebt())
+                .add(invoice.getAdjustmentAmount() != null ? invoice.getAdjustmentAmount() : BigDecimal.ZERO)
                 .subtract(invoice.getDiscountAmount());
 
         if (newTotal.compareTo(invoice.getPaidAmount()) < 0) {
@@ -275,17 +285,30 @@ public class UtilityService {
         BigDecimal remaining = newTotal.subtract(invoice.getPaidAmount());
         invoice.setTotalAmount(newTotal);
         invoice.setRemainingAmount(remaining);
-        if (remaining.compareTo(BigDecimal.ZERO) <= 0) {
-            invoice.setStatus(InvoiceStatus.PAID);
-        } else if (invoice.getDueDate().isBefore(LocalDate.now())) {
-            invoice.setStatus(InvoiceStatus.OVERDUE);
-        } else if (invoice.getPaidAmount().compareTo(BigDecimal.ZERO) > 0) {
-            invoice.setStatus(InvoiceStatus.PARTIALLY_PAID);
-        } else {
-            invoice.setStatus(InvoiceStatus.UNPAID);
+        if (invoice.getStatus() != InvoiceStatus.DRAFT) {
+            if (remaining.compareTo(BigDecimal.ZERO) <= 0) {
+                invoice.setStatus(InvoiceStatus.PAID);
+            } else if (invoice.getDueDate().isBefore(LocalDate.now())) {
+                invoice.setStatus(InvoiceStatus.OVERDUE);
+            } else if (invoice.getPaidAmount().compareTo(BigDecimal.ZERO) > 0) {
+                invoice.setStatus(InvoiceStatus.PARTIALLY_PAID);
+            } else {
+                invoice.setStatus(InvoiceStatus.UNPAID);
+            }
         }
 
         invoiceRepository.save(invoice);
+    }
+
+    private Optional<Invoice> findActiveLinkedInvoice(Long roomId, String billingMonth) {
+        List<Invoice> candidates = invoiceRepository.findAllByRoomIdAndBillingMonthOrderByCreatedAtDesc(roomId, billingMonth);
+        if (candidates != null && !candidates.isEmpty()) {
+            return candidates.stream()
+                    .filter(inv -> inv.getStatus() != InvoiceStatus.CANCELLED)
+                    .findFirst();
+        }
+        return invoiceRepository.findByRoomIdAndBillingMonth(roomId, billingMonth)
+                .filter(inv -> inv.getStatus() != InvoiceStatus.CANCELLED);
     }
 
     private String formatIdx(BigDecimal val) {
@@ -318,7 +341,7 @@ public class UtilityService {
         res.setNotes(record.getNotes());
         res.setHistoryLog(record.getHistoryLog());
 
-        Optional<Invoice> linkedInvoice = invoiceRepository.findByRoomIdAndBillingMonth(
+        Optional<Invoice> linkedInvoice = findActiveLinkedInvoice(
                 record.getRoom().getId(), record.getBillingMonth()
         );
         if (linkedInvoice.isPresent()) {

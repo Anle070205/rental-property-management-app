@@ -44,6 +44,12 @@ class InvoiceViewModel : ViewModel() {
     private val _paymentState = MutableStateFlow<Resource<InvoiceResponse>?>(null)
     val paymentState: StateFlow<Resource<InvoiceResponse>?> = _paymentState.asStateFlow()
 
+    private val _previewState = MutableStateFlow<Resource<InvoiceResponse>?>(null)
+    val previewState: StateFlow<Resource<InvoiceResponse>?> = _previewState.asStateFlow()
+
+    private val _lifecycleActionState = MutableStateFlow<Resource<InvoiceResponse>?>(null)
+    val lifecycleActionState: StateFlow<Resource<InvoiceResponse>?> = _lifecycleActionState.asStateFlow()
+
     var currentMonthFilter: String? = null
     var currentRoomIdFilter: Long? = null
     var currentStatusFilter: InvoiceStatus? = null
@@ -126,5 +132,53 @@ class InvoiceViewModel : ViewModel() {
 
     fun resetPaymentState() {
         _paymentState.value = null
+    }
+
+    fun previewInvoice(request: CreateInvoiceRequest) {
+        viewModelScope.launch {
+            _previewState.value = Resource.Loading()
+            _previewState.value = invoiceRepository.previewInvoice(request)
+        }
+    }
+
+    fun resetPreviewState() {
+        _previewState.value = null
+    }
+
+    fun publishInvoice(invoiceId: Long) {
+        viewModelScope.launch {
+            _lifecycleActionState.value = Resource.Loading()
+            val res = invoiceRepository.publishInvoice(invoiceId)
+            _lifecycleActionState.value = res
+            if (res is Resource.Success) {
+                _invoiceDetailState.value = res
+            }
+        }
+    }
+
+    fun adjustInvoice(invoiceId: Long, request: AdjustInvoiceRequest) {
+        viewModelScope.launch {
+            _lifecycleActionState.value = Resource.Loading()
+            val res = invoiceRepository.adjustInvoice(invoiceId, request)
+            _lifecycleActionState.value = res
+            if (res is Resource.Success) {
+                _invoiceDetailState.value = res
+            }
+        }
+    }
+
+    fun cancelInvoice(invoiceId: Long, reason: String? = null) {
+        viewModelScope.launch {
+            _lifecycleActionState.value = Resource.Loading()
+            val res = invoiceRepository.cancelInvoice(invoiceId, reason)
+            _lifecycleActionState.value = res
+            if (res is Resource.Success) {
+                _invoiceDetailState.value = res
+            }
+        }
+    }
+
+    fun resetLifecycleActionState() {
+        _lifecycleActionState.value = null
     }
 }

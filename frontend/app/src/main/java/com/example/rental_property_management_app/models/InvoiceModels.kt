@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
 enum class InvoiceStatus {
+    @SerializedName("DRAFT")
+    DRAFT,
+
     @SerializedName("UNPAID")
     UNPAID,
 
@@ -15,32 +18,41 @@ enum class InvoiceStatus {
     PAID,
 
     @SerializedName("OVERDUE")
-    OVERDUE;
+    OVERDUE,
+
+    @SerializedName("CANCELLED")
+    CANCELLED;
 
     fun getDisplayName(): String {
         return when (this) {
+            DRAFT -> "Nháp"
             UNPAID -> "Chưa thanh toán"
             PARTIALLY_PAID -> "Thanh toán 1 phần"
             PAID -> "Đã thanh toán"
             OVERDUE -> "Quá hạn"
+            CANCELLED -> "Đã hủy"
         }
     }
 
     fun getTextColorRes(): Int {
         return when (this) {
+            DRAFT -> R.color.invoice_draft
             UNPAID -> R.color.invoice_unpaid
             PARTIALLY_PAID -> R.color.invoice_partial
             PAID -> R.color.invoice_paid
             OVERDUE -> R.color.invoice_overdue
+            CANCELLED -> R.color.invoice_cancelled
         }
     }
 
     fun getBgColorRes(): Int {
         return when (this) {
+            DRAFT -> R.color.invoice_draft_bg
             UNPAID -> R.color.invoice_unpaid_bg
             PARTIALLY_PAID -> R.color.invoice_partial_bg
             PAID -> R.color.invoice_paid_bg
             OVERDUE -> R.color.invoice_overdue_bg
+            CANCELLED -> R.color.invoice_cancelled_bg
         }
     }
 }
@@ -114,6 +126,12 @@ data class InvoiceResponse(
     @SerializedName("tenantPhone")
     val tenantPhone: String?,
 
+    @SerializedName("contractId")
+    val contractId: Long? = null,
+
+    @SerializedName("contractCode")
+    val contractCode: String? = null,
+
     @SerializedName("utilityRecordId")
     val utilityRecordId: Long?,
 
@@ -132,6 +150,9 @@ data class InvoiceResponse(
     @SerializedName("internetAmount")
     val internetAmount: BigDecimal,
 
+    @SerializedName("garbageFee")
+    val garbageFee: BigDecimal = BigDecimal.ZERO,
+
     @SerializedName("serviceAmount")
     val serviceAmount: BigDecimal,
 
@@ -140,6 +161,15 @@ data class InvoiceResponse(
 
     @SerializedName("previousDebt")
     val previousDebt: BigDecimal,
+
+    @SerializedName("adjustmentAmount")
+    val adjustmentAmount: BigDecimal = BigDecimal.ZERO,
+
+    @SerializedName("adjustmentReason")
+    val adjustmentReason: String? = null,
+
+    @SerializedName("adjustmentHistory")
+    val adjustmentHistory: String? = null,
 
     @SerializedName("discountAmount")
     val discountAmount: BigDecimal,
@@ -165,11 +195,53 @@ data class InvoiceResponse(
     @SerializedName("notes")
     val notes: String?,
 
+    @SerializedName("prevElectricIndex")
+    val prevElectricIndex: BigDecimal? = null,
+
+    @SerializedName("currElectricIndex")
+    val currElectricIndex: BigDecimal? = null,
+
     @SerializedName("electricUsage")
     val electricUsage: BigDecimal?,
 
+    @SerializedName("electricUnitPrice")
+    val electricUnitPrice: BigDecimal? = null,
+
+    @SerializedName("prevWaterIndex")
+    val prevWaterIndex: BigDecimal? = null,
+
+    @SerializedName("currWaterIndex")
+    val currWaterIndex: BigDecimal? = null,
+
     @SerializedName("waterUsage")
     val waterUsage: BigDecimal?,
+
+    @SerializedName("waterUnitPrice")
+    val waterUnitPrice: BigDecimal? = null,
+
+    @SerializedName("waterBillingMode")
+    val waterBillingMode: String? = null,
+
+    @SerializedName("occupantCount")
+    val occupantCount: Int? = null,
+
+    @SerializedName("publishedAt")
+    val publishedAt: String? = null,
+
+    @SerializedName("cancelledAt")
+    val cancelledAt: String? = null,
+
+    @SerializedName("cancellationReason")
+    val cancellationReason: String? = null,
+
+    @SerializedName("paymentProofNote")
+    val paymentProofNote: String? = null,
+
+    @SerializedName("paymentProofUrl")
+    val paymentProofUrl: String? = null,
+
+    @SerializedName("paymentProofSubmittedAt")
+    val paymentProofSubmittedAt: String? = null,
 
     @SerializedName("payments")
     val payments: List<PaymentResponse> = emptyList(),
@@ -188,6 +260,9 @@ data class CreateInvoiceRequest(
     @SerializedName("tenantId")
     val tenantId: Long? = null,
 
+    @SerializedName("contractId")
+    val contractId: Long? = null,
+
     @SerializedName("billingMonth")
     val billingMonth: String,
 
@@ -197,14 +272,41 @@ data class CreateInvoiceRequest(
     @SerializedName("roomRent")
     val roomRent: BigDecimal? = null,
 
+    @SerializedName("prevElectricIndex")
+    val prevElectricIndex: BigDecimal? = null,
+
+    @SerializedName("currElectricIndex")
+    val currElectricIndex: BigDecimal? = null,
+
+    @SerializedName("electricUnitPrice")
+    val electricUnitPrice: BigDecimal? = null,
+
     @SerializedName("electricityAmount")
     val electricityAmount: BigDecimal? = null,
+
+    @SerializedName("prevWaterIndex")
+    val prevWaterIndex: BigDecimal? = null,
+
+    @SerializedName("currWaterIndex")
+    val currWaterIndex: BigDecimal? = null,
+
+    @SerializedName("waterUnitPrice")
+    val waterUnitPrice: BigDecimal? = null,
+
+    @SerializedName("waterBillingMode")
+    val waterBillingMode: WaterBillingMode? = null,
+
+    @SerializedName("occupantCount")
+    val occupantCount: Int? = null,
 
     @SerializedName("waterAmount")
     val waterAmount: BigDecimal? = null,
 
     @SerializedName("internetAmount")
     val internetAmount: BigDecimal? = null,
+
+    @SerializedName("garbageFee")
+    val garbageFee: BigDecimal? = null,
 
     @SerializedName("serviceAmount")
     val serviceAmount: BigDecimal? = null,
@@ -215,14 +317,54 @@ data class CreateInvoiceRequest(
     @SerializedName("previousDebt")
     val previousDebt: BigDecimal? = null,
 
+    @SerializedName("adjustmentAmount")
+    val adjustmentAmount: BigDecimal? = null,
+
+    @SerializedName("adjustmentReason")
+    val adjustmentReason: String? = null,
+
     @SerializedName("discountAmount")
     val discountAmount: BigDecimal = BigDecimal.ZERO,
 
     @SerializedName("useUtilityRecord")
     val useUtilityRecord: Boolean = true,
 
+    @SerializedName("autoCarryPreviousDebt")
+    val autoCarryPreviousDebt: Boolean = false,
+
+    @SerializedName("saveAsDraft")
+    val saveAsDraft: Boolean = false,
+
     @SerializedName("notes")
     val notes: String? = null
+)
+
+data class AdjustInvoiceRequest(
+    @SerializedName("adjustmentAmount")
+    val adjustmentAmount: BigDecimal = BigDecimal.ZERO,
+
+    @SerializedName("adjustmentReason")
+    val adjustmentReason: String,
+
+    @SerializedName("garbageFee")
+    val garbageFee: BigDecimal? = null,
+
+    @SerializedName("otherFees")
+    val otherFees: BigDecimal? = null,
+
+    @SerializedName("discountAmount")
+    val discountAmount: BigDecimal? = null,
+
+    @SerializedName("dueDate")
+    val dueDate: String? = null,
+
+    @SerializedName("notes")
+    val notes: String? = null
+)
+
+data class CancelInvoiceRequest(
+    @SerializedName("reason")
+    val reason: String? = null
 )
 
 data class BatchCreateInvoiceRequest(

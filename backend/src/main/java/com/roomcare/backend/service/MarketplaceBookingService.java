@@ -116,6 +116,8 @@ public class MarketplaceBookingService {
         String actionTitle = req.getRequestType() == BookingRequest.RequestType.BOOKING
                 ? "Yêu cầu đặt phòng mới - Phòng " + room.getRoomCode()
                 : "Liên hệ từ người thuê - Phòng " + room.getRoomCode();
+        String tenantContact = tenantUser.getPrimaryIdentifier();
+        String landlordContact = landlord.getPrimaryIdentifier();
         String notePreview = saved.getMessage() != null && !saved.getMessage().isBlank()
                 ? " • Lời nhắn: " + saved.getMessage()
                 : "";
@@ -123,8 +125,8 @@ public class MarketplaceBookingService {
                 landlord,
                 NotificationType.CONTRACT,
                 actionTitle,
-                tenantUser.getFullName() + " (" + tenantUser.getPhone() + ") quan tâm phòng "
-                        + room.getRoomCode() + " tại " + property.getName() + notePreview,
+                tenantUser.getFullName() + (!tenantContact.isBlank() ? " (" + tenantContact + ")" : "")
+                        + " quan tâm phòng " + room.getRoomCode() + " tại " + property.getName() + notePreview,
                 saved.getId()
         );
 
@@ -135,8 +137,8 @@ public class MarketplaceBookingService {
                 tenantUser,
                 NotificationType.CONTRACT,
                 tenantTitle,
-                "Chủ nhà " + landlord.getFullName() + " (" + landlord.getPhone()
-                        + ") sẽ phản hồi yêu cầu của bạn cho " + property.getName() + ".",
+                "Chủ nhà " + landlord.getFullName() + (!landlordContact.isBlank() ? " (" + landlordContact + ")" : "")
+                        + " sẽ phản hồi yêu cầu của bạn cho " + property.getName() + ".",
                 saved.getId()
         );
 
@@ -269,7 +271,11 @@ public class MarketplaceBookingService {
     private void linkOrCreateTenant(BookingRequest booking, User landlord, Property property) {
         User tenantUser = booking.getTenantUser();
         Optional<Tenant> existingOpt = tenantRepository.findByUserId(tenantUser.getId())
-                .or(() -> tenantRepository.findFirstByEmailIgnoreCaseOrPhone(tenantUser.getEmail(), tenantUser.getPhone()));
+                .or(() -> tenantRepository.findFirstByEmailIgnoreCaseOrPhone(tenantUser.getEmail(), tenantUser.getPhone()))
+                .or(() -> tenantUser.getPhone() != null && !tenantUser.getPhone().isBlank()
+                        ? tenantRepository.findFirstByPhoneIn(
+                                com.roomcare.backend.util.PhoneNumberUtils.lookupVariants(tenantUser.getPhone()))
+                        : Optional.empty());
 
         Tenant tenant = existingOpt.orElseGet(Tenant::new);
         tenant.setUser(tenantUser);

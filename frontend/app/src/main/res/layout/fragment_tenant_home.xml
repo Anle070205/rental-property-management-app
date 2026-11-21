@@ -171,6 +171,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/rc_browse_properties"
+                android:visibility="gone"
                 app:icon="@drawable/ic_search" />
 
             <com.google.android.material.button.MaterialButton
@@ -180,6 +181,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/rc_my_bookings"
+                android:visibility="gone"
                 app:icon="@drawable/ic_description" />
         </LinearLayout>
 
@@ -329,6 +331,15 @@
                 app:icon="@drawable/ic_person"
                 app:iconGravity="top" />
         </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGuestStays"
+            style="@style/RoomCare.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Khách lưu trú (Quét CCCD)"
+            app:icon="@drawable/ic_qr_code" />
 
         <TextView
             android:id="@+id/sample"

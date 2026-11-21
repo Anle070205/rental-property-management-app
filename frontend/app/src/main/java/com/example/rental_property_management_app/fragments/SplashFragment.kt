@@ -52,6 +52,9 @@ class SplashFragment : Fragment() {
                 Constants.Roles.TENANT -> {
                     findNavController().navigate(R.id.action_splashFragment_to_tenantDashboardFragment)
                 }
+                Constants.Roles.ADMIN -> {
+                    findNavController().navigate(R.id.action_splashFragment_to_adminDashboardFragment)
+                }
                 else -> {
                     // Invalid role, go to login
                     findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
